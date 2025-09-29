@@ -2,198 +2,462 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
-    <title>Appointiko</title>
+    <title>Appointiko - Instantly book salons and spas nearby</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
     <style>
-        #map { height: 500px; display: none; margin-top: 1rem; border-radius: 0.75rem; }
-        .tenant-card { transition: box-shadow 0.2s ease; }
-        .tenant-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        :root {
+            --primary: #000000;
+            --secondary: #ffffff;
+            --accent: #ffffff;
+            --dark: #000000;
+            --gradient-start: #f3efff;
+            --gradient-end: #e0d8ff;
+        }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+        }
+        #map { height: 500px; display: none; margin-top: 1rem; border-radius: 1rem; }
+        .tenant-card { transition: all 0.3s ease; }
+        .tenant-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
         #citySuggestions div {
             cursor: pointer;
-            padding: 0.5rem;
+            padding: 0.75rem;
             border-bottom: 1px solid #eee;
         }
         #citySuggestions div:hover {
             background: #f3f4f6;
         }
+        .flatpickr-calendar {
+            font-family: inherit;
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .flatpickr-day.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .time-range-container {
+            display: none;
+        }
+        .time-range-container.active {
+            display: flex;
+        }
+        .input-focus {
+            transition: all 0.2s ease;
+        }
+        .input-focus:focus {
+            ring: 2px solid var(--primary);
+            border-color: var(--primary);
+        }
+        .search-input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            cursor: pointer;
+            overflow: visible;
+            text-overflow: clip;
+        }
+        .search-field {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            position: relative;
+        }
+        .search-field:not(:last-of-type) {
+            border-right: 1px solid #e5e7eb;
+        }
+        .search-icon {
+            margin-right: 0.5rem;
+            color: #9ca3af;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 1rem;
+            z-index: 50;
+            min-width: 400px;
+            width: auto;
+            padding: 1rem;
+            display: none;
+        }
+        .dropdown.active {
+            display: block;
+        }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+        }
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+        .dropdown-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-white text-[--dark] antialiased">
 
 <!-- Header -->
-<header class="bg-white shadow-md p-4 flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-blue-600">Appointiko</h1>
-    <nav>
-        <a href="#" class="px-3 text-gray-600 hover:text-blue-600">Home</a>
-        <a href="/tenant/signup" class="px-3 text-gray-600 hover:text-blue-600">For Businesses</a>
+<header class="bg-white py-4 px-6 flex items-center justify-between w-full z-50 top-0">
+    <h1 class="text-2xl font-bold text-[--dark]">Appointiko</h1>
+    <nav class="flex items-center space-x-6">
+        <a href="#" class="text-base text-gray-700 hover:text-[--primary] transition">Log in</a>
+        <a href="/tenant/signup" class="text-base text-gray-700 hover:text-[--primary] transition border border-gray-300 rounded-full px-4 py-1">List your business</a>
+        <button class="text-base text-gray-700 hover:text-[--primary] transition border border-gray-300 rounded-full px-4 py-1">Menu ≡</button>
     </nav>
 </header>
 
-<!-- Hero Section -->
-<section class="text-center py-10 bg-gradient-to-r from-blue-50 to-blue-100">
-    <h2 class="text-4xl font-extrabold text-gray-800">Find & Book Your Spot</h2>
-    <p class="text-lg text-gray-600 mt-2">Salons, barbers, and more — all in one place</p>
-</section>
+<!-- Hero Section with Search -->
+<section class="relative min-h-[50vh] flex items-center justify-center bg-gradient-to-br from-[--gradient-start] to-[--gradient-end] pt-24 pb-20 px-6">
+    <div class="max-w-7xl mx-auto w-full text-center">
+        <h2 class="hero-title text-5xl md:text-7xl font-black text-[--dark] mb-8 leading-tight max-w-3xl mx-auto">Book local beauty and wellness services</h2>
 
-<!-- Search Bar -->
-<section class="max-w-4xl mx-auto mt-6 p-6 bg-white rounded-xl shadow-md">
-    <form id="searchForm" onsubmit="searchTenants(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input type="text" id="searchName" placeholder="Business name..."
-               class="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-2" />
+        <!-- Search Bar -->
+        <form id="searchForm" onsubmit="searchTenants(event)" class="flex items-center max-w-4xl mx-auto bg-white p-2 rounded-full shadow-lg">
+            <div class="search-field flex-1 relative">
+                <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="searchTreatmentInput" placeholder="All treatments and venues" class="search-input text-gray-700 placeholder-gray-500" readonly onclick="toggleDropdown('venueDropdown')">
+                <input type="hidden" id="searchTreatment" value="">
+                <div id="venueDropdown" class="dropdown">
+                    <div class="dropdown-item" onclick="selectVenue('', 'All treatments and venues')">
+                        All treatments and venues
+                    </div>
+                    <hr class="my-2 border-gray-200">
+                    <div class="dropdown-item" onclick="selectVenue('nail', 'Nail Salon')">
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10a3 3 0 11-6 0 3 3 0 016 0zm-7 4h8m-8 2h8m-8 2h8m-8 2h8"></path></svg>
+                        Nail Salon
+                    </div>
+                    <div class="dropdown-item" onclick="selectVenue('hair', 'Hair Salon')">
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0113.263 21H10.5M6 4h12v6H6V4z"></path></svg>
+                        Hair Salon
+                    </div>
+                    <div class="dropdown-item" onclick="selectVenue('barber', 'Barbershop')">
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+                        Barbershop
+                    </div>
+                    <div class="dropdown-item" onclick="selectVenue('spa', 'MedSpa')">
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        MedSpa
+                    </div>
+                    <div class="dropdown-item" onclick="selectVenue('massage', 'Massage')">
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5a7.5 7.5 0 00-7.5 7.5c0 2.5 1.5 4.5 3.5 5.5"></path></svg>
+                        Massage
+                    </div>
+                </div>
+            </div>
+            <div class="search-field relative" style="border-bottom: none;">
+                <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <input type="text" id="searchLocation" placeholder="Current location" oninput="suggestCities(this.value)" class="search-input text-gray-700 placeholder-gray-500" />
+                <div id="citySuggestions" class="absolute bg-white rounded-xl w-full shadow-md mt-1 z-10 overflow-hidden top-full left-0"></div>
+            </div>
+            <div class="search-field">
+                <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <input type="text" id="searchDate" placeholder="Any date" class="search-input text-gray-700 placeholder-gray-500 cursor-pointer" readonly />
+            </div>
+            <div class="search-field relative">
+                <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <input type="text" id="searchTimeInput" placeholder="Any time" class="search-input text-gray-700 placeholder-gray-500" readonly onclick="toggleDropdown('timeDropdown')">
+                <input type="hidden" id="searchTime" value="any">
+                <div id="timeDropdown" class="dropdown">
+                    <div class="dropdown-item" onclick="selectTime('any', 'Any time')">
+                        Any time
+                    </div>
+                    <div class="dropdown-item" onclick="selectTime('morning', 'Morning')">
+                        Morning
+                    </div>
+                    <div class="dropdown-item" onclick="selectTime('afternoon', 'Afternoon')">
+                        Afternoon
+                    </div>
+                    <div class="dropdown-item" onclick="selectTime('evening', 'Evening')">
+                        Evening
+                    </div>
+                    <div class="dropdown-item" onclick="toggleCustomTime()">
+                        Custom time
+                    </div>
+                    <div id="customTime" class="time-range-container flex gap-2 mt-2 hidden">
+                        <input type="time" id="timeFrom" class="p-2 border border-gray-300 rounded-lg w-1/2" />
+                        <input type="time" id="timeTo" class="p-2 border border-gray-300 rounded-lg w-1/2" />
+                        <button onclick="selectCustomTime()" class="bg-[--primary] text-white px-4 py-2 rounded-lg">Apply</button>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="bg-[--primary] text-white font-medium rounded-full px-6 py-3 hover:bg-gray-800 transition">
+                Search
+            </button>
+        </form>
 
-        <select id="searchType" multiple
-                class="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1">
-            <option value="nail">Nail Salon</option>
-            <option value="hair">Hair Salon</option>
-            <option value="barber">Barbershop</option>
-        </select>
-
-        <div class="relative col-span-1">
-            <input type="text" id="searchCity" placeholder="City..." oninput="suggestCities(this.value)"
-                   class="p-3 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <div id="citySuggestions" class="absolute bg-white border rounded-lg w-full shadow-md mt-1 z-10"></div>
-        </div>
-
-        <button type="submit"
-                class="col-span-1 bg-blue-600 text-white font-semibold rounded-lg px-4 py-3 hover:bg-blue-700 transition">
-            Search
-        </button>
-    </form>
+        <p class="text-base text-gray-700 mt-6">588,910 appointments booked today</p>
+    </div>
 </section>
 
 <!-- Toggle View -->
-<div class="flex justify-center space-x-4 mt-6">
+<div id="viewToggle" class="flex justify-center space-x-4 mt-12" style="display: none;">
     <button onclick="switchView('list')"
-            class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">List View</button>
+            class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">List View</button>
     <button onclick="switchView('map')"
-            class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Map View</button>
+            class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">Map View</button>
 </div>
 
 <!-- Results -->
-<section id="results" class="max-w-4xl mx-auto mt-6"></section>
-<div id="map" class="max-w-5xl mx-auto"></div>
+<section id="results" class="max-w-6xl mx-auto mt-12 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></section>
+<div id="map" class="max-w-6xl mx-auto mt-12 px-6" style="display: none;"></div>
 
+<!-- App Download Section -->
+<section class="max-w-6xl mx-auto mt-20 py-16 bg-gradient-to-r from-[--gradient-start] to-white rounded-3xl shadow-lg">
+    <div class="flex flex-col md:flex-row items-center justify-between px-8 gap-12">
+        <div class="text-center md:text-left">
+            <h2 class="text-4xl font-bold text-[--dark] mb-4">Download the Appointiko app</h2>
+            <p class="text-xl text-gray-700 max-w-lg">Book unforgettable beauty and wellness experiences with the Appointiko mobile app</p>
+        </div>
+        <div class="flex flex-col items-center">
+            <img src="https://via.placeholder.com/200?text=QR+Code" alt="Scan to download" class="rounded-lg shadow-md">
+            <p class="text-lg text-gray-700 mt-4">Scan to download</p>
+            <p class="text-lg text-gray-700">Available on App Store and Google Play</p>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="max-w-6xl mx-auto mt-20 px-6">
+    <h2 class="text-4xl font-bold text-[--dark] text-center mb-12">The top-rated destination for beauty and wellness</h2>
+    <p class="text-xl text-gray-700 text-center mb-12 max-w-3xl mx-auto">One solution, one software. Trusted by the best in the beauty and wellness industry</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div class="text-center">
+            <h3 class="text-5xl font-extrabold text-[--primary] mb-2">1 billion+</h3>
+            <p class="text-lg text-gray-700">Appointments booked on Appointiko</p>
+        </div>
+        <div class="text-center">
+            <h3 class="text-5xl font-extrabold text-[--primary] mb-2">130,000+</h3>
+            <p class="text-lg text-gray-700">Partner businesses</p>
+        </div>
+        <div class="text-center">
+            <h3 class="text-5xl font-extrabold text-[--primary] mb-2">120+</h3>
+            <p class="text-lg text-gray-700">Countries using Appointiko</p>
+        </div>
+        <div class="text-center">
+            <h3 class="text-5xl font-extrabold text-[--primary] mb-2">450,000+</h3>
+            <p class="text-lg text-gray-700">Stylists and professionals</p>
+        </div>
+    </div>
+</section>
+
+<!-- For Business Section -->
+<section class="max-w-6xl mx-auto mt-20 py-16 bg-white rounded-3xl shadow-lg px-6">
+    <div class="text-center">
+        <h2 class="text-4xl font-bold text-[--dark] mb-6">Appointiko for Business</h2>
+        <p class="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">Supercharge your business for free with the world's top booking platform for salons and spas. Independently voted no. 1 by industry professionals.</p>
+        <a href="/tenant/signup" class="inline-block bg-[--primary] text-white font-bold px-8 py-4 rounded-full hover:bg-gray-800 transition">Find out more</a>
+        <p class="text-xl text-gray-700 mt-6">Excellent 5/5</p>
+    </div>
+</section>
 
 <!-- Recommended Section -->
-<section class="max-w-5xl mx-auto mt-12">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Recommended</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg shadow p-4">
-            <h3 class="font-semibold text-blue-600">Luxury Hair Studio</h3>
-            <p class="text-gray-600">Top-rated in Skopje. Special offers for new clients.</p>
+<section class="max-w-6xl mx-auto mt-20 px-6">
+    <h2 class="text-3xl font-bold text-[--dark] mb-8">Recommended</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Luxury Hair Studio</h3>
+            <p class="text-gray-700">Top-rated in Skopje. Special offers for new clients.</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <h3 class="font-semibold text-blue-600">Diamond Nails</h3>
-            <p class="text-gray-600">Trending nail art. Book now for autumn discounts!</p>
+        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Diamond Nails</h3>
+            <p class="text-gray-700">Trending nail art. Book now for autumn discounts!</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <h3 class="font-semibold text-blue-600">Elite Barbers</h3>
-            <p class="text-gray-600">Classic cuts & modern styles. Walk-ins welcome.</p>
+        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Elite Barbers</h3>
+            <p class="text-gray-700">Classic cuts & modern styles. Walk-ins welcome.</p>
         </div>
     </div>
 </section>
 
 <!-- New to Appointiko -->
-<section class="max-w-5xl mx-auto mt-12">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">New to Appointiko</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg shadow p-4">
-            <h3 class="font-semibold text-blue-600">Glow MedSpa</h3>
-            <p class="text-gray-600">Now in Bitola – rejuvenation & wellness packages.</p>
+<section class="max-w-6xl mx-auto mt-20 px-6">
+    <h2 class="text-3xl font-bold text-[--dark] mb-8">New to Appointiko</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Glow MedSpa</h3>
+            <p class="text-gray-700">Now in Bitola – rejuvenation & wellness packages.</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <h3 class="font-semibold text-blue-600">FitPoint Gym</h3>
-            <p class="text-gray-600">New in Ohrid. Book training sessions via Appointiko.</p>
+        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">FitPoint Gym</h3>
+            <p class="text-gray-700">New in Ohrid. Book training sessions via Appointiko.</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <h3 class="font-semibold text-blue-600">Zen Massage Studio</h3>
-            <p class="text-gray-600">Relaxing massages now available in Tetovo.</p>
+        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Zen Massage Studio</h3>
+            <p class="text-gray-700">Relaxing massages now available in Tetovo.</p>
         </div>
     </div>
 </section>
 
 <!-- Categories Section -->
-<section class="max-w-6xl mx-auto mt-12">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">Explore Categories</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?salon')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Salon</div>
+<section class="max-w-6xl mx-auto mt-20 px-6">
+    <h2 class="text-3xl font-bold text-[--dark] mb-8">Explore Categories</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?salon" alt="Salon" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Salon</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?barber')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Barber</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?barber" alt="Barber" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Barber</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?nails')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Nails</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?nails" alt="Nails" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Nails</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?spa')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">MedSpa</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?spa" alt="MedSpa" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">MedSpa</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?massage')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Massage</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?massage" alt="Massage" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Massage</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?fitness')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Fitness</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?fitness" alt="Fitness" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Fitness</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?dog')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Pet Grooming</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?dog" alt="Pet Grooming" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Pet Grooming</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?tattoo')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Tattoo & Piercing</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?tattoo" alt="Tattoo & Piercing" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Tattoo & Piercing</div>
         </div>
-        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
-             style="background-image:url('https://source.unsplash.com/600x400/?healthcare')">
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Health Practice</div>
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition">
+            <img src="https://source.unsplash.com/600x400/?healthcare" alt="Health Practice" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Health Practice</div>
         </div>
     </div>
 </section>
 
 <!-- Reviews Section -->
-<section class="max-w-6xl mx-auto mt-16 mb-12">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">What Our Users Say</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-lg shadow">
-            <p class="italic text-gray-700">"Booking my nail appointment in Skopje has never been this easy. I can see available slots and book instantly."</p>
-            <h4 class="mt-4 font-semibold text-blue-600">Ana, Skopje</h4>
+<section class="max-w-6xl mx-auto mt-20 mb-24 px-6">
+    <h2 class="text-3xl font-bold text-[--dark] mb-8">What Our Users Say</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="bg-white p-8 rounded-2xl shadow-md">
+            <p class="italic text-gray-700 mb-6">"Booking my nail appointment in Skopje has never been this easy. I can see available slots and book instantly."</p>
+            <h4 class="font-bold text-[--primary]">Ana, Skopje</h4>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <p class="italic text-gray-700">"I discovered a new barber shop near me thanks to Appointiko. It saves me so much time."</p>
-            <h4 class="mt-4 font-semibold text-blue-600">Petar, Bitola</h4>
+        <div class="bg-white p-8 rounded-2xl shadow-md">
+            <p class="italic text-gray-700 mb-6">"I discovered a new barber shop near me thanks to Appointiko. It saves me so much time."</p>
+            <h4 class="font-bold text-[--primary]">Petar, Bitola</h4>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <p class="italic text-gray-700">"I love that I don’t need to call anymore. I book my massage in Tetovo directly online."</p>
-            <h4 class="mt-4 font-semibold text-blue-600">Elena, Tetovo</h4>
+        <div class="bg-white p-8 rounded-2xl shadow-md">
+            <p class="italic text-gray-700 mb-6">"I love that I don’t need to call anymore. I book my massage in Tetovo directly online."</p>
+            <h4 class="font-bold text-[--primary]">Elena, Tetovo</h4>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <p class="italic text-gray-700">"As a student in Ohrid, it’s perfect. I book gym sessions and haircuts all from my phone."</p>
-            <h4 class="mt-4 font-semibold text-blue-600">Marko, Ohrid</h4>
+        <div class="bg-white p-8 rounded-2xl shadow-md">
+            <p class="italic text-gray-700 mb-6">"As a student in Ohrid, it’s perfect. I book gym sessions and haircuts all from my phone."</p>
+            <h4 class="font-bold text-[--primary]">Marko, Ohrid</h4>
         </div>
     </div>
 </section>
 
-
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     let currentView = 'list';
     let tenantData = [];
 
+    // Initialize Flatpickr for date picker
+    flatpickr("#searchDate", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        altInput: true,
+        altFormat: "F j, Y",
+        weekNumbers: true,
+        locale: {
+            firstDayOfWeek: 1
+        },
+        onOpen: function(selectedDates, dateStr, instance) {
+            instance.calendarContainer.classList.add('rounded-lg', 'shadow-lg');
+        }
+    });
+
+    function toggleDropdown(id) {
+        const dropdown = document.getElementById(id);
+        dropdown.classList.toggle('active');
+        if (id === 'timeDropdown') {
+            document.getElementById('customTime').classList.add('hidden');
+        }
+    }
+
+    function selectVenue(value, text) {
+        document.getElementById('searchTreatment').value = value;
+        document.getElementById('searchTreatmentInput').value = text;
+        toggleDropdown('venueDropdown');
+    }
+
+    function selectTime(value, text) {
+        document.getElementById('searchTime').value = value;
+        document.getElementById('searchTimeInput').value = text;
+        document.getElementById('customTime').classList.add('hidden');
+        toggleDropdown('timeDropdown');
+    }
+
+    function toggleCustomTime() {
+        document.getElementById('customTime').classList.toggle('hidden');
+    }
+
+    function selectCustomTime() {
+        const from = document.getElementById('timeFrom').value;
+        const to = document.getElementById('timeTo').value;
+        if (from && to) {
+            document.getElementById('searchTime').value = 'custom';
+            document.getElementById('searchTimeInput').value = `${from} - ${to}`;
+            toggleDropdown('timeDropdown');
+        }
+    }
+
     async function searchTenants(event) {
         event.preventDefault();
-        const name = document.getElementById("searchName").value;
-        const types = Array.from(document.getElementById("searchType").selectedOptions).map(o => o.value);
-        const city = document.getElementById("searchCity").value;
+        const treatment = document.getElementById("searchTreatment").value;
+        const location = document.getElementById("searchLocation").value;
+        const date = document.getElementById("searchDate").value;
+        const timeOption = document.getElementById("searchTime").value;
+        let timeFrom = '';
+        let timeTo = '';
 
-        const res = await fetch(`/api/tenants/search?name=${encodeURIComponent(name)}&types=${types.join(",")}&city=${encodeURIComponent(city)}`);
+        if (timeOption === "custom") {
+            timeFrom = document.getElementById("timeFrom").value;
+            timeTo = document.getElementById("timeTo").value;
+        } else if (timeOption === "morning") {
+            timeFrom = "08:00";
+            timeTo = "12:00";
+        } else if (timeOption === "afternoon") {
+            timeFrom = "12:00";
+            timeTo = "17:00";
+        } else if (timeOption === "evening") {
+            timeFrom = "17:00";
+            timeTo = "22:00";
+        } else if (timeOption === "any") {
+            timeFrom = "00:00";
+            timeTo = "23:59";
+        }
+
+        const res = await fetch(`/api/tenants/search?type=${encodeURIComponent(treatment)}&city=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}&timeFrom=${encodeURIComponent(timeFrom)}&timeTo=${encodeURIComponent(timeTo)}`);
         tenantData = await res.json();
 
+        document.getElementById('viewToggle').style.display = 'flex';
         renderResults();
     }
 
@@ -203,18 +467,18 @@
             resultsDiv.innerHTML = "";
             tenantData.forEach(t => {
                 const card = document.createElement("div");
-                card.classList.add("tenant-card", "bg-white", "p-4", "rounded-lg", "shadow", "mb-4");
+                card.classList.add("tenant-card", "bg-white", "p-6", "rounded-2xl", "shadow-md");
                 card.innerHTML = `
-            <h3 class="text-lg font-bold text-blue-600">${t.name}</h3>
-            <p class="text-gray-600">${t.type} - ${t.city}</p>
-            <p class="text-gray-500">${t.address}</p>
-            <a href='/tenant/dashboard?tenantId=${t.id}'
-               class="mt-2 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Reserve</a>
-          `;
+                    <h3 class="text-xl font-bold text-[--primary] mb-2">${t.name}</h3>
+                    <p class="text-gray-700 mb-4">${t.type} - ${t.city}</p>
+                    <p class="text-gray-500 mb-4">${t.address}</p>
+                    <a href='/tenant/dashboard?tenantId=${t.id}'
+                       class="inline-block bg-[--primary] text-white font-bold px-6 py-3 rounded-full hover:bg-opacity-90 transition">Reserve</a>
+                `;
                 resultsDiv.appendChild(card);
             });
             document.getElementById("map").style.display = "none";
-            resultsDiv.style.display = "block";
+            resultsDiv.style.display = "grid";
         } else {
             document.getElementById("results").style.display = "none";
             document.getElementById("map").style.display = "block";
@@ -249,15 +513,25 @@
         suggestionBox.innerHTML = "";
         cities.forEach(c => {
             const option = document.createElement("div");
-            option.classList.add("px-3", "py-2", "hover:bg-blue-100");
+            option.classList.add("px-4", "py-3", "hover:bg-gray-100", "transition");
             option.innerText = c;
             option.onclick = () => {
-                document.getElementById("searchCity").value = c;
+                document.getElementById("searchLocation").value = c;
                 suggestionBox.innerHTML = "";
             };
             suggestionBox.appendChild(option);
         });
     }
+
+    // Add event listener to hide dropdowns on click outside
+    document.addEventListener('click', function(event) {
+        const venueDropdown = document.getElementById('venueDropdown');
+        const timeDropdown = document.getElementById('timeDropdown');
+        if (!event.target.closest('.search-field')) {
+            venueDropdown.classList.remove('active');
+            timeDropdown.classList.remove('active');
+        }
+    });
 </script>
 </body>
 </html>
