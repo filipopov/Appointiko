@@ -1,0 +1,33 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Reserve</title>
+</head>
+<body>
+<h2>Reserve Slot</h2>
+<form id="reserveForm">
+    <input type="hidden" id="slotId" th:value="${slotId}" />
+    <label>Name: <input type="text" id="clientName" required /></label><br />
+    <label>Contact: <input type="text" id="contact" required /></label><br />
+    <button type="submit">Reserve</button>
+</form>
+<div id="result"></div>
+
+<script>
+    document.getElementById('reserveForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const slotId = document.getElementById('slotId').value;
+        const clientName = document.getElementById('clientName').value;
+        const contact = document.getElementById('contact').value;
+        const fd = new URLSearchParams();
+        fd.append('slotId', slotId);
+        fd.append('clientName', clientName);
+        fd.append('contact', contact);
+        const res = await fetch('/api/reserve', { method: 'POST', body: fd });
+        const txt = await res.text();
+        document.getElementById('result').innerText = txt;
+    });
+</script>
+</body>
+</html>

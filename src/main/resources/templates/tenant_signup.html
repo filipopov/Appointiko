@@ -1,0 +1,16 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8" /><title>Tenant Signup</title></head>
+<body>
+<h2>Tenant Signup</h2>
+<form method="post" action="/tenant/signup">
+    <label>Name: <input type="text" name="name" required /></label><br />
+    <label>City: <input type="text" name="city" value="Skopje" required /></label><br />
+    <label>Type: <input type="text" name="type" placeholder="nail/hair/barber" required /></label><br />
+    <label>Address: <input type="text" name="address" required /></label><br />
+    <label>Latitude: <input type="number" step="0.000001" name="latitude" required /></label><br />
+    <label>Longitude: <input type="number" step="0.000001" name="longitude" required /></label><br />
+    <button type="submit">Sign up</button>
+</form>
+</body>
+</html>

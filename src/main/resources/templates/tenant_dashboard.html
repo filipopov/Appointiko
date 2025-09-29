@@ -1,0 +1,23 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8" /><title>Dashboard</title></head>
+<body>
+<h2 th:text="${tenant.name}">Tenant</h2>
+<p th:text="${tenant.address}"></p>
+
+<h3>Add slot</h3>
+<form method="post" action="/tenant/slots/add">
+    <input type="hidden" name="tenantId" th:value="${tenant.id}" />
+    <label>Service name: <input name="serviceName" /></label><br />
+    <label>Start (ISO): <input name="startAt" placeholder="2025-09-20T12:00:00" /></label><br />
+    <label>End (ISO): <input name="endAt" placeholder="2025-09-20T13:00:00" /></label><br />
+    <label>Price: <input name="price" /></label><br />
+    <button type="submit">Add</button>
+</form>
+
+<h3>Available slots</h3>
+<ul>
+    <li th:each="s : ${slots}" th:text="${s.serviceName} + ' ' + ${s.startAt}"></li>
+</ul>
+</body>
+</html>

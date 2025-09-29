@@ -1,0 +1,263 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Appointiko</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        #map { height: 500px; display: none; margin-top: 1rem; border-radius: 0.75rem; }
+        .tenant-card { transition: box-shadow 0.2s ease; }
+        .tenant-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        #citySuggestions div {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        #citySuggestions div:hover {
+            background: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+<!-- Header -->
+<header class="bg-white shadow-md p-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-blue-600">Appointiko</h1>
+    <nav>
+        <a href="#" class="px-3 text-gray-600 hover:text-blue-600">Home</a>
+        <a href="/tenant/signup" class="px-3 text-gray-600 hover:text-blue-600">For Businesses</a>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="text-center py-10 bg-gradient-to-r from-blue-50 to-blue-100">
+    <h2 class="text-4xl font-extrabold text-gray-800">Find & Book Your Spot</h2>
+    <p class="text-lg text-gray-600 mt-2">Salons, barbers, and more — all in one place</p>
+</section>
+
+<!-- Search Bar -->
+<section class="max-w-4xl mx-auto mt-6 p-6 bg-white rounded-xl shadow-md">
+    <form id="searchForm" onsubmit="searchTenants(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" id="searchName" placeholder="Business name..."
+               class="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-2" />
+
+        <select id="searchType" multiple
+                class="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 col-span-1">
+            <option value="nail">Nail Salon</option>
+            <option value="hair">Hair Salon</option>
+            <option value="barber">Barbershop</option>
+        </select>
+
+        <div class="relative col-span-1">
+            <input type="text" id="searchCity" placeholder="City..." oninput="suggestCities(this.value)"
+                   class="p-3 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div id="citySuggestions" class="absolute bg-white border rounded-lg w-full shadow-md mt-1 z-10"></div>
+        </div>
+
+        <button type="submit"
+                class="col-span-1 bg-blue-600 text-white font-semibold rounded-lg px-4 py-3 hover:bg-blue-700 transition">
+            Search
+        </button>
+    </form>
+</section>
+
+<!-- Toggle View -->
+<div class="flex justify-center space-x-4 mt-6">
+    <button onclick="switchView('list')"
+            class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">List View</button>
+    <button onclick="switchView('map')"
+            class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Map View</button>
+</div>
+
+<!-- Results -->
+<section id="results" class="max-w-4xl mx-auto mt-6"></section>
+<div id="map" class="max-w-5xl mx-auto"></div>
+
+
+<!-- Recommended Section -->
+<section class="max-w-5xl mx-auto mt-12">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Recommended</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="font-semibold text-blue-600">Luxury Hair Studio</h3>
+            <p class="text-gray-600">Top-rated in Skopje. Special offers for new clients.</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="font-semibold text-blue-600">Diamond Nails</h3>
+            <p class="text-gray-600">Trending nail art. Book now for autumn discounts!</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="font-semibold text-blue-600">Elite Barbers</h3>
+            <p class="text-gray-600">Classic cuts & modern styles. Walk-ins welcome.</p>
+        </div>
+    </div>
+</section>
+
+<!-- New to Appointiko -->
+<section class="max-w-5xl mx-auto mt-12">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">New to Appointiko</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="font-semibold text-blue-600">Glow MedSpa</h3>
+            <p class="text-gray-600">Now in Bitola – rejuvenation & wellness packages.</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="font-semibold text-blue-600">FitPoint Gym</h3>
+            <p class="text-gray-600">New in Ohrid. Book training sessions via Appointiko.</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <h3 class="font-semibold text-blue-600">Zen Massage Studio</h3>
+            <p class="text-gray-600">Relaxing massages now available in Tetovo.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="max-w-6xl mx-auto mt-12">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Explore Categories</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?salon')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Salon</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?barber')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Barber</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?nails')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Nails</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?spa')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">MedSpa</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?massage')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Massage</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?fitness')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Fitness</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?dog')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Pet Grooming</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?tattoo')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Tattoo & Piercing</div>
+        </div>
+        <div class="relative h-32 bg-cover bg-center rounded-lg shadow"
+             style="background-image:url('https://source.unsplash.com/600x400/?healthcare')">
+            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-lg">Health Practice</div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Section -->
+<section class="max-w-6xl mx-auto mt-16 mb-12">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">What Our Users Say</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <p class="italic text-gray-700">"Booking my nail appointment in Skopje has never been this easy. I can see available slots and book instantly."</p>
+            <h4 class="mt-4 font-semibold text-blue-600">Ana, Skopje</h4>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <p class="italic text-gray-700">"I discovered a new barber shop near me thanks to Appointiko. It saves me so much time."</p>
+            <h4 class="mt-4 font-semibold text-blue-600">Petar, Bitola</h4>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <p class="italic text-gray-700">"I love that I don’t need to call anymore. I book my massage in Tetovo directly online."</p>
+            <h4 class="mt-4 font-semibold text-blue-600">Elena, Tetovo</h4>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+            <p class="italic text-gray-700">"As a student in Ohrid, it’s perfect. I book gym sessions and haircuts all from my phone."</p>
+            <h4 class="mt-4 font-semibold text-blue-600">Marko, Ohrid</h4>
+        </div>
+    </div>
+</section>
+
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    let currentView = 'list';
+    let tenantData = [];
+
+    async function searchTenants(event) {
+        event.preventDefault();
+        const name = document.getElementById("searchName").value;
+        const types = Array.from(document.getElementById("searchType").selectedOptions).map(o => o.value);
+        const city = document.getElementById("searchCity").value;
+
+        const res = await fetch(`/api/tenants/search?name=${encodeURIComponent(name)}&types=${types.join(",")}&city=${encodeURIComponent(city)}`);
+        tenantData = await res.json();
+
+        renderResults();
+    }
+
+    function renderResults() {
+        if (currentView === 'list') {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+            tenantData.forEach(t => {
+                const card = document.createElement("div");
+                card.classList.add("tenant-card", "bg-white", "p-4", "rounded-lg", "shadow", "mb-4");
+                card.innerHTML = `
+            <h3 class="text-lg font-bold text-blue-600">${t.name}</h3>
+            <p class="text-gray-600">${t.type} - ${t.city}</p>
+            <p class="text-gray-500">${t.address}</p>
+            <a href='/tenant/dashboard?tenantId=${t.id}'
+               class="mt-2 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Reserve</a>
+          `;
+                resultsDiv.appendChild(card);
+            });
+            document.getElementById("map").style.display = "none";
+            resultsDiv.style.display = "block";
+        } else {
+            document.getElementById("results").style.display = "none";
+            document.getElementById("map").style.display = "block";
+            const map = L.map('map').setView([41.9981, 21.4254], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            tenantData.forEach(t => {
+                if (t.latitude && t.longitude) {
+                    const marker = L.marker([t.latitude, t.longitude]).addTo(map);
+                    marker.bindPopup(`<b>${t.name}</b><br/>${t.address}<br/><a href='/tenant/dashboard?tenantId=${t.id}'>Reserve</a>`);
+                }
+            });
+        }
+    }
+
+    function switchView(view) {
+        currentView = view;
+        renderResults();
+    }
+
+    async function suggestCities(query) {
+        if (query.length < 2) {
+            document.getElementById("citySuggestions").innerHTML = "";
+            return;
+        }
+        const res = await fetch(`/api/cities?suggest=${encodeURIComponent(query)}`);
+        const cities = await res.json();
+        const suggestionBox = document.getElementById("citySuggestions");
+        suggestionBox.innerHTML = "";
+        cities.forEach(c => {
+            const option = document.createElement("div");
+            option.classList.add("px-3", "py-2", "hover:bg-blue-100");
+            option.innerText = c;
+            option.onclick = () => {
+                document.getElementById("searchCity").value = c;
+                suggestionBox.innerHTML = "";
+            };
+            suggestionBox.appendChild(option);
+        });
+    }
+</script>
+</body>
+</html>
