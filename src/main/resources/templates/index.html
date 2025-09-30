@@ -1,10 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointiko - Instantly book salons and spas nearby</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
     <style>
@@ -16,105 +17,104 @@
             --gradient-start: #f3efff;
             --gradient-end: #e0d8ff;
         }
+
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background: linear-gradient(to bottom, var(--gradient-start) 0%, var(--gradient-end) 50%, #ffffff 50%);
             min-height: 100vh;
+            margin: 0;
         }
+
         .hero-title {
             font-family: 'Playfair Display', serif;
         }
-        #map { height: 500px; display: none; margin-top: 1rem; border-radius: 1rem; }
-        .tenant-card { transition: all 0.3s ease; }
-        .tenant-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-        #citySuggestions div {
-            cursor: pointer;
-            padding: 0.75rem;
-            border-bottom: 1px solid #eee;
+
+        #map {
+            height: 500px;
+            display: none;
+            margin-top: 1rem;
+            border-radius: 1rem;
         }
-        #citySuggestions div:hover {
-            background: #f3f4f6;
+
+        .tenant-card {
+            transition: all 0.3s ease;
         }
+
+        .tenant-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
         .flatpickr-calendar {
             font-family: inherit;
-            border-radius: 1rem;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             border: none;
         }
+
         .flatpickr-day.selected {
             background: var(--primary);
             border-color: var(--primary);
         }
-        .time-range-container {
-            display: none;
-        }
-        .time-range-container.active {
-            display: flex;
-        }
-        .input-focus {
-            transition: all 0.2s ease;
-        }
-        .input-focus:focus {
-            ring: 2px solid var(--primary);
-            border-color: var(--primary);
-        }
+
         .search-input {
             border: none;
             background: transparent;
             outline: none;
             width: 100%;
             cursor: pointer;
-            overflow: visible;
-            text-overflow: clip;
-            white-space: nowrap;
-            min-width: 180px;
+            font-size: 1rem;
         }
+
         .search-field {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
+            padding: 0.75rem;
             position: relative;
+            flex: 1;
         }
-        .search-field:not(:last-of-type) {
-            border-right: 1px solid #e5e7eb;
-        }
+
         .search-icon {
             margin-right: 0.5rem;
             color: #9ca3af;
+            flex-shrink: 0;
         }
+
         .dropdown {
             position: absolute;
             top: 100%;
             left: 0;
+            right: 0;
             background: white;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-radius: 1rem;
-            z-index: 50;
-            min-width: 400px;
-            width: auto;
-            padding: 1rem;
+            border-radius: 0.75rem;
+            z-index: 1000;
+            padding: 0.5rem;
             display: none;
         }
+
         .dropdown.active {
             display: block;
         }
+
         .dropdown-item {
             display: flex;
             align-items: center;
-            padding: 0.5rem;
+            padding: 0.75rem;
             cursor: pointer;
             border-radius: 0.5rem;
-            white-space: nowrap;
         }
+
         .dropdown-item:hover {
             background: #f3f4f6;
         }
+
         .dropdown-icon {
             width: 1.25rem;
             height: 1.25rem;
             margin-right: 0.75rem;
         }
-        /* Blurred bouncing blobs */
+
         .animated-blob {
             position: absolute;
             border-radius: 50%;
@@ -124,6 +124,7 @@
             pointer-events: none;
             z-index: 0;
         }
+
         .blob1 {
             width: 400px;
             height: 400px;
@@ -133,6 +134,7 @@
             animation-duration: 15s;
             animation-delay: -3s;
         }
+
         .blob2 {
             width: 500px;
             height: 500px;
@@ -142,43 +144,33 @@
             animation-duration: 18s;
             animation-delay: -6s;
         }
+
         @keyframes float-bounce {
             0% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-40px) scale(1.05); }
             100% { transform: translateY(0) scale(1); }
         }
-        /* UI Improvements */
-        * {
-            box-sizing: border-box;
-        }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
-        section {
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border-radius: 1rem;
+            overflow: hidden;
             transition: all 0.3s ease;
         }
 
-        .card {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border-radius: 1rem;
-            overflow: hidden;
-        }
-
         .card:hover {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
             transform: translateY(-2px);
         }
 
-        /* Responsiveness - Mimicking Fresha mobile design */
+        /* Mobile Responsiveness (Inspired by Fresha.com) */
         @media (max-width: 768px) {
             header {
-                padding: 0.5rem 1rem;
+                padding: 0.75rem 1rem;
             }
 
             .hero-title {
-                font-size: 2.25rem;
+                font-size: 2rem;
                 line-height: 1.2;
                 margin-bottom: 1.5rem;
             }
@@ -186,15 +178,15 @@
             #searchForm {
                 flex-direction: column;
                 gap: 0.5rem;
-                padding: 1rem;
-                border-radius: 1rem;
+                padding: 0.75rem;
+                border-radius: 0.75rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             }
 
             .search-field {
-                flex: none;
-                min-width: auto;
                 border-right: none;
                 border-bottom: 1px solid #e5e7eb;
+                padding: 1rem;
                 justify-content: space-between;
             }
 
@@ -203,47 +195,56 @@
             }
 
             .search-input {
-                min-width: auto;
-                white-space: normal;
+                font-size: 1rem;
+                padding: 0.5rem;
+                min-height: 44px; /* Minimum tap target size */
             }
 
             .dropdown {
-                position: relative;
-                min-width: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
                 width: 100%;
+                height: 100%;
+                border-radius: 0;
+                padding: 1rem;
+                z-index: 2000;
+                overflow-y: auto;
                 box-shadow: none;
-                border: 1px solid #e5e7eb;
-                border-radius: 0.5rem;
+                background: rgba(255,255,255,0.95);
+            }
+
+            .dropdown-item {
+                font-size: 1.1rem;
+                padding: 1rem;
             }
 
             button[type="submit"] {
-                align-self: stretch;
+                width: 100%;
+                padding: 1rem;
+                font-size: 1.1rem;
                 border-radius: 0.75rem;
+                margin-top: 0.5rem;
             }
 
-            /* Simplify max-width classes */
-            [class*="max-w-"] {
+            .max-w-7xl, .max-w-6xl, .max-w-4xl {
                 max-width: 100%;
                 padding-left: 1rem;
                 padding-right: 1rem;
             }
 
-            /* Handle grid layouts */
-            .grid-cols-1,
-            .grid-cols-2,
-            .grid-cols-3,
-            .grid-cols-4,
-            .grid-cols-5 {
+            .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-5 {
                 grid-template-columns: 1fr;
             }
 
-            /* Handle flex layouts */
             .flex-row {
                 flex-direction: column;
             }
 
             .gap-12 {
-                gap: 1.5rem;
+                gap: 1rem;
             }
 
             .py-16 {
@@ -256,11 +257,15 @@
             }
 
             .text-5xl {
-                font-size: 1.875rem;
+                font-size: 1.75rem;
             }
 
             .text-4xl {
                 font-size: 1.5rem;
+            }
+
+            .text-3xl {
+                font-size: 1.25rem;
             }
 
             .text-xl {
@@ -268,176 +273,164 @@
             }
 
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
                 gap: 1rem;
             }
 
             .nav-menu {
                 display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
+                position: fixed;
+                top: 0;
                 right: 0;
+                width: 75%;
+                height: 100%;
                 background: white;
                 flex-direction: column;
-                padding: 1rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 2rem;
+                box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+                transform: translateX(100%);
+                transition: transform 0.3s ease-in-out;
+                z-index: 1000;
             }
 
             .nav-menu.active {
                 display: flex;
+                transform: translateX(0);
             }
 
-            .blob1,
-            .blob2 {
-                width: 200px;
-                height: 200px;
+            .hamburger {
+                display: block;
+                font-size: 1.5rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .blob1, .blob2 {
+                width: 150px;
+                height: 150px;
+            }
+
+            #map {
+                height: 400px;
+            }
+
+            section.min-h-screen {
+                min-height: auto;
+                padding-top: 4rem;
+                padding-bottom: 1.5rem;
+            }
+
+            #viewToggle, #results, #map {
+                margin-top: 1rem;
             }
         }
 
         @media (max-width: 480px) {
             .hero-title {
-                font-size: 1.875rem;
+                font-size: 1.75rem;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
+            #map {
+                height: 300px;
+            }
+
+            .search-input {
+                font-size: 0.95rem;
+            }
+
+            .dropdown-item {
+                font-size: 1rem;
             }
         }
-        @media (max-width: 480px) {
-            .hero-title { font-size: 1.875rem; }
-            .stats-grid { grid-template-columns: 1fr; }
-        }
-        /* Mobile hamburger */
-        .hamburger { display: none; cursor: pointer; }
-        @media (max-width: 768px) { .hamburger { display: block; } }
     </style>
 </head>
 <body class="text-[--dark] antialiased">
-
 <!-- Header -->
 <header class="bg-white py-4 px-6 flex items-center justify-between w-full z-50 top-0 fixed">
     <h1 class="text-2xl font-bold text-[--dark]">Appointiko</h1>
-    <nav class="flex items-center space-x-6 nav-menu" id="navMenu">
-        <a href="#" class="text-base text-gray-700 hover:text-[--primary] transition">Log in</a>
-        <a href="/tenant/signup" class="text-base text-gray-700 hover:text-[--primary] transition border border-gray-300 rounded-full px-4 py-1">List your business</a>
+    <nav class="nav-menu" id="navMenu">
+        <a href="#" class="text-base text-gray-700 hover:text-[--primary] transition block py-2">Log in</a>
+        <a href="/tenant/signup" class="text-base text-gray-700 hover:text-[--primary] transition border border-gray-300 rounded-full px-4 py-2 block mt-2 text-center">List your business</a>
     </nav>
-    <button class="hamburger text-base text-gray-700 hover:text-[--primary] transition border border-gray-300 rounded-full px-4 py-1" onclick="toggleMenu()">≡</button>
+    <button class="hamburger" onclick="toggleMenu()">≡</button>
 </header>
 
-<!-- Hero Section with Search -->
+<!-- Hero Section -->
 <section class="relative min-h-screen flex items-center justify-center bg-transparent pt-24 pb-20 px-6 overflow-hidden">
-    <!-- Blobs -->
     <div class="animated-blob blob1"></div>
     <div class="animated-blob blob2"></div>
     <div class="max-w-7xl mx-auto w-full text-center relative z-10">
-        <h2 class="hero-title text-5xl md:text-7xl font-black text-[--dark] mb-8 leading-tight max-w-3xl mx-auto">Book local beauty and wellness services</h2>
-
-        <!-- Search Bar -->
+        <h2 class="hero-title text-5xl md:text-6xl font-black text-[--dark] mb-8 leading-tight max-w-3xl mx-auto">Book local beauty and wellness services</h2>
         <form id="searchForm" onsubmit="searchTenants(event)" class="flex items-center max-w-4xl mx-auto bg-white p-2 rounded-full shadow-lg">
-            <div class="search-field flex-1 relative" style="min-width: 240px; flex: 1.5;">
-                <svg class="search-icon w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" id="searchTreatmentInput" placeholder="All treatments and venues" class="search-input text-gray-700 placeholder-gray-500 px-2" readonly onclick="toggleDropdown('venueDropdown')" style="min-width: 180px;">
+            <div class="search-field">
+                <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="searchTreatmentInput" placeholder="All treatments" class="search-input text-gray-700 placeholder-gray-500" readonly onclick="toggleDropdown('venueDropdown')">
                 <input type="hidden" id="searchTreatment" value="">
                 <div id="venueDropdown" class="dropdown">
-                    <div class="dropdown-item" onclick="selectVenue('', 'All treatments and venues')">
-                        All treatments and venues
-                    </div>
+                    <div class="dropdown-item" onclick="selectVenue('', 'All treatments')">All treatments</div>
                     <hr class="my-2 border-gray-200">
                     <div class="dropdown-item" onclick="selectVenue('nail', 'Nail Salon')">
-                        <!-- Better nail icon: simple nail polish bottle -->
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            <rect x="7" y="3" width="10" height="5" rx="1"></rect>
-                        </svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path><rect x="7" y="3" width="10" height="5" rx="1"></rect></svg>
                         Nail Salon
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('hair', 'Hair Salon')">
-                        <!-- Better hair icon: scissors -->
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                         Hair Salon
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('barber', 'Barbershop')">
-                        <!-- Better barber icon: razor -->
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-4 0v14a2 2 0 004 0V5z"></path>
-                        </svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-4 0v14a2 2 0 004 0V5z"></path></svg>
                         Barbershop
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('spa', 'MedSpa')">
-                        <!-- Better medspa icon: lotus -->
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         MedSpa
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('massage', 'Massage')">
-                        <!-- Better massage icon: hands -->
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m-3 0a1.5 1.5 0 00-3 0"></path>
-                        </svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m-3 0a1.5 1.5 0 00-3 0"></path></svg>
                         Massage
                     </div>
                 </div>
             </div>
-            <div class="search-field relative" style="border-bottom: none;">
+            <div class="search-field">
                 <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                <input type="text" id="searchLocation" placeholder="Current location" oninput="suggestCities(this.value)" class="search-input text-gray-700 placeholder-gray-500" />
-                <div id="citySuggestions" class="absolute bg-white rounded-xl w-full shadow-md mt-1 z-10 overflow-hidden top-full left-0"></div>
+                <input type="text" id="searchLocation" placeholder="Current location" oninput="suggestCities(this.value)" class="search-input text-gray-700 placeholder-gray-500"/>
+                <div id="citySuggestions" class="dropdown"></div>
             </div>
             <div class="search-field">
                 <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <input type="text" id="searchDate" placeholder="Any date" class="search-input text-gray-700 placeholder-gray-500 cursor-pointer" readonly />
+                <input type="text" id="searchDate" placeholder="Any date" class="search-input text-gray-700 placeholder-gray-500 cursor-pointer" readonly/>
             </div>
-            <div class="search-field relative">
+            <div class="search-field">
                 <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <input type="text" id="searchTimeInput" placeholder="Any time" class="search-input text-gray-700 placeholder-gray-500" readonly onclick="toggleDropdown('timeDropdown')">
                 <input type="hidden" id="searchTime" value="any">
                 <div id="timeDropdown" class="dropdown">
-                    <div class="dropdown-item" onclick="selectTime('any', 'Any time')">
-                        Any time
-                    </div>
-                    <div class="dropdown-item" onclick="selectTime('morning', 'Morning')">
-                        Morning
-                    </div>
-                    <div class="dropdown-item" onclick="selectTime('afternoon', 'Afternoon')">
-                        Afternoon
-                    </div>
-                    <div class="dropdown-item" onclick="selectTime('evening', 'Evening')">
-                        Evening
-                    </div>
-                    <div class="dropdown-item" onclick="toggleCustomTime()">
-                        Custom time
-                    </div>
+                    <div class="dropdown-item" onclick="selectTime('any', 'Any time')">Any time</div>
+                    <div class="dropdown-item" onclick="selectTime('morning', 'Morning')">Morning</div>
+                    <div class="dropdown-item" onclick="selectTime('afternoon', 'Afternoon')">Afternoon</div>
+                    <div class="dropdown-item" onclick="selectTime('evening', 'Evening')">Evening</div>
+                    <div class="dropdown-item" onclick="toggleCustomTime()">Custom time</div>
                     <div id="customTime" class="time-range-container flex gap-2 mt-2 hidden">
-                        <input type="time" id="timeFrom" class="p-2 border border-gray-300 rounded-lg w-1/2" />
-                        <input type="time" id="timeTo" class="p-2 border border-gray-300 rounded-lg w-1/2" />
+                        <input type="time" id="timeFrom" class="p-2 border border-gray-300 rounded-lg w-1/2"/>
+                        <input type="time" id="timeTo" class="p-2 border border-gray-300 rounded-lg w-1/2"/>
                         <button onclick="selectCustomTime()" class="bg-[--primary] text-white px-4 py-2 rounded-lg">Apply</button>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="bg-[--primary] text-white font-medium rounded-full px-6 py-3 hover:bg-gray-800 transition">
-                Search
-            </button>
+            <button type="submit" class="bg-[--primary] text-white font-medium rounded-full px-6 py-3 hover:bg-gray-800 transition">Search</button>
         </form>
-
         <p class="text-base text-gray-700 mt-6">588,910 appointments booked today</p>
     </div>
 </section>
 
 <!-- Toggle View -->
 <div id="viewToggle" class="flex justify-center space-x-4 mt-12" style="display: none;">
-    <button onclick="switchView('list')"
-            class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">List View</button>
-    <button onclick="switchView('map')"
-            class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">Map View</button>
+    <button onclick="switchView('list')" class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">List View</button>
+    <button onclick="switchView('map')" class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">Map View</button>
 </div>
 
 <!-- Results -->
 <section id="results" class="max-w-6xl mx-auto mt-12 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></section>
-<div id="map" class="max-w-6xl mx-auto mt-12 px-6" style="display: none;"></div>
+<div id="map" class="max-w-6xl mx-auto mt-12 px-6"></div>
 
 <!-- App Download Section -->
 <section class="max-w-6xl mx-auto mt-20 py-16 bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg">
@@ -531,39 +524,39 @@
     <h2 class="text-3xl font-bold text-[--dark] mb-8">Explore Categories</h2>
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?salon" alt="Salon" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1511671786161-2f7d6c8db1e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Salon" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Salon</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?barber" alt="Barber" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1513258496096-7a952f61a4b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Barber" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Barber</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?nails" alt="Nails" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1610992020088-3f12b898e377?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Nails" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Nails</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?spa" alt="MedSpa" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="MedSpa" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">MedSpa</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?massage" alt="Massage" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1600335895229-6e75511894c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Massage" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Massage</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?fitness" alt="Fitness" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Fitness" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Fitness</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?dog" alt="Pet Grooming" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Pet Grooming" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Pet Grooming</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?tattoo" alt="Tattoo & Piercing" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Tattoo & Piercing" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Tattoo & Piercing</div>
         </div>
         <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://source.unsplash.com/600x400/?healthcare" alt="Health Practice" class="w-full h-full object-cover" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1576765607924-84f7b1a6d5c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Health Practice" class="w-full h-full object-cover" loading="lazy">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Health Practice</div>
         </div>
     </div>
@@ -592,19 +585,17 @@
     </div>
 </section>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     let currentView = 'list';
     let tenantData = [];
 
-    // Mobile menu toggle
     function toggleMenu() {
         const menu = document.getElementById('navMenu');
         menu.classList.toggle('active');
     }
 
-    // Flatpickr
     flatpickr("#searchDate", {
         dateFormat: "Y-m-d",
         minDate: "today",
@@ -618,6 +609,10 @@
     });
 
     function toggleDropdown(id) {
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(d => {
+            if (d.id !== id) d.classList.remove('active');
+        });
         const dropdown = document.getElementById(id);
         dropdown.classList.toggle('active');
         if (id === 'timeDropdown') {
@@ -683,6 +678,7 @@
 
         document.getElementById('viewToggle').style.display = 'flex';
         renderResults();
+        document.getElementById('viewToggle').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function renderResults() {
@@ -693,12 +689,11 @@
                 const card = document.createElement("div");
                 card.classList.add("tenant-card", "bg-white", "p-6", "rounded-2xl", "shadow-md", "card");
                 card.innerHTML = `
-                    <h3 class="text-xl font-bold text-[--primary] mb-2">${t.name}</h3>
-                    <p class="text-gray-700 mb-4">${t.type} - ${t.city}</p>
-                    <p class="text-gray-500 mb-4">${t.address}</p>
-                    <a href='/tenant/dashboard?tenantId=${t.id}'
-                       class="inline-block bg-[--primary] text-white font-bold px-6 py-3 rounded-full hover:bg-opacity-90 transition">Reserve</a>
-                `;
+                        <h3 class="text-xl font-bold text-[--primary] mb-2">${t.name}</h3>
+                        <p class="text-gray-700 mb-4">${t.type} - ${t.city}</p>
+                        <p class="text-gray-500 mb-4">${t.address}</p>
+                        <a href='/tenant/dashboard?tenantId=${t.id}' class="inline-block bg-[--primary] text-white font-bold px-6 py-3 rounded-full hover:bg-opacity-90 transition">Reserve</a>
+                    `;
                 resultsDiv.appendChild(card);
             });
             document.getElementById("map").style.display = "none";
@@ -737,23 +732,21 @@
         suggestionBox.innerHTML = "";
         cities.forEach(c => {
             const option = document.createElement("div");
-            option.classList.add("px-4", "py-3", "hover:bg-gray-100", "transition");
+            option.classList.add("dropdown-item");
             option.innerText = c;
             option.onclick = () => {
                 document.getElementById("searchLocation").value = c;
                 suggestionBox.innerHTML = "";
+                suggestionBox.classList.remove('active');
             };
             suggestionBox.appendChild(option);
         });
+        suggestionBox.classList.add('active');
     }
 
-    // Hide dropdowns on outside click
     document.addEventListener('click', function(event) {
-        const venueDropdown = document.getElementById('venueDropdown');
-        const timeDropdown = document.getElementById('timeDropdown');
         if (!event.target.closest('.search-field')) {
-            venueDropdown.classList.remove('active');
-            timeDropdown.classList.remove('active');
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
         }
     });
 </script>
