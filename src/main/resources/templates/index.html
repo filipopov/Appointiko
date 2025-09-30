@@ -163,6 +163,20 @@
             transform: translateY(-2px);
         }
 
+        .dropdown-header {
+            display: none;
+        }
+
+        .close-button {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+
+        .close-menu {
+            display: none;
+        }
+
         /* Mobile Responsiveness (Inspired by Fresha.com) */
         @media (max-width: 768px) {
             header {
@@ -214,6 +228,14 @@
                 overflow-y: auto;
                 box-shadow: none;
                 background: rgba(255,255,255,0.95);
+            }
+
+            .dropdown-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.5rem;
+                font-weight: bold;
             }
 
             .dropdown-item {
@@ -304,6 +326,13 @@
                 padding: 0.5rem 1rem;
             }
 
+            .close-menu {
+                display: block;
+                font-size: 1.5rem;
+                padding: 0.5rem;
+                color: #9ca3af;
+            }
+
             .blob1, .blob2 {
                 width: 150px;
                 height: 150px;
@@ -348,6 +377,7 @@
 <header class="bg-white py-4 px-6 flex items-center justify-between w-full z-50 top-0 fixed">
     <h1 class="text-2xl font-bold text-[--dark]">Appointiko</h1>
     <nav class="nav-menu" id="navMenu">
+        <button class="close-menu" onclick="toggleMenu()">×</button>
         <a href="#" class="text-base text-gray-700 hover:text-[--primary] transition block py-2">Log in</a>
         <a href="/tenant/signup" class="text-base text-gray-700 hover:text-[--primary] transition border border-gray-300 rounded-full px-4 py-2 block mt-2 text-center">List your business</a>
     </nav>
@@ -366,14 +396,18 @@
                 <input type="text" id="searchTreatmentInput" placeholder="All treatments" class="search-input text-gray-700 placeholder-gray-500" readonly onclick="toggleDropdown('venueDropdown')">
                 <input type="hidden" id="searchTreatment" value="">
                 <div id="venueDropdown" class="dropdown">
+                    <div class="dropdown-header">
+                        <span>Select Treatment</span>
+                        <button class="close-button" onclick="toggleDropdown('venueDropdown')">×</button>
+                    </div>
                     <div class="dropdown-item" onclick="selectVenue('', 'All treatments')">All treatments</div>
                     <hr class="my-2 border-gray-200">
                     <div class="dropdown-item" onclick="selectVenue('nail', 'Nail Salon')">
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path><rect x="7" y="3" width="10" height="5" rx="1"></rect></svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m16 0v4m-4 0V4m-8 0v4m-4 8h.01m4 0h.01m4 0h.01m4 0h.01M5 20h14a2 2 0 002-2V9H3v9a2 2 0 002 2z"></path></svg>
                         Nail Salon
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('hair', 'Hair Salon')">
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2m1-17.87a4 4 0 010 7.75M3 8.12a4 4 0 010-7.75"></path></svg>
                         Hair Salon
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('barber', 'Barbershop')">
@@ -381,11 +415,11 @@
                         Barbershop
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('spa', 'MedSpa')">
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                         MedSpa
                     </div>
                     <div class="dropdown-item" onclick="selectVenue('massage', 'Massage')">
-                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m-3 0a1.5 1.5 0 00-3 0"></path></svg>
+                        <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path></svg>
                         Massage
                     </div>
                 </div>
@@ -404,6 +438,10 @@
                 <input type="text" id="searchTimeInput" placeholder="Any time" class="search-input text-gray-700 placeholder-gray-500" readonly onclick="toggleDropdown('timeDropdown')">
                 <input type="hidden" id="searchTime" value="any">
                 <div id="timeDropdown" class="dropdown">
+                    <div class="dropdown-header">
+                        <span>Select Time</span>
+                        <button class="close-button" onclick="toggleDropdown('timeDropdown')">×</button>
+                    </div>
                     <div class="dropdown-item" onclick="selectTime('any', 'Any time')">Any time</div>
                     <div class="dropdown-item" onclick="selectTime('morning', 'Morning')">Morning</div>
                     <div class="dropdown-item" onclick="selectTime('afternoon', 'Afternoon')">Afternoon</div>
@@ -523,40 +561,31 @@
 <section class="max-w-6xl mx-auto mt-20 px-6">
     <h2 class="text-3xl font-bold text-[--dark] mb-8">Explore Categories</h2>
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1511671786161-2f7d6c8db1e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Salon" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/3993461/pexels-photo-3993461.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Salon</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1513258496096-7a952f61a4b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Barber" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/3737667/pexels-photo-3737667.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Barber</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1610992020088-3f12b898e377?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Nails" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/457701/pexels-photo-457701.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Nails</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="MedSpa" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">MedSpa</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1600335895229-6e75511894c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Massage" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Massage</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Fitness" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/3185480/pexels-photo-3185480.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Fitness</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Pet Grooming" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/225232/pexels-photo-225232.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Pet Grooming</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Tattoo & Piercing" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/58997/pexels-photo-58997.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Tattoo & Piercing</div>
         </div>
-        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card">
-            <img src="https://images.unsplash.com/photo-1576765607924-84f7b1a6d5c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Health Practice" class="w-full h-full object-cover" loading="lazy">
+        <div class="relative h-40 bg-cover bg-center rounded-2xl shadow-md overflow-hidden hover:scale-105 transition card" style="background-image: url('https://images.pexels.com/photos/3760067/pexels-photo-3760067.jpeg?auto=compress&cs=tinysrgb&w=600&h=400')">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white font-bold text-xl">Health Practice</div>
         </div>
     </div>
