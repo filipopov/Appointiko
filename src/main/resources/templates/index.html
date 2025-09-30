@@ -47,14 +47,55 @@
 
         .flatpickr-calendar {
             font-family: inherit;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             border: none;
+            background: #ffffff;
+            padding: 1rem;
         }
 
-        .flatpickr-day.selected {
+        .flatpickr-day {
+            border-radius: 50%;
+            font-weight: 500;
+        }
+
+        .flatpickr-day.selected,
+        .flatpickr-day.selected:hover {
             background: var(--primary);
             border-color: var(--primary);
+            color: white;
+        }
+
+        .flatpickr-day.today {
+            border-color: var(--primary);
+        }
+
+        .flatpickr-month {
+            color: var(--dark);
+            font-weight: bold;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            border: none;
+            background: transparent;
+            color: var(--dark);
+        }
+
+        .flatpickr-weekdays {
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .flatpickr-prev-month,
+        .flatpickr-next-month {
+            color: #9ca3af;
+            fill: #9ca3af;
+        }
+
+        .flatpickr-prev-month:hover,
+        .flatpickr-next-month:hover {
+            color: var(--primary);
+            fill: var(--primary);
         }
 
         .search-input {
@@ -118,37 +159,39 @@
         .animated-blob {
             position: absolute;
             border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.4;
-            animation: float-bounce 12s infinite ease-in-out alternate;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: blob-move 20s infinite ease-in-out;
             pointer-events: none;
             z-index: 0;
         }
 
         .blob1 {
-            width: 400px;
-            height: 400px;
-            background: rgba(216, 191, 216, 0.6);
-            top: 10%;
-            left: 15%;
-            animation-duration: 15s;
-            animation-delay: -3s;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 113, 113, 0.6); /* Adjusted to more vibrant colors like Fresha */
+            top: 5%;
+            left: 10%;
+            animation-duration: 25s;
+            animation-delay: -5s;
         }
 
         .blob2 {
-            width: 500px;
-            height: 500px;
-            background: rgba(230, 230, 250, 0.6);
-            bottom: 20%;
-            right: 20%;
-            animation-duration: 18s;
-            animation-delay: -6s;
+            width: 600px;
+            height: 600px;
+            background: rgba(113, 113, 255, 0.6);
+            bottom: 15%;
+            right: 15%;
+            animation-duration: 30s;
+            animation-delay: -10s;
         }
 
-        @keyframes float-bounce {
-            0% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-40px) scale(1.05); }
-            100% { transform: translateY(0) scale(1); }
+        @keyframes blob-move {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -80px) scale(1.1); }
+            50% { transform: translate(-50px, 80px) scale(0.95); }
+            75% { transform: translate(80px, 50px) scale(1.05); }
+            100% { transform: translate(0, 0) scale(1); }
         }
 
         .card {
@@ -175,9 +218,52 @@
 
         .close-menu {
             display: none;
+            align-self: flex-end;
+            margin-bottom: 1rem;
         }
 
-        /* Mobile Responsiveness (Inspired by Fresha.com) */
+        .hamburger {
+            display: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-menu a {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu .login {
+            color: #4b5563;
+        }
+
+        .nav-menu .login:hover {
+            color: var(--primary);
+            background: #f3f4f6;
+        }
+
+        .nav-menu .business {
+            border: 1px solid #d1d5db;
+            color: #4b5563;
+        }
+
+        .nav-menu .business:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        header {
+            background: transparent;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             header {
                 padding: 0.75rem 1rem;
@@ -211,7 +297,7 @@
             .search-input {
                 font-size: 1rem;
                 padding: 0.5rem;
-                min-height: 44px; /* Minimum tap target size */
+                min-height: 44px;
             }
 
             .dropdown {
@@ -320,6 +406,11 @@
                 transform: translateX(0);
             }
 
+            .nav-menu a {
+                padding: 1rem;
+                border-radius: 0.5rem;
+            }
+
             .hamburger {
                 display: block;
                 font-size: 1.5rem;
@@ -328,9 +419,7 @@
 
             .close-menu {
                 display: block;
-                font-size: 1.5rem;
-                padding: 0.5rem;
-                color: #9ca3af;
+                font-size: 2rem;
             }
 
             .blob1, .blob2 {
@@ -344,8 +433,15 @@
 
             section.min-h-screen {
                 min-height: auto;
-                padding-top: 4rem;
+                padding-top: 6rem;
                 padding-bottom: 1.5rem;
+            }
+
+            .flatpickr-calendar {
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 90vw !important;
+                max-width: 320px;
             }
 
             #viewToggle, #results, #map {
@@ -374,12 +470,12 @@
 </head>
 <body class="text-[--dark] antialiased">
 <!-- Header -->
-<header class="bg-white py-4 px-6 flex items-center justify-between w-full z-50 top-0 fixed">
+<header class="py-4 px-6 flex items-center justify-between w-full z-50 top-0 fixed">
     <h1 class="text-2xl font-bold text-[--dark]">Appointiko</h1>
     <nav class="nav-menu" id="navMenu">
         <button class="close-menu" onclick="toggleMenu()">×</button>
-        <a href="#" class="text-base text-gray-700 hover:text-[--primary] transition block py-2">Log in</a>
-        <a href="/tenant/signup" class="text-base text-gray-700 hover:text-[--primary] transition border border-gray-300 rounded-full px-4 py-2 block mt-2 text-center">List your business</a>
+        <a href="#" class="login text-base hover:text-[--primary] transition">Log in</a>
+        <a href="/tenant/signup" class="business text-base hover:text-[--primary] transition border border-gray-300">List your business</a>
     </nav>
     <button class="hamburger" onclick="toggleMenu()">≡</button>
 </header>
@@ -461,14 +557,52 @@
 </section>
 
 <!-- Toggle View -->
-<div id="viewToggle" class="flex justify-center space-x-4 mt-12" style="display: none;">
+<div id="viewToggle" class="flex justify-center space-x-4 mt-12 px-6" style="display: none;">
     <button onclick="switchView('list')" class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">List View</button>
     <button onclick="switchView('map')" class="px-6 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition font-medium">Map View</button>
 </div>
 
 <!-- Results -->
-<section id="results" class="max-w-6xl mx-auto mt-12 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></section>
-<div id="map" class="max-w-6xl mx-auto mt-12 px-6"></div>
+<section id="results" class="max-w-6xl mx-auto mt-6 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;"></section>
+<div id="map" class="max-w-6xl mx-auto mt-6 px-6"></div>
+
+<!-- Recommended Section -->
+<section class="max-w-6xl mx-auto mt-20 px-6">
+    <h2 class="text-3xl font-bold text-[--dark] mb-8">Recommended</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="card bg-white p-6">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Luxury Hair Studio</h3>
+            <p class="text-gray-700">Top-rated in Skopje. Special offers for new clients.</p>
+        </div>
+        <div class="card bg-white p-6">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Diamond Nails</h3>
+            <p class="text-gray-700">Trending nail art. Book now for autumn discounts!</p>
+        </div>
+        <div class="card bg-white p-6">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Elite Barbers</h3>
+            <p class="text-gray-700">Classic cuts & modern styles. Walk-ins welcome.</p>
+        </div>
+    </div>
+</section>
+
+<!-- New to Appointiko -->
+<section class="max-w-6xl mx-auto mt-20 px-6">
+    <h2 class="text-3xl font-bold text-[--dark] mb-8">New to Appointiko</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="card bg-white p-6">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Glow MedSpa</h3>
+            <p class="text-gray-700">Now in Bitola – rejuvenation & wellness packages.</p>
+        </div>
+        <div class="card bg-white p-6">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">FitPoint Gym</h3>
+            <p class="text-gray-700">New in Ohrid. Book training sessions via Appointiko.</p>
+        </div>
+        <div class="card bg-white p-6">
+            <h3 class="text-xl font-bold text-[--primary] mb-2">Zen Massage Studio</h3>
+            <p class="text-gray-700">Relaxing massages now available in Tetovo.</p>
+        </div>
+    </div>
+</section>
 
 <!-- App Download Section -->
 <section class="max-w-6xl mx-auto mt-20 py-16 bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg">
@@ -516,44 +650,6 @@
         <p class="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">Supercharge your business for free with the world's top booking platform for salons and spas. Independently voted no. 1 by industry professionals.</p>
         <a href="/tenant/signup" class="inline-block bg-[--primary] text-white font-bold px-8 py-4 rounded-full hover:bg-gray-800 transition">Find out more</a>
         <p class="text-xl text-gray-700 mt-6">Excellent 5/5</p>
-    </div>
-</section>
-
-<!-- Recommended Section -->
-<section class="max-w-6xl mx-auto mt-20 px-6">
-    <h2 class="text-3xl font-bold text-[--dark] mb-8">Recommended</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="card bg-white p-6">
-            <h3 class="text-xl font-bold text-[--primary] mb-2">Luxury Hair Studio</h3>
-            <p class="text-gray-700">Top-rated in Skopje. Special offers for new clients.</p>
-        </div>
-        <div class="card bg-white p-6">
-            <h3 class="text-xl font-bold text-[--primary] mb-2">Diamond Nails</h3>
-            <p class="text-gray-700">Trending nail art. Book now for autumn discounts!</p>
-        </div>
-        <div class="card bg-white p-6">
-            <h3 class="text-xl font-bold text-[--primary] mb-2">Elite Barbers</h3>
-            <p class="text-gray-700">Classic cuts & modern styles. Walk-ins welcome.</p>
-        </div>
-    </div>
-</section>
-
-<!-- New to Appointiko -->
-<section class="max-w-6xl mx-auto mt-20 px-6">
-    <h2 class="text-3xl font-bold text-[--dark] mb-8">New to Appointiko</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="card bg-white p-6">
-            <h3 class="text-xl font-bold text-[--primary] mb-2">Glow MedSpa</h3>
-            <p class="text-gray-700">Now in Bitola – rejuvenation & wellness packages.</p>
-        </div>
-        <div class="card bg-white p-6">
-            <h3 class="text-xl font-bold text-[--primary] mb-2">FitPoint Gym</h3>
-            <p class="text-gray-700">New in Ohrid. Book training sessions via Appointiko.</p>
-        </div>
-        <div class="card bg-white p-6">
-            <h3 class="text-xl font-bold text-[--primary] mb-2">Zen Massage Studio</h3>
-            <p class="text-gray-700">Relaxing massages now available in Tetovo.</p>
-        </div>
     </div>
 </section>
 
@@ -707,7 +803,10 @@
 
         document.getElementById('viewToggle').style.display = 'flex';
         renderResults();
-        document.getElementById('viewToggle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.scrollTo({
+            top: document.getElementById('viewToggle').offsetTop - 100,
+            behavior: 'smooth'
+        });
     }
 
     function renderResults() {
@@ -731,15 +830,24 @@
             document.getElementById("results").style.display = "none";
             document.getElementById("map").style.display = "block";
             const map = L.map('map').setView([41.9981, 21.4254], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
             }).addTo(map);
+
+            const customIcon = L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background-color: #e0d8ff; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000000; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
 
             tenantData.forEach(t => {
                 if (t.latitude && t.longitude) {
-                    const marker = L.marker([t.latitude, t.longitude]).addTo(map);
-                    marker.bindPopup(`<b>${t.name}</b><br/>${t.address}<br/><a href='/tenant/dashboard?tenantId=${t.id}'>Reserve</a>`);
+                    L.marker([t.latitude, t.longitude], {icon: customIcon}).addTo(map)
+                        .bindPopup(`<b>${t.name}</b><br/>${t.address}<br/><a href='/tenant/dashboard?tenantId=${t.id}'>Reserve</a>`);
                 }
             });
         }
@@ -751,14 +859,17 @@
     }
 
     async function suggestCities(query) {
+        const suggestionBox = document.getElementById("citySuggestions");
+        suggestionBox.innerHTML = "";
+        suggestionBox.classList.remove('active');
         if (query.length < 2) {
-            document.getElementById("citySuggestions").innerHTML = "";
             return;
         }
         const res = await fetch(`/api/cities?suggest=${encodeURIComponent(query)}`);
         const cities = await res.json();
-        const suggestionBox = document.getElementById("citySuggestions");
-        suggestionBox.innerHTML = "";
+        if (cities.length === 0) {
+            return;
+        }
         cities.forEach(c => {
             const option = document.createElement("div");
             option.classList.add("dropdown-item");
