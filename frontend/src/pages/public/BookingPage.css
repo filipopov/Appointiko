@@ -1,0 +1,251 @@
+.booking {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  min-height: 100vh;
+}
+
+.booking__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.booking__salon-name {
+  font-size: 24px;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.booking__salon-address {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* === Step progress indicator === */
+.booking__steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.booking__step {
+  display: flex;
+  align-items: center;
+}
+
+.booking__step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  border: 2px solid var(--border);
+  color: var(--text-secondary);
+  background: var(--surface);
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+
+.booking__step--active .booking__step-num {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(192,86,122,0.25);
+}
+
+.booking__step--done .booking__step-num {
+  border-color: var(--success);
+  background: var(--success);
+  color: #fff;
+}
+
+.booking__step-line {
+  width: 40px;
+  height: 2px;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+
+.booking__step-line--done {
+  background: var(--success);
+}
+
+/* === Section cards === */
+.booking__section {
+  margin-bottom: 16px;
+}
+
+.booking__section-title {
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* === Service buttons === */
+.booking__services {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.booking__svc-btn {
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 44px;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+}
+
+.booking__svc-btn--selected {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.booking__svc-btn:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.booking__svc-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.booking__svc-duration {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.booking__svc-price {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 15px;
+}
+
+/* === Time slots grid === */
+.booking__slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 8px;
+}
+
+.booking__slot-btn {
+  padding: 10px 4px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 44px;
+  text-align: center;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  font-variant-numeric: tabular-nums;
+}
+
+.booking__slot-btn--selected {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.booking__slot-btn:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.booking__no-slots {
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* === Client info form === */
+.booking__info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.booking__error {
+  color: var(--error);
+  font-size: 13px;
+  padding: 8px 12px;
+  background: var(--error-bg);
+  border-radius: var(--radius);
+}
+
+/* === Success screen === */
+.booking__success {
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.booking__success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--success-bg);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 16px;
+}
+
+.booking__success-title {
+  color: var(--success);
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.booking__success-detail {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.booking__success-action {
+  margin-top: 24px;
+}
+
+/* === Mobile === */
+@media (max-width: 480px) {
+  .booking {
+    padding: 16px 12px;
+  }
+
+  .booking__salon-name {
+    font-size: 20px;
+  }
+
+  .booking__step-line {
+    width: 24px;
+  }
+
+  .booking__slots {
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 6px;
+  }
+}

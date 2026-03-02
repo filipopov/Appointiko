@@ -1,137 +1,70 @@
 package org.appointiko.controller;
 
-import org.appointiko.model.ServiceSlot;
-import org.appointiko.model.Tenant;
-import org.appointiko.repo.ServiceSlotRepository;
-import org.appointiko.repo.TenantRepository;
-import org.appointiko.service.ReservationService;
-import org.appointiko.service.SimpleRateLimiter;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.appointiko.dto.*;
+import org.appointiko.model.Appointment;
+import org.appointiko.model.Salon;
+import org.appointiko.service.BookingService;
+import org.appointiko.service.SalonMgmtService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-@Controller
+@RestController
+@RequestMapping("/api/public/salons/{slug}")
+@RequiredArgsConstructor
 public class PublicController {
-  private final TenantRepository tenantRepository;
-  private final ServiceSlotRepository slotRepository;
-  private final ReservationService reservationService;
-  private final SimpleRateLimiter rateLimiter;
 
-  public PublicController(TenantRepository tenantRepository, ServiceSlotRepository slotRepository,
-                          ReservationService reservationService, SimpleRateLimiter rateLimiter) {
-    this.tenantRepository = tenantRepository;
-    this.slotRepository = slotRepository;
-    this.reservationService = reservationService;
-    this.rateLimiter = rateLimiter;
-  }
+    private final SalonMgmtService salonMgmtService;
+    private final BookingService bookingService;
 
-  @GetMapping({"/", "/index"})
-  public String index(Model model, @RequestParam(required = false, defaultValue = "Skopje") String city) {
-    model.addAttribute("city", city);
-    return "index";
-  }
-
-  @GetMapping("/api/cities")
-  @ResponseBody
-  public List<String> suggestCities(@RequestParam String suggest) {
-    List<String> allCities = tenantRepository.findAll()
-            .stream()
-            .map(Tenant::getCity)
-            .distinct()
-            .toList();
-
-    return allCities.stream()
-            .filter(c -> c.toLowerCase().startsWith(suggest.toLowerCase()))
-            .toList();
-  }
-
-  @GetMapping("/api/tenants/search")
-  @ResponseBody
-  public List<Tenant> searchTenants(
-          @RequestParam(required = false) String name,
-          @RequestParam(required = false) String types,
-          @RequestParam(required = false) String city
-  ) {
-    // Simplest version: fetch all, then filter in memory
-    List<Tenant> tenants = tenantRepository.findAll();
-
-    if (name != null && !name.isEmpty()) {
-      tenants = tenants.stream()
-              .filter(t -> t.getName().toLowerCase().contains(name.toLowerCase()))
-              .toList();
+    @GetMapping
+    public ResponseEntity<SalonInfo> getSalon(@PathVariable String slug) {
+        Salon salon = salonMgmtService.getSalonBySlug(slug);
+        return ResponseEntity.ok(new SalonInfo(
+                salon.getId(), salon.getName(), salon.getSlug(),
+                salon.getCity(), salon.getAddress(), salon.getPhone(),
+                salon.getInstagram(), salon.isActive()));
     }
 
-    if (types != null && !types.isEmpty()) {
-      Set<String> typeSet = Arrays.stream(types.split(","))
-              .map(String::toLowerCase)
-              .collect(Collectors.toSet());
-      tenants = tenants.stream()
-              .filter(t -> typeSet.contains(t.getType().toLowerCase()))
-              .toList();
+    @GetMapping("/services")
+    public ResponseEntity<List<ServiceInfo>> getServices(@PathVariable String slug) {
+        Salon salon = salonMgmtService.getSalonBySlug(slug);
+        return ResponseEntity.ok(salonMgmtService.getActiveServices(salon.getId()).stream()
+                .map(s -> new ServiceInfo(s.getId(), s.getName(), s.getDurationMinutes(),
+                        s.getPrice(), s.isActive(), s.getDisplayOrder()))
+                .toList());
     }
 
-    if (city != null && !city.isEmpty()) {
-      tenants = tenants.stream()
-              .filter(t -> t.getCity().equalsIgnoreCase(city))
-              .toList();
+    @GetMapping("/slots")
+    public ResponseEntity<List<SlotInfo>> getSlots(
+            @PathVariable String slug,
+            @RequestParam Long serviceId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        Salon salon = salonMgmtService.getSalonBySlug(slug);
+        List<LocalTime> slots = bookingService.getAvailableSlots(salon.getId(), date, serviceId);
+        return ResponseEntity.ok(slots.stream().map(SlotInfo::new).toList());
     }
 
-    return tenants;
-  }
-
-
-  @GetMapping("/api/tenants")
-  @ResponseBody
-  public List<Tenant> tenants(@RequestParam String city) {
-    return tenantRepository.findByCityIgnoreCase(city);
-  }
-
-  @GetMapping("/api/slots")
-  @ResponseBody
-  public List<ServiceSlot> slots(@RequestParam String city) {
-    return slotRepository.findByTenantCityAndAvailable(city, true);
-  }
-
-  @GetMapping("/reserve/{slotId}")
-  public String reserveForm(@PathVariable String slotId, Model model) {
-    model.addAttribute("slotId", slotId);
-    return "reserve_form";
-  }
-
-  @PostMapping("/api/reserve")
-  @ResponseBody
-  public ResponseEntity<?> reserve(@RequestParam String slotId,
-                                   @RequestParam String clientName,
-                                   @RequestParam String contact,
-                                   HttpServletRequest request) {
-    String key = request.getRemoteAddr() + ":" + contact;
-    if (!rateLimiter.allow(key)) {
-      return ResponseEntity.status(429).body("Too many requests");
+    @PostMapping("/book")
+    public ResponseEntity<?> book(@PathVariable String slug, @Valid @RequestBody BookingRequest req) {
+        try {
+            Salon salon = salonMgmtService.getSalonBySlug(slug);
+            Appointment appointment = bookingService.book(
+                    salon.getId(), req.serviceId(), req.startTime(),
+                    req.clientName(), req.clientPhone());
+            return ResponseEntity.ok(new AppointmentInfo(
+                    appointment.getId(), appointment.getServiceId(), null,
+                    appointment.getStartTime(), appointment.getEndTime(),
+                    appointment.getClientName(), appointment.getClientPhone(),
+                    appointment.getStatus().name()));
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), e.getMessage()));
+        }
     }
-    try {
-      Long sid = Long.parseLong(slotId);
-      return ResponseEntity.ok(reservationService.holdSlot(sid, clientName, contact));
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
-    }
-  }
-
-  @GetMapping("/confirm")
-  public String confirm(@RequestParam String token, Model model) {
-    try {
-      model.addAttribute("reservation", reservationService.confirm(token));
-      return "confirm_result"; // optional template
-    } catch (Exception e) {
-      model.addAttribute("error", e.getMessage());
-      return "confirm_result";
-    }
-  }
 }

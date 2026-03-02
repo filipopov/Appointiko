@@ -1,0 +1,24 @@
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group__label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.input-group__field {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  min-height: 44px;
+  background: var(--surface);
+}
+
+.input-group__field::placeholder {
+  color: var(--border);
+}

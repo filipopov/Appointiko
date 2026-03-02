@@ -1,0 +1,168 @@
+/* === Dashboard grid: calendar left, appointments right on desktop === */
+.dash {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* === Left column: calendar === */
+.dash__sidebar {
+  position: sticky;
+  top: 88px;
+}
+
+.dash__cal-card {
+  padding: 20px;
+}
+
+.dash__today-btn {
+  margin-top: 12px;
+  width: 100%;
+}
+
+/* === Right column: appointments === */
+.dash__content {
+  min-width: 0;
+}
+
+.dash__content-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dash__title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.dash__date-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.dash__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--primary-bg);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.dash__count-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+}
+
+/* === Appointment list === */
+.dash__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dash__appt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-left: 3px solid var(--primary);
+  transition: opacity var(--transition);
+}
+
+.dash__appt--cancelled {
+  opacity: 0.45;
+  border-left-color: var(--border);
+}
+
+.dash__appt-time {
+  font-weight: 600;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash__appt-service {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.dash__appt-client {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.dash__appt-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash__status-badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.dash__status-badge--confirmed {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.dash__status-badge--cancelled {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+/* === Empty state === */
+.dash__empty {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.dash__empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.dash__empty-text {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* === Mobile: stack vertically === */
+@media (max-width: 768px) {
+  .dash {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .dash__sidebar {
+    position: static;
+  }
+
+  .dash__cal-card {
+    padding: 16px;
+  }
+}

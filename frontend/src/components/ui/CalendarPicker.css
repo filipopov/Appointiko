@@ -1,0 +1,101 @@
+.cal {
+  user-select: none;
+}
+
+.cal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.cal__nav {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+
+.cal__nav:hover {
+  background: var(--bg);
+  border-color: var(--text-secondary);
+}
+
+.cal__month-label {
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: capitalize;
+  letter-spacing: -0.01em;
+}
+
+.cal__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  margin-bottom: 4px;
+}
+
+.cal__weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cal__cell {
+  aspect-ratio: 1;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 500;
+  background: none;
+  color: var(--text);
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.cal__cell--empty {
+  cursor: default;
+}
+
+.cal__cell--disabled {
+  color: var(--border);
+  cursor: not-allowed;
+}
+
+.cal__cell--today:not(.cal__cell--selected) {
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.cal__cell--selected {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(192,86,122,0.3);
+  transform: scale(1.05);
+}
+
+.cal__cell--active:not(.cal__cell--selected):hover {
+  background: var(--primary-bg);
+  color: var(--primary-dark);
+}

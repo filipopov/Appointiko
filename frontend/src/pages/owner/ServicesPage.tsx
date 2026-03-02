@@ -1,0 +1,99 @@
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { api } from '../../api'
+import OwnerLayout from '../../components/OwnerLayout'
+import Card from '../../components/ui/Card'
+import Button from '../../components/ui/Button'
+import Input from '../../components/ui/Input'
+import './ServicesPage.css'
+
+export default function ServicesPage() {
+  const { t } = useTranslation()
+  const [services, setServices] = useState<any[]>([])
+  const [editing, setEditing] = useState<any>(null)
+  const [name, setName] = useState('')
+  const [duration, setDuration] = useState(30)
+  const [price, setPrice] = useState(0)
+
+  const load = () => {
+    api.getServices().then(setServices).catch(() => {})
+  }
+
+  useEffect(load, [])
+
+  const handleSave = async () => {
+    if (!name.trim()) return
+    if (editing?.id) {
+      await api.updateService(editing.id, { name, durationMinutes: duration, price, active: true, displayOrder: editing.displayOrder || 0 })
+    } else {
+      await api.createService({ name, durationMinutes: duration, price, active: true, displayOrder: services.length })
+    }
+    resetForm()
+    load()
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm(t('services.confirmDelete'))) return
+    await api.deleteService(id)
+    load()
+  }
+
+  const startEdit = (s: any) => {
+    setEditing(s)
+    setName(s.name)
+    setDuration(s.durationMinutes)
+    setPrice(s.price)
+  }
+
+  const resetForm = () => {
+    setEditing(null)
+    setName('')
+    setDuration(30)
+    setPrice(0)
+  }
+
+  return (
+    <OwnerLayout>
+      <h2 className="svc__title">{t('services.title')}</h2>
+
+      <Card className="svc__form">
+        <div className="svc__form-fields">
+          <Input label={t('services.name')} value={name} onChange={e => setName(e.target.value)} />
+          <div className="svc__form-row">
+            <Input label={t('services.duration')} type="number" min={1} value={duration} onChange={e => setDuration(+e.target.value)} />
+            <Input label={t('services.price')} type="number" min={0} value={price} onChange={e => setPrice(+e.target.value)} />
+          </div>
+          <div className="svc__form-actions">
+            <Button onClick={handleSave}>{t('services.save')}</Button>
+            {editing && <Button variant="secondary" onClick={resetForm}>{t('services.cancelEdit')}</Button>}
+          </div>
+        </div>
+      </Card>
+
+      {services.length === 0 ? (
+        <p className="svc__empty">{t('services.noServices')}</p>
+      ) : (
+        <div className="svc__list">
+          {services.map(s => (
+            <Card key={s.id} className="svc__item">
+              <div>
+                <div className="svc__item-name">{s.name}</div>
+                <div className="svc__item-meta">
+                  {s.durationMinutes} min &middot; {s.price} ден
+                </div>
+              </div>
+              <div className="svc__item-actions">
+                <Button variant="secondary" size="sm" onClick={() => startEdit(s)}>
+                  {t('services.edit')}
+                </Button>
+                <Button variant="danger" size="sm" onClick={() => handleDelete(s.id)}>
+                  {t('services.delete')}
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </OwnerLayout>
+  )
+}

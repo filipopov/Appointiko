@@ -1,0 +1,104 @@
+.settings__title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+/* === Salon info form === */
+.settings__form {
+  margin-bottom: 28px;
+}
+
+.settings__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings__save-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.settings__saved {
+  color: var(--success);
+  font-size: 13px;
+  font-weight: 500;
+  animation: fadeInUp 0.25s ease both;
+}
+
+/* === Booking link section === */
+.settings__section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.settings__link-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.settings__link-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 6px 6px 14px;
+}
+
+.settings__link-url {
+  flex: 1;
+  font-size: 13px;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  word-break: break-all;
+  color: var(--primary-dark);
+  line-height: 1.4;
+}
+
+.settings__copy-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  min-height: 36px;
+  letter-spacing: 0.02em;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+
+.settings__copy-btn:hover {
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.settings__copy-btn--copied {
+  background: var(--success);
+}
+
+.settings__copy-btn--copied:hover {
+  background: var(--success);
+}
+
+/* === Mobile === */
+@media (max-width: 480px) {
+  .settings__link-box {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .settings__copy-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "app": {
+    "name": "Appointiko"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "services": "Services",
+    "hours": "Working Hours",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone number",
+    "salonName": "Salon name",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginHere": "Login here",
+    "registerHere": "Register here"
+  },
+  "booking": {
+    "title": "Book an appointment",
+    "selectService": "Select a service",
+    "selectDate": "Select a date",
+    "selectTime": "Select a time",
+    "yourInfo": "Your information",
+    "name": "Your name",
+    "phone": "Phone number",
+    "book": "Book",
+    "success": "Appointment booked successfully!",
+    "noSlots": "No available slots for this date",
+    "duration": "{{min}} min",
+    "price": "{{price}} den",
+    "closed": "Closed"
+  },
+  "dashboard": {
+    "today": "Today",
+    "noAppointments": "No appointments for this date",
+    "cancel": "Cancel",
+    "cancelled": "Cancelled",
+    "confirmed": "Confirmed",
+    "bookingsToday": "bookings today"
+  },
+  "services": {
+    "title": "Services",
+    "add": "Add service",
+    "name": "Service name",
+    "duration": "Duration (min)",
+    "price": "Price (den)",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancelEdit": "Cancel",
+    "confirmDelete": "Are you sure you want to delete this service?",
+    "noServices": "No services yet. Add your first service."
+  },
+  "hours": {
+    "title": "Working Hours",
+    "save": "Save",
+    "addBlock": "Add block",
+    "removeBlock": "Remove block",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "settings": {
+    "title": "Salon Settings",
+    "name": "Salon name",
+    "city": "City",
+    "address": "Address",
+    "phone": "Phone",
+    "instagram": "Instagram",
+    "save": "Save",
+    "bookingLink": "Booking link",
+    "saved": "Settings saved!",
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+  "errors": {
+    "EMAIL_EXISTS": "Email already registered",
+    "INVALID_CREDENTIALS": "Invalid email or password",
+    "SLOT_TAKEN": "This slot is no longer available",
+    "SERVICE_NOT_FOUND": "Service not found",
+    "SALON_NOT_FOUND": "Salon not found",
+    "INVALID_PHONE": "Invalid Macedonian phone number",
+    "UNKNOWN": "Something went wrong"
+  },
+  "days": {
+    "1": "Mon",
+    "2": "Tue",
+    "3": "Wed",
+    "4": "Thu",
+    "5": "Fri",
+    "6": "Sat",
+    "7": "Sun"
+  }
+}

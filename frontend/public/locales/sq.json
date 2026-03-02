@@ -1,0 +1,104 @@
+{
+  "app": {
+    "name": "Appointiko"
+  },
+  "nav": {
+    "dashboard": "Paneli",
+    "services": "Shërbimet",
+    "hours": "Orari i punës",
+    "settings": "Cilësimet",
+    "logout": "Dil"
+  },
+  "auth": {
+    "login": "Hyr",
+    "register": "Regjistrohu",
+    "email": "Email",
+    "password": "Fjalëkalimi",
+    "phone": "Numri i telefonit",
+    "salonName": "Emri i sallonit",
+    "noAccount": "Nuk ke llogari?",
+    "hasAccount": "Ke llogari tashmë?",
+    "loginHere": "Hyr këtu",
+    "registerHere": "Regjistrohu këtu"
+  },
+  "booking": {
+    "title": "Rezervo termin",
+    "selectService": "Zgjidh shërbimin",
+    "selectDate": "Zgjidh datën",
+    "selectTime": "Zgjidh kohën",
+    "yourInfo": "Të dhënat tuaja",
+    "name": "Emri yt",
+    "phone": "Numri i telefonit",
+    "book": "Rezervo",
+    "success": "Termini u rezervua me sukses!",
+    "noSlots": "Nuk ka termine të lira për këtë datë",
+    "duration": "{{min}} min",
+    "price": "{{price}} den",
+    "closed": "Mbyllur"
+  },
+  "dashboard": {
+    "today": "Sot",
+    "noAppointments": "Nuk ka termine për këtë datë",
+    "cancel": "Anulo",
+    "cancelled": "Anuluar",
+    "confirmed": "Konfirmuar",
+    "bookingsToday": "rezervime sot"
+  },
+  "services": {
+    "title": "Shërbimet",
+    "add": "Shto shërbim",
+    "name": "Emri i shërbimit",
+    "duration": "Kohëzgjatja (min)",
+    "price": "Çmimi (den)",
+    "save": "Ruaj",
+    "edit": "Ndrysho",
+    "delete": "Fshi",
+    "cancelEdit": "Anulo",
+    "confirmDelete": "A jeni i sigurt që dëshironi ta fshini këtë shërbim?",
+    "noServices": "Nuk ka shërbime. Shto shërbimin e parë."
+  },
+  "hours": {
+    "title": "Orari i punës",
+    "save": "Ruaj",
+    "addBlock": "Shto bllok",
+    "removeBlock": "Hiq bllokun",
+    "monday": "E hënë",
+    "tuesday": "E martë",
+    "wednesday": "E mërkurë",
+    "thursday": "E enjte",
+    "friday": "E premte",
+    "saturday": "E shtunë",
+    "sunday": "E diel"
+  },
+  "settings": {
+    "title": "Cilësimet e sallonit",
+    "name": "Emri i sallonit",
+    "city": "Qyteti",
+    "address": "Adresa",
+    "phone": "Telefoni",
+    "instagram": "Instagram",
+    "save": "Ruaj",
+    "bookingLink": "Linku për rezervim",
+    "saved": "Cilësimet u ruajtën!",
+    "copy": "Kopjo",
+    "copied": "U kopjua!"
+  },
+  "errors": {
+    "EMAIL_EXISTS": "Email-i është regjistruar tashmë",
+    "INVALID_CREDENTIALS": "Email ose fjalëkalim i gabuar",
+    "SLOT_TAKEN": "Ky termin nuk është më i lirë",
+    "SERVICE_NOT_FOUND": "Shërbimi nuk u gjet",
+    "SALON_NOT_FOUND": "Salloni nuk u gjet",
+    "INVALID_PHONE": "Numër i pavlefshëm i telefonit maqedonas",
+    "UNKNOWN": "Diçka shkoi keq"
+  },
+  "days": {
+    "1": "Hën",
+    "2": "Mar",
+    "3": "Mër",
+    "4": "Enj",
+    "5": "Pre",
+    "6": "Sht",
+    "7": "Die"
+  }
+}
