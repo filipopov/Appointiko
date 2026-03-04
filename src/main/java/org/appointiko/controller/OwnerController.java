@@ -3,11 +3,13 @@ package org.appointiko.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.appointiko.dto.*;
+import org.appointiko.model.Appointment;
 import org.appointiko.model.Owner;
 import org.appointiko.model.Salon;
 import org.appointiko.model.SalonService;
 import org.appointiko.model.WorkingHours;
 import org.appointiko.service.AuthService;
+import org.appointiko.service.BookingService;
 import org.appointiko.service.DashboardService;
 import org.appointiko.service.SalonMgmtService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,6 +31,7 @@ public class OwnerController {
     private final AuthService authService;
     private final SalonMgmtService salonMgmtService;
     private final DashboardService dashboardService;
+    private final BookingService bookingService;
 
     // -- Salon --
 
@@ -130,11 +133,39 @@ public class OwnerController {
         return ResponseEntity.ok(dashboardService.getAppointments(salon.getId(), date));
     }
 
+    @PostMapping("/appointments")
+    public ResponseEntity<?> createAppointment(Authentication auth, @Valid @RequestBody OwnerBookingRequest req) {
+        Salon salon = getOwnerSalon(auth);
+        try {
+            Appointment appointment = bookingService.book(
+                    salon.getId(), req.serviceId(), req.startTime(),
+                    req.clientName(), req.clientPhone() != null ? req.clientPhone() : "",
+                    req.comment());
+            return ResponseEntity.ok(new AppointmentInfo(
+                    appointment.getId(), appointment.getServiceId(), null,
+                    appointment.getStartTime(), appointment.getEndTime(),
+                    appointment.getClientName(), appointment.getClientPhone(),
+                    appointment.getStatus().name(), appointment.getComment()));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), e.getMessage()));
+        }
+    }
+
     @PatchMapping("/appointments/{id}/cancel")
     public ResponseEntity<Void> cancelAppointment(Authentication auth, @PathVariable Long id) {
         Salon salon = getOwnerSalon(auth);
         dashboardService.cancelAppointment(id, salon.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    // -- Onboarding --
+
+    @GetMapping("/onboarding-status")
+    public ResponseEntity<OnboardingStatus> getOnboardingStatus(Authentication auth) {
+        Salon salon = getOwnerSalon(auth);
+        boolean hasServices = !salonMgmtService.getServices(salon.getId()).isEmpty();
+        boolean hasCustomHours = salonMgmtService.hasCustomWorkingHours(salon.getId());
+        return ResponseEntity.ok(new OnboardingStatus(hasServices, hasCustomHours));
     }
 
     // -- Helpers --

@@ -162,6 +162,110 @@
   font-size: 15px;
 }
 
+/* === FAB: floating add button === */
+.dash__fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 300;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(192, 86, 122, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  z-index: 100;
+}
+
+.dash__fab:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(192, 86, 122, 0.5);
+}
+
+/* === Modal === */
+.dash__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dash__modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeInUp 0.25s ease both;
+}
+
+.dash__modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+}
+
+.dash__modal-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.dash__modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.dash__modal-close:hover {
+  color: var(--text);
+}
+
+.dash__modal-body {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dash__modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.dash__modal-error {
+  color: var(--error);
+  font-size: 13px;
+  padding: 8px 12px;
+  background: var(--error-bg);
+  border-radius: var(--radius);
+}
+
 /* === Mobile: stack vertically === */
 @media (max-width: 768px) {
   .dash {

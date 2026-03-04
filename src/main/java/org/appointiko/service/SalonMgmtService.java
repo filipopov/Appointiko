@@ -31,6 +31,7 @@ public class SalonMgmtService {
         salon.setSlug(generateUniqueSlug(name));
         salon = salonRepository.save(salon);
         initDefaultWorkingHours(salon.getId());
+        initDefaultServices(salon.getId());
         return salon;
     }
 
@@ -108,6 +109,23 @@ public class SalonMgmtService {
         return workingHoursRepository.findBySalonIdOrderByDayOfWeekAscBlockOrderAsc(salonId);
     }
 
+    public boolean hasCustomWorkingHours(Long salonId) {
+        List<WorkingHours> hours = getWorkingHours(salonId);
+        // Default is Mon-Fri 9-17, Sat-Sun off with single block each
+        // If any block differs from this, working hours have been customized
+        for (WorkingHours wh : hours) {
+            int day = wh.getDayOfWeek();
+            boolean expectedWorking = day <= 5;
+            if (wh.isWorkingDay() != expectedWorking) return true;
+            if (wh.isWorkingDay()) {
+                if (!wh.getStartTime().equals(LocalTime.of(9, 0))) return true;
+                if (!wh.getEndTime().equals(LocalTime.of(17, 0))) return true;
+            }
+            if (wh.getBlockOrder() > 0) return true;
+        }
+        return false;
+    }
+
     @Transactional
     public void setWorkingHours(Long salonId, List<WorkingHours> hours) {
         workingHoursRepository.deleteBySalonId(salonId);
@@ -130,6 +148,12 @@ public class SalonMgmtService {
             wh.setWorkingDay(day <= 5); // Mon-Fri working, Sat-Sun off
             workingHoursRepository.save(wh);
         }
+    }
+
+    private void initDefaultServices(Long salonId) {
+        createService(salonId, "\u041C\u0430\u043D\u0438\u043A\u0438\u0440", 30, 400, 0);    // Маникир
+        createService(salonId, "\u0413\u0435\u043B \u043B\u0430\u043A", 60, 700, 1);         // Гел лак
+        createService(salonId, "\u041F\u0435\u0434\u0438\u043A\u0438\u0440", 45, 500, 2);    // Педикир
     }
 
     private String generateUniqueSlug(String name) {

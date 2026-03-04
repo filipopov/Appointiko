@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect, createContext } from 'react'
 import { api } from './api'
+import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/owner/DashboardPage'
@@ -27,6 +28,11 @@ function App() {
   return (
     <AuthContext.Provider value={{ user, setUser, loading }}>
       <Routes>
+        {/* Landing page */}
+        <Route path="/" element={
+          user ? <Navigate to="/dashboard" /> : <LandingPage />
+        } />
+
         {/* Public booking page */}
         <Route path="/b/:slug" element={<BookingPage />} />
 
@@ -53,7 +59,7 @@ function App() {
         } />
 
         {/* Default redirect */}
-        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
       </Routes>
     </AuthContext.Provider>
   )

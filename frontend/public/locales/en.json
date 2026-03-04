@@ -21,6 +21,30 @@
     "loginHere": "Login here",
     "registerHere": "Register here"
   },
+  "landing": {
+    "heroTitle": "Your clients book in 30 seconds",
+    "heroSubtitle": "Share a link — clients pick a service, date, and time on their own. You manage everything from one place.",
+    "cta": "Start for free",
+    "free": "Free forever for basic use",
+    "howItWorks": "How does it work?",
+    "step1Title": "Sign up",
+    "step1Desc": "Enter your salon name and get your own booking link in less than 1 minute.",
+    "step2Title": "Share the link",
+    "step2Desc": "Put the link on Instagram, Viber, or send it to a client — they book on their own.",
+    "step3Title": "Manage appointments",
+    "step3Desc": "See all bookings in a dashboard. Cancel, add, or change — everything in one place.",
+    "featuresTitle": "Why Appointiko?",
+    "feature1Title": "Online booking 24/7",
+    "feature1Desc": "Clients book whenever they want, no waiting for a reply.",
+    "feature2Title": "Mobile-friendly",
+    "feature2Desc": "Works perfectly on phone — for you and your clients.",
+    "feature3Title": "Free to start",
+    "feature3Desc": "Start at no cost. Upgrade only when you need more.",
+    "feature4Title": "Local language support",
+    "feature4Desc": "Fully in Macedonian, Albanian, and English. Built for this market.",
+    "bottomCtaTitle": "Ready for more clients?",
+    "bottomCtaDesc": "Sign up in 1 minute and start receiving bookings today."
+  },
   "booking": {
     "title": "Book an appointment",
     "selectService": "Select a service",
@@ -44,7 +68,13 @@
     "cancel": "Cancel",
     "cancelled": "Cancelled",
     "confirmed": "Confirmed",
-    "bookingsToday": "bookings today"
+    "bookingsToday": "bookings today",
+    "addAppointment": "Add appointment",
+    "selectService": "Service",
+    "selectServicePlaceholder": "Select a service...",
+    "date": "Date",
+    "time": "Time",
+    "saveAppointment": "Save appointment"
   },
   "services": {
     "title": "Services",
@@ -85,6 +115,18 @@
     "copy": "Copy",
     "copied": "Copied!"
   },
+  "share": {
+    "title": "Booking link",
+    "messageText": "Book an appointment with us: {{url}}",
+    "qrHint": "Scan the QR code to open the booking link"
+  },
+  "onboarding": {
+    "title": "Welcome! Set up your salon",
+    "subtitle": "Complete these steps to start receiving bookings.",
+    "addServices": "Review your services",
+    "setHours": "Set working hours",
+    "shareLink": "Share your booking link"
+  },
   "errors": {
     "EMAIL_EXISTS": "Email already registered",
     "INVALID_CREDENTIALS": "Invalid email or password",
@@ -92,6 +134,8 @@
     "SERVICE_NOT_FOUND": "Service not found",
     "SALON_NOT_FOUND": "Salon not found",
     "INVALID_PHONE": "Invalid Macedonian phone number",
+    "NOT_WORKING_DAY": "The salon is closed on this day",
+    "OUTSIDE_WORKING_HOURS": "Appointment is outside working hours",
     "UNKNOWN": "Something went wrong"
   },
   "days": {

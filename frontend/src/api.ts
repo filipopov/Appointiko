@@ -48,8 +48,14 @@ export const api = {
   // Owner - Appointments
   getAppointments: (date: string) =>
     request<any[]>(`/api/owner/appointments?date=${date}`),
+  createAppointment: (data: { serviceId: number; startTime: string; clientName: string; clientPhone?: string; comment?: string }) =>
+    request('/api/owner/appointments', { method: 'POST', body: JSON.stringify(data) }),
   cancelAppointment: (id: number) =>
     request(`/api/owner/appointments/${id}/cancel`, { method: 'PATCH' }),
+
+  // Owner - Onboarding
+  getOnboardingStatus: () =>
+    request<{ hasServices: boolean; hasCustomHours: boolean }>('/api/owner/onboarding-status'),
 
   // Public
   publicSalon: (slug: string) => request<any>(`/api/public/salons/${slug}`),

@@ -1,11 +1,15 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api'
+import { AuthContext } from '../../App'
 import OwnerLayout from '../../components/OwnerLayout'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
+import Input from '../../components/ui/Input'
 import CalendarPicker from '../../components/ui/CalendarPicker'
 import Spinner from '../../components/ui/Spinner'
+import OnboardingChecklist from '../../components/OnboardingChecklist'
+import ShareLinkCard from '../../components/ShareLinkCard'
 import './DashboardPage.css'
 
 function formatDate(d: Date): string {
@@ -18,9 +22,23 @@ function formatTime(dt: string): string {
 
 export default function DashboardPage() {
   const { t, i18n } = useTranslation()
+  const { user } = useContext(AuthContext)
   const [date, setDate] = useState(formatDate(new Date()))
   const [appointments, setAppointments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Manual appointment modal
+  const [showModal, setShowModal] = useState(false)
+  const [services, setServices] = useState<any[]>([])
+  const [maServiceId, setMaServiceId] = useState<number | ''>('')
+  const [maTime, setMaTime] = useState('10:00')
+  const [maClientName, setMaClientName] = useState('')
+  const [maClientPhone, setMaClientPhone] = useState('')
+  const [maComment, setMaComment] = useState('')
+  const [maError, setMaError] = useState('')
+  const [maSaving, setMaSaving] = useState(false)
+
+  const slug = user?.salon?.slug || ''
 
   const load = () => {
     setLoading(true)
@@ -32,6 +50,46 @@ export default function DashboardPage() {
   const handleCancel = async (id: number) => {
     await api.cancelAppointment(id)
     load()
+  }
+
+  const openModal = () => {
+    setShowModal(true)
+    setMaError('')
+    if (services.length === 0) {
+      api.getServices().then(setServices).catch(() => {})
+    }
+  }
+
+  const closeModal = () => {
+    setShowModal(false)
+    setMaServiceId('')
+    setMaTime('10:00')
+    setMaClientName('')
+    setMaClientPhone('')
+    setMaComment('')
+    setMaError('')
+  }
+
+  const handleCreateAppointment = async () => {
+    if (!maServiceId || !maClientName.trim()) return
+    setMaError('')
+    setMaSaving(true)
+    try {
+      const startTime = `${date}T${maTime}:00`
+      await api.createAppointment({
+        serviceId: maServiceId as number,
+        startTime,
+        clientName: maClientName.trim(),
+        clientPhone: maClientPhone.trim() || undefined,
+        comment: maComment.trim() || undefined,
+      })
+      closeModal()
+      load()
+    } catch (err: any) {
+      setMaError(t(`errors.${err.code || 'UNKNOWN'}`))
+    } finally {
+      setMaSaving(false)
+    }
   }
 
   const confirmed = appointments.filter(a => a.status === 'CONFIRMED')
@@ -56,10 +114,14 @@ export default function DashboardPage() {
               {t('dashboard.today')}
             </Button>
           </Card>
+
+          {slug && <ShareLinkCard slug={slug} />}
         </div>
 
         {/* Right: Appointments */}
         <div className="dash__content">
+          {slug && <OnboardingChecklist slug={slug} />}
+
           <div className="dash__content-header">
             <h2 className="dash__title">{t('nav.dashboard')}</h2>
             <span className="dash__date-label">{dateLabel}</span>
@@ -89,7 +151,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="dash__appt-service">{a.serviceName}</div>
                     <div className="dash__appt-client">
-                      {a.clientName} &middot; {a.clientPhone}
+                      {a.clientName}{a.clientPhone ? ` \u00B7 ${a.clientPhone}` : ''}
                     </div>
                     {a.comment && (
                       <div className="dash__appt-comment">{a.comment}</div>
@@ -113,6 +175,63 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* FAB: Add appointment */}
+      <button className="dash__fab" onClick={openModal} title={t('dashboard.addAppointment')}>
+        +
+      </button>
+
+      {/* Manual appointment modal */}
+      {showModal && (
+        <div className="dash__modal-overlay" onClick={closeModal}>
+          <div className="dash__modal" onClick={e => e.stopPropagation()}>
+            <div className="dash__modal-header">
+              <h3>{t('dashboard.addAppointment')}</h3>
+              <button className="dash__modal-close" onClick={closeModal}>&times;</button>
+            </div>
+            <div className="dash__modal-body">
+              <div className="input-group">
+                <label className="input-group__label">{t('dashboard.selectService')}</label>
+                <select
+                  className="input-group__field"
+                  value={maServiceId}
+                  onChange={e => setMaServiceId(e.target.value ? Number(e.target.value) : '')}
+                >
+                  <option value="">{t('dashboard.selectServicePlaceholder')}</option>
+                  {services.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.durationMinutes} min - {s.price} ден)
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="dash__modal-row">
+                <Input label={t('dashboard.date')} type="date" value={date} onChange={e => setDate(e.target.value)} />
+                <Input label={t('dashboard.time')} type="time" value={maTime} onChange={e => setMaTime(e.target.value)} />
+              </div>
+              <Input label={t('booking.name')} value={maClientName} onChange={e => setMaClientName(e.target.value)} required />
+              <Input label={t('booking.phone')} value={maClientPhone} onChange={e => setMaClientPhone(e.target.value)} />
+              <div className="input-group">
+                <label className="input-group__label">{t('booking.comment')}</label>
+                <textarea
+                  className="input-group__field"
+                  value={maComment}
+                  onChange={e => setMaComment(e.target.value)}
+                  rows={2}
+                />
+              </div>
+              {maError && <p className="dash__modal-error">{maError}</p>}
+              <Button
+                fullWidth
+                onClick={handleCreateAppointment}
+                disabled={maSaving || !maServiceId || !maClientName.trim()}
+              >
+                {t('dashboard.saveAppointment')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </OwnerLayout>
   )
 }

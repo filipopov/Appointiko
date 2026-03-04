@@ -21,6 +21,30 @@
     "loginHere": "Hyr këtu",
     "registerHere": "Regjistrohu këtu"
   },
+  "landing": {
+    "heroTitle": "Klientët tuaj rezervojnë për 30 sekonda",
+    "heroSubtitle": "Ndaj një link — klientët zgjedhin shërbimin, datën dhe kohën vetë. Ti menaxhon gjithçka nga një vend.",
+    "cta": "Fillo falas",
+    "free": "Falas përgjithmonë për përdorim bazik",
+    "howItWorks": "Si funksionon?",
+    "step1Title": "Regjistrohu",
+    "step1Desc": "Shkruaj emrin e sallonit dhe merr linkun tënd për rezervim në më pak se 1 minutë.",
+    "step2Title": "Ndaj linkun",
+    "step2Desc": "Vendose linkun në Instagram, Viber ose dërgoja një klienti — ata rezervojnë vetë.",
+    "step3Title": "Menaxho terminet",
+    "step3Desc": "Shiko të gjitha rezervimet në panel. Anulo, shto ose ndrysho — gjithçka në një vend.",
+    "featuresTitle": "Pse Appointiko?",
+    "feature1Title": "Rezervim online 24/7",
+    "feature1Desc": "Klientët rezervojnë kur dëshirojnë, pa pritur përgjigje.",
+    "feature2Title": "I përshtatshëm për celular",
+    "feature2Desc": "Punon perfekt në telefon — për ty dhe klientët e tu.",
+    "feature3Title": "Falas për fillim",
+    "feature3Desc": "Fillo pa kosto. Përmirëso vetëm kur të nevojitet më shumë.",
+    "feature4Title": "Në gjuhën lokale",
+    "feature4Desc": "Plotësisht në maqedonisht, shqip dhe anglisht. I ndërtuar për këtë treg.",
+    "bottomCtaTitle": "Gati për më shumë klientë?",
+    "bottomCtaDesc": "Regjistrohu për 1 minutë dhe fillo të marrësh rezervime sot."
+  },
   "booking": {
     "title": "Rezervo termin",
     "selectService": "Zgjidh shërbimin",
@@ -44,7 +68,13 @@
     "cancel": "Anulo",
     "cancelled": "Anuluar",
     "confirmed": "Konfirmuar",
-    "bookingsToday": "rezervime sot"
+    "bookingsToday": "rezervime sot",
+    "addAppointment": "Shto termin",
+    "selectService": "Shërbimi",
+    "selectServicePlaceholder": "Zgjidh shërbimin...",
+    "date": "Data",
+    "time": "Koha",
+    "saveAppointment": "Ruaj terminin"
   },
   "services": {
     "title": "Shërbimet",
@@ -85,6 +115,18 @@
     "copy": "Kopjo",
     "copied": "U kopjua!"
   },
+  "share": {
+    "title": "Linku për rezervim",
+    "messageText": "Rezervo termin tek ne: {{url}}",
+    "qrHint": "Skano kodin QR për të hapur linkun e rezervimit"
+  },
+  "onboarding": {
+    "title": "Mirësevjen! Përgatit sallonin",
+    "subtitle": "Përfundo këto hapa për të filluar të marrësh rezervime.",
+    "addServices": "Shiko shërbimet",
+    "setHours": "Vendos orarin e punës",
+    "shareLink": "Ndaj linkun për rezervim"
+  },
   "errors": {
     "EMAIL_EXISTS": "Email-i është regjistruar tashmë",
     "INVALID_CREDENTIALS": "Email ose fjalëkalim i gabuar",
@@ -92,6 +134,8 @@
     "SERVICE_NOT_FOUND": "Shërbimi nuk u gjet",
     "SALON_NOT_FOUND": "Salloni nuk u gjet",
     "INVALID_PHONE": "Numër i pavlefshëm i telefonit maqedonas",
+    "NOT_WORKING_DAY": "Salloni është i mbyllur këtë ditë",
+    "OUTSIDE_WORKING_HOURS": "Termini është jashtë orarit të punës",
     "UNKNOWN": "Diçka shkoi keq"
   },
   "days": {

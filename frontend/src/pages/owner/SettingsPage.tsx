@@ -5,6 +5,7 @@ import OwnerLayout from '../../components/OwnerLayout'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
+import ShareLinkCard from '../../components/ShareLinkCard'
 import './SettingsPage.css'
 
 export default function SettingsPage() {
@@ -16,7 +17,6 @@ export default function SettingsPage() {
   const [instagram, setInstagram] = useState('')
   const [slug, setSlug] = useState('')
   const [saved, setSaved] = useState(false)
-  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     api.getSalon().then((s: any) => {
@@ -32,14 +32,6 @@ export default function SettingsPage() {
   const handleSave = async () => {
     await api.updateSalon({ name, city, address, phone, instagram })
     setSaved(true)
-  }
-
-  const bookingUrl = `${window.location.origin}/b/${slug}`
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(bookingUrl)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
@@ -60,17 +52,7 @@ export default function SettingsPage() {
         </div>
       </Card>
 
-      {slug && (
-        <Card>
-          <div className="settings__link-label">{t('settings.bookingLink')}</div>
-          <div className="settings__link-box">
-            <a className="settings__link-url" href={bookingUrl} target="_blank" rel="noopener noreferrer">{bookingUrl}</a>
-            <button className="settings__copy-btn" onClick={handleCopy}>
-              {copied ? t('settings.copied') : t('settings.copy')}
-            </button>
-          </div>
-        </Card>
-      )}
+      {slug && <ShareLinkCard slug={slug} />}
     </OwnerLayout>
   )
 }
