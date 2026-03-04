@@ -69,7 +69,7 @@ public class BookingService {
 
     @Transactional
     public Appointment book(Long salonId, Long serviceId, LocalDateTime startTime,
-                            String clientName, String clientPhone) {
+                            String clientName, String clientPhone, String comment) {
         SalonService service = salonServiceRepository.findById(serviceId)
                 .orElseThrow(() -> new IllegalArgumentException("SERVICE_NOT_FOUND"));
         if (!service.getSalonId().equals(salonId)) {
@@ -113,6 +113,7 @@ public class BookingService {
         appointment.setEndTime(endTime);
         appointment.setClientName(clientName);
         appointment.setClientPhone(clientPhone);
+        appointment.setComment(comment);
         appointment.setStatus(AppointmentStatus.CONFIRMED);
         return appointmentRepository.save(appointment);
     }

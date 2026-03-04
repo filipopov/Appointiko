@@ -10,5 +10,6 @@ public record AppointmentInfo(
         LocalDateTime endTime,
         String clientName,
         String clientPhone,
-        String status
+        String status,
+        String comment
 ) {}

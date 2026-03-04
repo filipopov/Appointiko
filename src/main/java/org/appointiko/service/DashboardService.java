@@ -42,7 +42,8 @@ public class DashboardService {
                     a.getEndTime(),
                     a.getClientName(),
                     a.getClientPhone(),
-                    a.getStatus().name()
+                    a.getStatus().name(),
+                    a.getComment()
             );
         }).toList();
     }

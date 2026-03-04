@@ -36,6 +36,9 @@ public class Appointment {
     @Column(name = "client_phone", nullable = false)
     private String clientPhone;
 
+    @Column(length = 500)
+    private String comment;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AppointmentStatus status = AppointmentStatus.CONFIRMED;

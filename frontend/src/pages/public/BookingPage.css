@@ -1,8 +1,9 @@
 .booking {
   max-width: 520px;
   margin: 0 auto;
-  padding: 20px 16px;
+  padding: 20px 16px 40px;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .booking__header {
@@ -26,12 +27,30 @@
   margin-top: 4px;
 }
 
+/* === Sticky step progress wrapper === */
+.booking__steps-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  margin: 0 -16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+/* Add subtle shadow when scrolled past top */
+.booking__steps-wrapper {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(249, 247, 248, 0.9);
+}
+
 /* === Step progress indicator === */
 .booking__steps {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
   padding: 0 8px;
 }
 
@@ -84,6 +103,11 @@
 /* === Section cards === */
 .booking__section {
   margin-bottom: 16px;
+}
+
+/* Offset scroll target to account for sticky stepper */
+.stagger > div {
+  scroll-margin-top: 72px;
 }
 
 .booking__section-title {
@@ -188,6 +212,13 @@
   gap: 14px;
 }
 
+.booking__comment {
+  resize: vertical;
+  min-height: 70px;
+  max-height: 160px;
+  line-height: 1.5;
+}
+
 .booking__error {
   color: var(--error);
   font-size: 13px;
@@ -236,6 +267,11 @@
     padding: 16px 12px;
   }
 
+  .booking__steps-wrapper {
+    margin: 0 -12px;
+    padding: 10px 12px;
+  }
+
   .booking__salon-name {
     font-size: 20px;
   }
@@ -247,5 +283,9 @@
   .booking__slots {
     grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
     gap: 6px;
+  }
+
+  .stagger > div {
+    scroll-margin-top: 64px;
   }
 }

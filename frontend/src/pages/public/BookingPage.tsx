@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api'
@@ -32,10 +32,19 @@ export default function BookingPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [clientName, setClientName] = useState('')
   const [clientPhone, setClientPhone] = useState('')
+  const [clientComment, setClientComment] = useState('')
   const [step, setStep] = useState<Step>('service')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [notFound, setNotFound] = useState(false)
+
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  const scrollToSection = useCallback((sectionKey: string) => {
+    setTimeout(() => {
+      sectionRefs.current[sectionKey]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }, [])
 
   useEffect(() => {
     if (!slug) return
@@ -70,8 +79,10 @@ export default function BookingPage() {
         startTime,
         clientName,
         clientPhone: cleaned,
+        comment: clientComment.trim() || null,
       })
       setStep('done')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err: any) {
       setError(t(`errors.${err.code || 'UNKNOWN'}`))
     } finally {
@@ -118,18 +129,20 @@ export default function BookingPage() {
       </div>
 
       {step !== 'done' && (
-        <div className="booking__steps">
-          {stepOrder.map((s, i) => {
-            const state = getStepState(s)
-            return (
-              <div key={s} className={`booking__step booking__step--${state}`}>
-                {i > 0 && (
-                  <div className={`booking__step-line ${stepOrder.indexOf(step) >= i ? 'booking__step-line--done' : ''}`} />
-                )}
-                <span className="booking__step-num">{state === 'done' ? '\u2713' : i + 1}</span>
-              </div>
-            )
-          })}
+        <div className="booking__steps-wrapper">
+          <div className="booking__steps">
+            {stepOrder.map((s, i) => {
+              const state = getStepState(s)
+              return (
+                <div key={s} className={`booking__step booking__step--${state}`}>
+                  {i > 0 && (
+                    <div className={`booking__step-line ${stepOrder.indexOf(step) >= i ? 'booking__step-line--done' : ''}`} />
+                  )}
+                  <span className="booking__step-num">{state === 'done' ? '\u2713' : i + 1}</span>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
 
@@ -148,6 +161,7 @@ export default function BookingPage() {
                 setSelectedSlot(null)
                 setClientName('')
                 setClientPhone('')
+                setClientComment('')
               }}>
                 {t('booking.title')}
               </Button>
@@ -157,82 +171,100 @@ export default function BookingPage() {
       ) : (
         <div className="stagger">
           {/* Step 1: Select Service */}
-          <Card className="booking__section">
-            <h3 className="booking__section-title">1. {t('booking.selectService')}</h3>
-            <div className="booking__services">
-              {services.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => { setSelectedService(s); setStep('date'); setSelectedSlot(null) }}
-                  className={`booking__svc-btn ${selectedService?.id === s.id ? 'booking__svc-btn--selected' : ''}`}
-                >
-                  <div>
-                    <div className="booking__svc-name">{s.name}</div>
-                    <div className="booking__svc-duration">{t('booking.duration', { min: s.durationMinutes })}</div>
-                  </div>
-                  <div className="booking__svc-price">{t('booking.price', { price: s.price })}</div>
-                </button>
-              ))}
-            </div>
-          </Card>
+          <div ref={el => { sectionRefs.current['service'] = el }}>
+            <Card className="booking__section">
+              <h3 className="booking__section-title">1. {t('booking.selectService')}</h3>
+              <div className="booking__services">
+                {services.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => { setSelectedService(s); setStep('date'); setSelectedSlot(null); scrollToSection('date') }}
+                    className={`booking__svc-btn ${selectedService?.id === s.id ? 'booking__svc-btn--selected' : ''}`}
+                  >
+                    <div>
+                      <div className="booking__svc-name">{s.name}</div>
+                      <div className="booking__svc-duration">{t('booking.duration', { min: s.durationMinutes })}</div>
+                    </div>
+                    <div className="booking__svc-price">{t('booking.price', { price: s.price })}</div>
+                  </button>
+                ))}
+              </div>
+            </Card>
+          </div>
 
           {/* Step 2: Select Date */}
           {selectedService && (
-            <Card className="booking__section animate-in">
-              <h3 className="booking__section-title">2. {t('booking.selectDate')}</h3>
-              <CalendarPicker
-                value={date}
-                onChange={d => { setDate(d); setSelectedSlot(null); setStep('date') }}
-                minDate={formatDate(new Date())}
-              />
-            </Card>
+            <div ref={el => { sectionRefs.current['date'] = el }}>
+              <Card className="booking__section animate-in">
+                <h3 className="booking__section-title">2. {t('booking.selectDate')}</h3>
+                <CalendarPicker
+                  value={date}
+                  onChange={d => { setDate(d); setSelectedSlot(null); setStep('date'); scrollToSection('time') }}
+                  minDate={formatDate(new Date())}
+                />
+              </Card>
+            </div>
           )}
 
           {/* Step 3: Select Time */}
           {selectedService && date && (step === 'date' || step === 'time' || step === 'info') && (
-            <Card className="booking__section animate-in">
-              <h3 className="booking__section-title">3. {t('booking.selectTime')}</h3>
-              {loading ? (
-                <Spinner />
-              ) : slots.length === 0 ? (
-                <p className="booking__no-slots">{t('booking.noSlots')}</p>
-              ) : (
-                <div className="booking__slots">
-                  {slots.map(s => {
-                    const time = typeof s === 'string' ? s : s.startTime
-                    const display = time.substring(0, 5)
-                    return (
-                      <button
-                        key={time}
-                        onClick={() => { setSelectedSlot(display); setStep('info') }}
-                        className={`booking__slot-btn ${selectedSlot === display ? 'booking__slot-btn--selected' : ''}`}
-                      >
-                        {display}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </Card>
+            <div ref={el => { sectionRefs.current['time'] = el }}>
+              <Card className="booking__section animate-in">
+                <h3 className="booking__section-title">3. {t('booking.selectTime')}</h3>
+                {loading ? (
+                  <Spinner />
+                ) : slots.length === 0 ? (
+                  <p className="booking__no-slots">{t('booking.noSlots')}</p>
+                ) : (
+                  <div className="booking__slots">
+                    {slots.map(s => {
+                      const time = typeof s === 'string' ? s : s.startTime
+                      const display = time.substring(0, 5)
+                      return (
+                        <button
+                          key={time}
+                          onClick={() => { setSelectedSlot(display); setStep('info'); scrollToSection('info') }}
+                          className={`booking__slot-btn ${selectedSlot === display ? 'booking__slot-btn--selected' : ''}`}
+                        >
+                          {display}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </Card>
+            </div>
           )}
 
           {/* Step 4: Client Info + Book */}
           {step === 'info' && selectedSlot && (
-            <Card className="animate-in">
-              <h3 className="booking__section-title">4. {t('booking.yourInfo')}</h3>
-              <div className="booking__info-form">
-                <Input label={t('booking.name')} value={clientName} onChange={e => setClientName(e.target.value)} required />
-                <PhoneInput label={t('booking.phone')} value={clientPhone} onChange={setClientPhone} required />
-                {error && <p className="booking__error">{error}</p>}
-                <Button
-                  fullWidth
-                  onClick={handleBook}
-                  disabled={loading || !clientName.trim() || !clientPhone.trim()}
-                >
-                  {t('booking.book')}
-                </Button>
-              </div>
-            </Card>
+            <div ref={el => { sectionRefs.current['info'] = el }}>
+              <Card className="animate-in">
+                <h3 className="booking__section-title">4. {t('booking.yourInfo')}</h3>
+                <div className="booking__info-form">
+                  <Input label={t('booking.name')} value={clientName} onChange={e => setClientName(e.target.value)} required />
+                  <PhoneInput label={t('booking.phone')} value={clientPhone} onChange={setClientPhone} required />
+                  <div className="input-group">
+                    <label className="input-group__label">{t('booking.comment')}</label>
+                    <textarea
+                      className="input-group__field booking__comment"
+                      value={clientComment}
+                      onChange={e => setClientComment(e.target.value)}
+                      placeholder={t('booking.commentPlaceholder')}
+                      rows={3}
+                    />
+                  </div>
+                  {error && <p className="booking__error">{error}</p>}
+                  <Button
+                    fullWidth
+                    onClick={handleBook}
+                    disabled={loading || !clientName.trim() || !clientPhone.trim()}
+                  >
+                    {t('booking.book')}
+                  </Button>
+                </div>
+              </Card>
+            </div>
           )}
         </div>
       )}

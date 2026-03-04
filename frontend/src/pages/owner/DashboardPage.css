@@ -109,6 +109,17 @@
   margin-top: 2px;
 }
 
+.dash__appt-comment {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: var(--bg);
+  border-radius: calc(var(--radius) - 2px);
+  font-style: italic;
+  line-height: 1.4;
+}
+
 .dash__appt-actions {
   display: flex;
   align-items: center;

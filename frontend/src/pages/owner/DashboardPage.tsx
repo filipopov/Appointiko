@@ -91,6 +91,9 @@ export default function DashboardPage() {
                     <div className="dash__appt-client">
                       {a.clientName} &middot; {a.clientPhone}
                     </div>
+                    {a.comment && (
+                      <div className="dash__appt-comment">{a.comment}</div>
+                    )}
                   </div>
                   <div className="dash__appt-actions">
                     {a.status === 'CANCELLED' ? (

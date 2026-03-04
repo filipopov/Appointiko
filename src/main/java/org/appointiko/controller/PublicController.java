@@ -57,12 +57,12 @@ public class PublicController {
             Salon salon = salonMgmtService.getSalonBySlug(slug);
             Appointment appointment = bookingService.book(
                     salon.getId(), req.serviceId(), req.startTime(),
-                    req.clientName(), req.clientPhone());
+                    req.clientName(), req.clientPhone(), req.comment());
             return ResponseEntity.ok(new AppointmentInfo(
                     appointment.getId(), appointment.getServiceId(), null,
                     appointment.getStartTime(), appointment.getEndTime(),
                     appointment.getClientName(), appointment.getClientPhone(),
-                    appointment.getStatus().name()));
+                    appointment.getStatus().name(), appointment.getComment()));
         } catch (IllegalStateException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), e.getMessage()));
         }

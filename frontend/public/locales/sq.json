@@ -29,6 +29,8 @@
     "yourInfo": "Të dhënat tuaja",
     "name": "Emri yt",
     "phone": "Numri i telefonit",
+    "comment": "Shënim (opsional)",
+    "commentPlaceholder": "Kërkesa të veçanta ose shënime...",
     "book": "Rezervo",
     "success": "Termini u rezervua me sukses!",
     "noSlots": "Nuk ka termine të lira për këtë datë",

@@ -29,6 +29,8 @@
     "yourInfo": "Your information",
     "name": "Your name",
     "phone": "Phone number",
+    "comment": "Note (optional)",
+    "commentPlaceholder": "Any special requests or notes...",
     "book": "Book",
     "success": "Appointment booked successfully!",
     "noSlots": "No available slots for this date",
