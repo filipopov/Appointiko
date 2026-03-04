@@ -1,0 +1,98 @@
+.onboarding {
+  border-left: 4px solid var(--primary) !important;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.onboarding__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.onboarding__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.onboarding__subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.onboarding__dismiss {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.onboarding__dismiss:hover {
+  color: var(--text);
+}
+
+.onboarding__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.onboarding__step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background var(--transition);
+}
+
+.onboarding__step:hover {
+  background: var(--bg);
+}
+
+.onboarding__step--done {
+  color: var(--text-secondary);
+}
+
+.onboarding__step--done .onboarding__step-label {
+  text-decoration: line-through;
+}
+
+.onboarding__step-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.onboarding__step--done .onboarding__step-check {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.onboarding__step-label {
+  flex: 1;
+}
+
+.onboarding__step-arrow {
+  font-size: 18px;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
