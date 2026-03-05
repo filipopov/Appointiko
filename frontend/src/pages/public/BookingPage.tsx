@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import CalendarPicker from '../../components/ui/CalendarPicker'
 import PhoneInput from '../../components/ui/PhoneInput'
-import Spinner from '../../components/ui/Spinner'
+import Skeleton from '../../components/ui/Skeleton'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { isValidMkPhone, cleanPhone } from '../../utils/phone'
 import './BookingPage.css'
@@ -20,9 +20,27 @@ type Step = 'service' | 'date' | 'time' | 'info' | 'done'
 
 const stepOrder: Step[] = ['service', 'date', 'time', 'info']
 
+function generateICS(salonName: string, serviceName: string, date: string, time: string, durationMin: number): string {
+  const start = date.replace(/-/g, '') + 'T' + time.replace(':', '') + '00'
+  const endDate = new Date(`${date}T${time}:00`)
+  endDate.setMinutes(endDate.getMinutes() + durationMin)
+  const end = endDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${serviceName} - ${salonName}`,
+    `DESCRIPTION:Appointment at ${salonName}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n')
+}
+
 export default function BookingPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const [salon, setSalon] = useState<any>(null)
   const [services, setServices] = useState<any[]>([])
@@ -38,6 +56,15 @@ export default function BookingPage() {
   const [error, setError] = useState('')
   const [notFound, setNotFound] = useState(false)
 
+  // Working hours
+  const [workingHours, setWorkingHours] = useState<any[]>([])
+
+  // Social proof
+  const [bookingsCount, setBookingsCount] = useState(0)
+
+  // Phone lookup debounce
+  const lookupTimeout = useRef<ReturnType<typeof setTimeout>>()
+
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const scrollToSection = useCallback((sectionKey: string) => {
@@ -51,9 +78,13 @@ export default function BookingPage() {
     Promise.all([
       api.publicSalon(slug),
       api.publicServices(slug),
-    ]).then(([s, svcs]) => {
+      api.publicWorkingHours(slug).catch(() => []),
+      api.publicStats(slug).catch(() => ({ bookingsThisMonth: 0 })),
+    ]).then(([s, svcs, wh, stats]) => {
       setSalon(s)
       setServices(svcs)
+      setWorkingHours(wh)
+      setBookingsCount(stats.bookingsThisMonth)
     }).catch(() => setNotFound(true))
   }, [slug])
 
@@ -65,6 +96,21 @@ export default function BookingPage() {
       .catch(() => setSlots([]))
       .finally(() => setLoading(false))
   }, [slug, selectedService, date])
+
+  // Phone auto-detect returning clients
+  const handlePhoneChange = (phone: string) => {
+    setClientPhone(phone)
+    const cleaned = cleanPhone(phone)
+    if (!slug || !cleaned || !isValidMkPhone(cleaned)) return
+    clearTimeout(lookupTimeout.current)
+    lookupTimeout.current = setTimeout(() => {
+      api.publicClientLookup(slug, cleaned).then(result => {
+        if (result.clientName && !clientName) {
+          setClientName(result.clientName)
+        }
+      }).catch(() => {})
+    }, 500)
+  }
 
   const handleBook = async () => {
     if (!slug || !selectedService || !selectedSlot) return
@@ -90,6 +136,18 @@ export default function BookingPage() {
     }
   }
 
+  const handleDownloadICS = () => {
+    if (!selectedService || !selectedSlot || !salon) return
+    const ics = generateICS(salon.name, selectedService.name, date, selectedSlot, selectedService.durationMinutes)
+    const blob = new Blob([ics], { type: 'text/calendar' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'appointment.ics'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const getStepState = (s: Step): 'done' | 'active' | 'pending' => {
     if (step === 'done') return 'done'
     const current = stepOrder.indexOf(step)
@@ -99,20 +157,26 @@ export default function BookingPage() {
     return 'pending'
   }
 
+  // Today's working hours
+  const todayHours = workingHours.length > 0 ? (() => {
+    const dow = new Date().getDay() || 7 // 1=Mon..7=Sun
+    return workingHours.find((wh: any) => wh.dayOfWeek === dow)
+  })() : null
+
   if (notFound) {
     return (
       <div className="booking">
         <Card>
-          <div className="dash__empty">
-            <div className="dash__empty-icon">&#128566;</div>
-            <p className="dash__empty-text">{t('errors.SALON_NOT_FOUND')}</p>
+          <div className="booking__empty">
+            <div className="booking__empty-icon">&#128566;</div>
+            <p className="booking__empty-text">{t('errors.SALON_NOT_FOUND')}</p>
           </div>
         </Card>
       </div>
     )
   }
 
-  if (!salon) return <div className="booking"><Spinner /></div>
+  if (!salon) return <div className="booking"><Skeleton rows={5} height={60} /></div>
 
   return (
     <div className="booking">
@@ -124,9 +188,27 @@ export default function BookingPage() {
               {salon.address}{salon.city ? `, ${salon.city}` : ''}
             </p>
           )}
+          {todayHours && (
+            <p className="booking__salon-hours">
+              {todayHours.isWorkingDay
+                ? todayHours.blocks.map((b: any, i: number) => (
+                    <span key={i}>
+                      {i > 0 ? ', ' : ''}
+                      {(b.startTime || '').substring(0, 5)} - {(b.endTime || '').substring(0, 5)}
+                    </span>
+                  ))
+                : t('booking.closed')}
+            </p>
+          )}
         </div>
         <LanguageSwitcher />
       </div>
+
+      {bookingsCount >= 5 && (
+        <div className="booking__social-proof">
+          {t('booking.socialProof', { count: bookingsCount, salon: salon.name })}
+        </div>
+      )}
 
       {step !== 'done' && (
         <div className="booking__steps-wrapper">
@@ -146,6 +228,16 @@ export default function BookingPage() {
         </div>
       )}
 
+      {/* Sticky service summary */}
+      {selectedService && step !== 'done' && step !== 'service' && (
+        <div className="booking__sticky-summary">
+          <span className="booking__sticky-name">{selectedService.name}</span>
+          <span className="booking__sticky-meta">
+            {selectedService.durationMinutes} min &middot; {selectedService.price} {t('booking.den')}
+          </span>
+        </div>
+      )}
+
       {step === 'done' ? (
         <Card className="animate-in">
           <div className="booking__success">
@@ -154,7 +246,10 @@ export default function BookingPage() {
             <p className="booking__success-detail">
               {selectedService.name} &middot; {date} &middot; {selectedSlot}
             </p>
-            <div className="booking__success-action">
+            <div className="booking__success-actions">
+              <Button onClick={handleDownloadICS} variant="secondary">
+                {t('booking.addToCalendar')}
+              </Button>
               <Button onClick={() => {
                 setStep('service')
                 setSelectedService(null)
@@ -163,7 +258,7 @@ export default function BookingPage() {
                 setClientPhone('')
                 setClientComment('')
               }}>
-                {t('booking.title')}
+                {t('booking.bookAnother')}
               </Button>
             </div>
           </div>
@@ -212,9 +307,12 @@ export default function BookingPage() {
               <Card className="booking__section animate-in">
                 <h3 className="booking__section-title">3. {t('booking.selectTime')}</h3>
                 {loading ? (
-                  <Spinner />
+                  <Skeleton rows={2} height={44} />
                 ) : slots.length === 0 ? (
-                  <p className="booking__no-slots">{t('booking.noSlots')}</p>
+                  <div className="booking__no-slots-box">
+                    <p className="booking__no-slots">{t('booking.noSlots')}</p>
+                    <p className="booking__no-slots-hint">{t('booking.tryNextWeek')}</p>
+                  </div>
                 ) : (
                   <div className="booking__slots">
                     {slots.map(s => {
@@ -242,8 +340,8 @@ export default function BookingPage() {
               <Card className="animate-in">
                 <h3 className="booking__section-title">4. {t('booking.yourInfo')}</h3>
                 <div className="booking__info-form">
+                  <PhoneInput label={t('booking.phone')} value={clientPhone} onChange={handlePhoneChange} required />
                   <Input label={t('booking.name')} value={clientName} onChange={e => setClientName(e.target.value)} required />
-                  <PhoneInput label={t('booking.phone')} value={clientPhone} onChange={setClientPhone} required />
                   <div className="input-group">
                     <label className="input-group__label">{t('booking.comment')}</label>
                     <textarea

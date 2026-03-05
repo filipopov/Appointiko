@@ -52,10 +52,29 @@ export const api = {
     request('/api/owner/appointments', { method: 'POST', body: JSON.stringify(data) }),
   cancelAppointment: (id: number) =>
     request(`/api/owner/appointments/${id}/cancel`, { method: 'PATCH' }),
+  completeAppointment: (id: number) =>
+    request(`/api/owner/appointments/${id}/complete`, { method: 'PATCH' }),
+  noShowAppointment: (id: number) =>
+    request(`/api/owner/appointments/${id}/no-show`, { method: 'PATCH' }),
 
   // Owner - Onboarding
   getOnboardingStatus: () =>
     request<{ hasServices: boolean; hasCustomHours: boolean }>('/api/owner/onboarding-status'),
+
+  // Owner - Push notifications
+  subscribePush: (data: { endpoint: string; p256dh: string; auth: string }) =>
+    request('/api/owner/push/subscribe', { method: 'POST', body: JSON.stringify(data) }),
+
+  // Public - Push
+  getVapidKey: async (): Promise<string | null> => {
+    try {
+      const res = await fetch('/api/public/push/vapid-key', { credentials: 'same-origin' })
+      if (!res.ok) return null
+      return res.text()
+    } catch {
+      return null
+    }
+  },
 
   // Public
   publicSalon: (slug: string) => request<any>(`/api/public/salons/${slug}`),
@@ -64,4 +83,10 @@ export const api = {
     request<any[]>(`/api/public/salons/${slug}/slots?serviceId=${serviceId}&date=${date}`),
   publicBook: (slug: string, data: any) =>
     request(`/api/public/salons/${slug}/book`, { method: 'POST', body: JSON.stringify(data) }),
+  publicWorkingHours: (slug: string) =>
+    request<any[]>(`/api/public/salons/${slug}/working-hours`),
+  publicStats: (slug: string) =>
+    request<{ bookingsThisMonth: number }>(`/api/public/salons/${slug}/stats`),
+  publicClientLookup: (slug: string, phone: string) =>
+    request<{ clientName?: string }>(`/api/public/salons/${slug}/client-lookup?phone=${encodeURIComponent(phone)}`),
 }

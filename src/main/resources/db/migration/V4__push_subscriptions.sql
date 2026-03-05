@@ -1,0 +1,10 @@
+CREATE TABLE push_subscription (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    salon_id BIGINT NOT NULL,
+    endpoint VARCHAR(500) NOT NULL,
+    p256dh VARCHAR(255) NOT NULL,
+    auth VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_push_salon FOREIGN KEY (salon_id) REFERENCES salon(id) ON DELETE CASCADE,
+    CONSTRAINT uq_push_endpoint UNIQUE (endpoint)
+);

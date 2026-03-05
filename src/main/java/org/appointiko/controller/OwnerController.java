@@ -12,6 +12,7 @@ import org.appointiko.service.AuthService;
 import org.appointiko.service.BookingService;
 import org.appointiko.service.DashboardService;
 import org.appointiko.service.SalonMgmtService;
+import org.appointiko.service.WebPushNotificationService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,7 @@ public class OwnerController {
     private final SalonMgmtService salonMgmtService;
     private final DashboardService dashboardService;
     private final BookingService bookingService;
+    private final WebPushNotificationService webPushService;
 
     // -- Salon --
 
@@ -142,7 +144,7 @@ public class OwnerController {
                     req.clientName(), req.clientPhone() != null ? req.clientPhone() : "",
                     req.comment());
             return ResponseEntity.ok(new AppointmentInfo(
-                    appointment.getId(), appointment.getServiceId(), null,
+                    appointment.getId(), appointment.getServiceId(), null, 0,
                     appointment.getStartTime(), appointment.getEndTime(),
                     appointment.getClientName(), appointment.getClientPhone(),
                     appointment.getStatus().name(), appointment.getComment()));
@@ -158,6 +160,20 @@ public class OwnerController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/appointments/{id}/complete")
+    public ResponseEntity<Void> completeAppointment(Authentication auth, @PathVariable Long id) {
+        Salon salon = getOwnerSalon(auth);
+        dashboardService.completeAppointment(id, salon.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/appointments/{id}/no-show")
+    public ResponseEntity<Void> noShowAppointment(Authentication auth, @PathVariable Long id) {
+        Salon salon = getOwnerSalon(auth);
+        dashboardService.noShowAppointment(id, salon.getId());
+        return ResponseEntity.noContent().build();
+    }
+
     // -- Onboarding --
 
     @GetMapping("/onboarding-status")
@@ -166,6 +182,15 @@ public class OwnerController {
         boolean hasServices = !salonMgmtService.getServices(salon.getId()).isEmpty();
         boolean hasCustomHours = salonMgmtService.hasCustomWorkingHours(salon.getId());
         return ResponseEntity.ok(new OnboardingStatus(hasServices, hasCustomHours));
+    }
+
+    // -- Push Notifications --
+
+    @PostMapping("/push/subscribe")
+    public ResponseEntity<Void> subscribePush(Authentication auth, @Valid @RequestBody PushSubscriptionRequest req) {
+        Salon salon = getOwnerSalon(auth);
+        webPushService.subscribe(salon.getId(), req.endpoint(), req.p256dh(), req.auth());
+        return ResponseEntity.ok().build();
     }
 
     // -- Helpers --

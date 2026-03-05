@@ -4,6 +4,7 @@ import { api } from '../../api'
 import OwnerLayout from '../../components/OwnerLayout'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
+import { useToast } from '../../components/ui/Toast'
 import './WorkingHoursPage.css'
 
 const dayKeys = ['hours.monday', 'hours.tuesday', 'hours.wednesday', 'hours.thursday', 'hours.friday', 'hours.saturday', 'hours.sunday']
@@ -21,8 +22,8 @@ interface DayHours {
 
 export default function WorkingHoursPage() {
   const { t } = useTranslation()
+  const toast = useToast()
   const [hours, setHours] = useState<DayHours[]>([])
-  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     api.getWorkingHours().then((data: any[]) => {
@@ -49,7 +50,6 @@ export default function WorkingHoursPage() {
 
   const toggleDay = (idx: number, checked: boolean) => {
     setHours(prev => prev.map((h, i) => i === idx ? { ...h, isWorkingDay: checked } : h))
-    setSaved(false)
   }
 
   const updateBlock = (dayIdx: number, blockIdx: number, field: keyof TimeBlock, value: string) => {
@@ -58,7 +58,6 @@ export default function WorkingHoursPage() {
       const blocks = h.blocks.map((b, bi) => bi === blockIdx ? { ...b, [field]: value } : b)
       return { ...h, blocks }
     }))
-    setSaved(false)
   }
 
   const addBlock = (dayIdx: number) => {
@@ -67,7 +66,6 @@ export default function WorkingHoursPage() {
       const last = h.blocks[h.blocks.length - 1]
       return { ...h, blocks: [...h.blocks, { startTime: last?.endTime || '13:00', endTime: '21:00' }] }
     }))
-    setSaved(false)
   }
 
   const removeBlock = (dayIdx: number, blockIdx: number) => {
@@ -76,12 +74,11 @@ export default function WorkingHoursPage() {
       const blocks = h.blocks.filter((_, bi) => bi !== blockIdx)
       return { ...h, blocks: blocks.length > 0 ? blocks : [{ startTime: '09:00', endTime: '17:00' }] }
     }))
-    setSaved(false)
   }
 
   const handleSave = async () => {
     await api.setWorkingHours({ days: hours })
-    setSaved(true)
+    toast(t('settings.saved'))
   }
 
   return (
@@ -134,7 +131,6 @@ export default function WorkingHoursPage() {
 
       <div className="wh-save-row">
         <Button onClick={handleSave}>{t('hours.save')}</Button>
-        {saved && <span className="wh-saved-msg">{t('settings.saved')}</span>}
       </div>
     </OwnerLayout>
   )

@@ -10,7 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   gap: 12px;
 }
 
@@ -27,6 +27,28 @@
   margin-top: 4px;
 }
 
+.booking__salon-hours {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  padding: 4px 10px;
+  background: var(--bg);
+  border-radius: var(--radius-full);
+  display: inline-block;
+}
+
+/* === Social proof === */
+.booking__social-proof {
+  text-align: center;
+  padding: 8px 16px;
+  background: var(--primary-bg);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-dark);
+  margin-bottom: 16px;
+}
+
 /* === Sticky step progress wrapper === */
 .booking__steps-wrapper {
   position: sticky;
@@ -37,13 +59,37 @@
   padding: 12px 16px;
   border-bottom: 1px solid transparent;
   transition: border-color var(--transition), box-shadow var(--transition);
-}
-
-/* Add subtle shadow when scrolled past top */
-.booking__steps-wrapper {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   background: rgba(249, 247, 248, 0.9);
+}
+
+/* === Sticky service summary === */
+.booking__sticky-summary {
+  position: sticky;
+  top: 58px;
+  z-index: 49;
+  background: var(--surface);
+  margin: 0 -16px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.booking__sticky-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--primary);
+}
+
+.booking__sticky-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 /* === Step progress indicator === */
@@ -105,9 +151,9 @@
   margin-bottom: 16px;
 }
 
-/* Offset scroll target to account for sticky stepper */
+/* Offset scroll target to account for sticky stepper + summary */
 .stagger > div {
-  scroll-margin-top: 72px;
+  scroll-margin-top: 120px;
 }
 
 .booking__section-title {
@@ -198,11 +244,21 @@
   transform: translateY(-1px);
 }
 
+.booking__no-slots-box {
+  text-align: center;
+  padding: 20px 0;
+}
+
 .booking__no-slots {
   color: var(--text-secondary);
   font-size: 14px;
-  text-align: center;
-  padding: 20px 0;
+}
+
+.booking__no-slots-hint {
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-top: 6px;
+  opacity: 0.7;
 }
 
 /* === Client info form === */
@@ -225,6 +281,23 @@
   padding: 8px 12px;
   background: var(--error-bg);
   border-radius: var(--radius);
+}
+
+/* === Empty/not found state === */
+.booking__empty {
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.booking__empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.booking__empty-text {
+  color: var(--text-secondary);
+  font-size: 15px;
 }
 
 /* === Success screen === */
@@ -257,8 +330,12 @@
   font-size: 14px;
 }
 
-.booking__success-action {
+.booking__success-actions {
   margin-top: 24px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* === Mobile === */
@@ -270,6 +347,12 @@
   .booking__steps-wrapper {
     margin: 0 -12px;
     padding: 10px 12px;
+  }
+
+  .booking__sticky-summary {
+    margin: 0 -12px;
+    padding: 8px 12px;
+    top: 54px;
   }
 
   .booking__salon-name {
@@ -286,6 +369,6 @@
   }
 
   .stagger > div {
-    scroll-margin-top: 64px;
+    scroll-margin-top: 110px;
   }
 }

@@ -1,8 +1,9 @@
-import { ReactNode, useContext, useState } from 'react'
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AuthContext } from '../App'
 import { api } from '../api'
+import { subscribeToPush, isPushSupported } from '../pushManager'
 import LanguageSwitcher from './LanguageSwitcher'
 import './OwnerLayout.css'
 
@@ -55,9 +56,18 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
   const { user, setUser } = useContext(AuthContext)
   const navigate = useNavigate()
   const location = useLocation()
-  const [menuOpen, setMenuOpen] = useState(false)
 
   const salonName = user?.salon?.name
+  const pushInitRef = useRef(false)
+
+  // Auto-subscribe to push notifications on first visit
+  useEffect(() => {
+    if (pushInitRef.current) return
+    pushInitRef.current = true
+
+    if (!isPushSupported()) return
+    setTimeout(() => { subscribeToPush().catch(() => {}) }, 2000)
+  }, [])
 
   const handleLogout = async () => {
     await api.logout().catch(() => {})
@@ -92,39 +102,31 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
             {t('nav.logout')}
           </button>
         </div>
-        <button
-          className="layout__hamburger"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
-          {menuOpen ? '\u2715' : '\u2630'}
-        </button>
       </header>
-
-      <div className={`layout__mobile-menu ${menuOpen ? 'layout__mobile-menu--open' : ''}`}>
-        {salonName && <div className="layout__mobile-salon">{salonName}</div>}
-        {navItems.map(item => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`layout__nav-link ${location.pathname === item.path ? 'layout__nav-link--active' : ''}`}
-            onClick={() => setMenuOpen(false)}
-          >
-            {item.icon}
-            {t(item.key)}
-          </Link>
-        ))}
-        <div className="layout__mobile-actions">
-          <LanguageSwitcher />
-          <button className="layout__logout" onClick={handleLogout}>
-            {t('nav.logout')}
-          </button>
-        </div>
-      </div>
 
       <main className="layout__main">
         {children}
       </main>
+
+      {/* Mobile bottom tab bar */}
+      <nav className="layout__bottom-tabs">
+        {navItems.map(item => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`layout__tab ${location.pathname === item.path ? 'layout__tab--active' : ''}`}
+          >
+            {item.icon}
+            <span className="layout__tab-label">{t(item.key)}</span>
+          </Link>
+        ))}
+        <button className="layout__tab" onClick={handleLogout}>
+          <svg className="layout__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M11 11l3-3-3-3M14 8H6" />
+          </svg>
+          <span className="layout__tab-label">{t('nav.logout')}</span>
+        </button>
+      </nav>
     </div>
   )
 }

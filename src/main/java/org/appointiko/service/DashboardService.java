@@ -38,6 +38,7 @@ public class DashboardService {
                     a.getId(),
                     a.getServiceId(),
                     svc != null ? svc.getName() : "Unknown",
+                    svc != null ? svc.getPrice() : 0,
                     a.getStartTime(),
                     a.getEndTime(),
                     a.getClientName(),
@@ -50,12 +51,31 @@ public class DashboardService {
 
     @Transactional
     public void cancelAppointment(Long appointmentId, Long salonId) {
+        Appointment appointment = findOwnedAppointment(appointmentId, salonId);
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentRepository.save(appointment);
+    }
+
+    @Transactional
+    public void completeAppointment(Long appointmentId, Long salonId) {
+        Appointment appointment = findOwnedAppointment(appointmentId, salonId);
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointmentRepository.save(appointment);
+    }
+
+    @Transactional
+    public void noShowAppointment(Long appointmentId, Long salonId) {
+        Appointment appointment = findOwnedAppointment(appointmentId, salonId);
+        appointment.setStatus(AppointmentStatus.NO_SHOW);
+        appointmentRepository.save(appointment);
+    }
+
+    private Appointment findOwnedAppointment(Long appointmentId, Long salonId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("APPOINTMENT_NOT_FOUND"));
         if (!appointment.getSalonId().equals(salonId)) {
             throw new IllegalArgumentException("APPOINTMENT_NOT_FOUND");
         }
-        appointment.setStatus(AppointmentStatus.CANCELLED);
-        appointmentRepository.save(appointment);
+        return appointment;
     }
 }

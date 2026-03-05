@@ -1,4 +1,9 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
   datasource:
     url: jdbc:h2:mem:appointiko;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
@@ -12,3 +17,8 @@ spring:
     show-sql: true
   flyway:
     locations: classpath:db/migration
+
+vapid:
+  public-key: BP3eGcEpGEVomCWadC1wK9LRzQ61w8WY2W_VI9MtOL2Gj-mJyXPCpLDS2l3kfOFT3xuBzF7uKDBsWyy-UanqYYQ
+  private-key: REDACTED-VAPID-PRIVATE-KEY
+

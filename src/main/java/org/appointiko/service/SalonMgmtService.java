@@ -63,6 +63,10 @@ public class SalonMgmtService {
         return salonServiceRepository.findBySalonIdOrderByDisplayOrder(salonId);
     }
 
+    public SalonService getServiceById(Long serviceId) {
+        return salonServiceRepository.findById(serviceId).orElse(null);
+    }
+
     public List<SalonService> getActiveServices(Long salonId) {
         return salonServiceRepository.findBySalonIdAndActiveTrueOrderByDisplayOrder(salonId);
     }

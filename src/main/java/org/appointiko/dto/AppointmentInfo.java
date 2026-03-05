@@ -6,6 +6,7 @@ public record AppointmentInfo(
         Long id,
         Long serviceId,
         String serviceName,
+        int servicePrice,
         LocalDateTime startTime,
         LocalDateTime endTime,
         String clientName,

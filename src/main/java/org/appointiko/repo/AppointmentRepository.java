@@ -35,4 +35,19 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             @Param("salonId") Long salonId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(a) FROM Appointment a WHERE a.salonId = :salonId " +
+           "AND a.status <> 'CANCELLED' " +
+           "AND a.startTime >= :monthStart AND a.startTime < :monthEnd")
+    long countBySalonIdThisMonth(
+            @Param("salonId") Long salonId,
+            @Param("monthStart") LocalDateTime monthStart,
+            @Param("monthEnd") LocalDateTime monthEnd);
+
+    @Query("SELECT a FROM Appointment a WHERE a.salonId = :salonId " +
+           "AND a.clientPhone = :phone AND a.status <> 'CANCELLED' " +
+           "ORDER BY a.createdAt DESC")
+    List<Appointment> findBySalonIdAndClientPhone(
+            @Param("salonId") Long salonId,
+            @Param("phone") String phone);
 }

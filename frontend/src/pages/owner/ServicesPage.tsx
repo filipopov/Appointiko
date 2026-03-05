@@ -5,15 +5,19 @@ import OwnerLayout from '../../components/OwnerLayout'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import { useToast } from '../../components/ui/Toast'
 import './ServicesPage.css'
 
 export default function ServicesPage() {
   const { t } = useTranslation()
+  const toast = useToast()
   const [services, setServices] = useState<any[]>([])
   const [editing, setEditing] = useState<any>(null)
   const [name, setName] = useState('')
   const [duration, setDuration] = useState(30)
   const [price, setPrice] = useState(0)
+  const [deleteId, setDeleteId] = useState<number | null>(null)
 
   const load = () => {
     api.getServices().then(setServices).catch(() => {})
@@ -30,12 +34,15 @@ export default function ServicesPage() {
     }
     resetForm()
     load()
+    toast(t('settings.saved'))
   }
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm(t('services.confirmDelete'))) return
-    await api.deleteService(id)
+  const handleDelete = async () => {
+    if (deleteId == null) return
+    await api.deleteService(deleteId)
+    setDeleteId(null)
     load()
+    toast(t('services.deleted'), 'info')
   }
 
   const startEdit = (s: any) => {
@@ -86,13 +93,23 @@ export default function ServicesPage() {
                 <Button variant="secondary" size="sm" onClick={() => startEdit(s)}>
                   {t('services.edit')}
                 </Button>
-                <Button variant="danger" size="sm" onClick={() => handleDelete(s.id)}>
+                <Button variant="danger" size="sm" onClick={() => setDeleteId(s.id)}>
                   {t('services.delete')}
                 </Button>
               </div>
             </Card>
           ))}
         </div>
+      )}
+
+      {deleteId != null && (
+        <ConfirmDialog
+          message={t('services.confirmDelete')}
+          confirmLabel={t('services.delete')}
+          cancelLabel={t('services.cancelEdit')}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteId(null)}
+        />
       )}
     </OwnerLayout>
   )

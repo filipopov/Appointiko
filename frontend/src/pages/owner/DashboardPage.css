@@ -44,6 +44,14 @@
   font-weight: 400;
 }
 
+.dash__stats-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
 .dash__count {
   display: inline-flex;
   align-items: center;
@@ -54,7 +62,6 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--primary);
-  margin-bottom: 16px;
 }
 
 .dash__count-num {
@@ -67,6 +74,18 @@
   background: var(--primary);
   color: #fff;
   font-size: 12px;
+}
+
+.dash__revenue {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: var(--success-bg);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--success);
 }
 
 /* === Appointment list === */
@@ -86,9 +105,22 @@
   transition: opacity var(--transition);
 }
 
+.dash__appt--confirmed {
+  border-left-color: var(--primary);
+}
+
+.dash__appt--completed {
+  border-left-color: var(--success);
+}
+
 .dash__appt--cancelled {
   opacity: 0.45;
   border-left-color: var(--border);
+}
+
+.dash__appt--noshow {
+  opacity: 0.65;
+  border-left-color: var(--warning);
 }
 
 .dash__appt-time {
@@ -124,6 +156,49 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dash__action-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.dash__action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+
+.dash__action-btn:hover {
+  transform: scale(1.1);
+}
+
+.dash__action-btn--complete:hover {
+  background: var(--success-bg);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.dash__action-btn--noshow:hover {
+  background: var(--warning-bg);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.dash__action-btn--cancel:hover {
+  background: var(--error-bg);
+  border-color: var(--error);
+  color: var(--error);
 }
 
 .dash__status-badge {
@@ -140,12 +215,28 @@
   color: var(--success);
 }
 
+.dash__status-badge--completed {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
 .dash__status-badge--cancelled {
   background: var(--error-bg);
   color: var(--error);
 }
 
+.dash__status-badge--noshow {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
 /* === Empty state === */
+.dash__empty-card {
+  border: 1px dashed var(--border);
+  background: transparent;
+  box-shadow: none;
+}
+
 .dash__empty {
   text-align: center;
   padding: 40px 20px;
@@ -160,6 +251,104 @@
 .dash__empty-text {
   color: var(--text-secondary);
   font-size: 15px;
+}
+
+.dash__empty-cta {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.dash__empty-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* === Tomorrow preview === */
+.dash__tomorrow {
+  margin-top: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.dash__tomorrow-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: none;
+  text-align: left;
+  font-size: 14px;
+}
+
+.dash__tomorrow-toggle:hover {
+  background: var(--bg);
+}
+
+.dash__tomorrow-title {
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.dash__tomorrow-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary-bg);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dash__tomorrow-arrow {
+  font-size: 10px;
+  color: var(--text-secondary);
+  transition: transform var(--transition);
+}
+
+.dash__tomorrow-arrow--open {
+  transform: rotate(180deg);
+}
+
+.dash__tomorrow-content {
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+  animation: fadeInUp 0.2s ease;
+}
+
+.dash__tomorrow-empty {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.dash__tomorrow-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.dash__tomorrow-item + .dash__tomorrow-item {
+  border-top: 1px solid var(--border);
+}
+
+.dash__tomorrow-detail {
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 /* === FAB: floating add button === */
@@ -181,7 +370,7 @@
   align-items: center;
   justify-content: center;
   transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-  z-index: 100;
+  z-index: 90;
 }
 
 .dash__fab:hover {
@@ -279,5 +468,10 @@
 
   .dash__cal-card {
     padding: 16px;
+  }
+
+  .dash__fab {
+    bottom: 88px;
+    right: 16px;
   }
 }
