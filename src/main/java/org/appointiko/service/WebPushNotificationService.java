@@ -77,6 +77,7 @@ public class WebPushNotificationService {
                         null,  // topic
                         null   // urgency
                 );
+                log.info("Push result for {}: {}", sub.getEndpoint().substring(0, Math.min(60, sub.getEndpoint().length())), state);
                 if (state == WebPush.SubscriptionState.EXPIRED) {
                     log.info("Push subscription expired, removing: {}", sub.getEndpoint());
                     pushSubscriptionRepository.delete(sub);
