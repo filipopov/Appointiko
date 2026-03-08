@@ -190,7 +190,7 @@ public class OwnerController {
     public ResponseEntity<Void> subscribePush(Authentication auth, @Valid @RequestBody PushSubscriptionRequest req) {
         Salon salon = getOwnerSalon(auth);
         webPushService.subscribe(salon.getId(), req.endpoint(), req.p256dh(), req.auth());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     // -- Helpers --
