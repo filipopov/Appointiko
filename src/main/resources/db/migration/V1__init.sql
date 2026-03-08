@@ -1,5 +1,5 @@
 CREATE TABLE owner (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email           VARCHAR(255) NOT NULL UNIQUE,
     password_hash   VARCHAR(255) NOT NULL,
     phone           VARCHAR(30),
@@ -7,7 +7,7 @@ CREATE TABLE owner (
 );
 
 CREATE TABLE salon (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     owner_id        BIGINT NOT NULL,
     name            VARCHAR(255) NOT NULL,
     slug            VARCHAR(100) NOT NULL UNIQUE,
@@ -21,7 +21,7 @@ CREATE TABLE salon (
 );
 
 CREATE TABLE salon_service (
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id                BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     salon_id          BIGINT NOT NULL,
     name              VARCHAR(255) NOT NULL,
     duration_minutes  INT NOT NULL CHECK (duration_minutes > 0),
@@ -32,7 +32,7 @@ CREATE TABLE salon_service (
 );
 
 CREATE TABLE working_hours (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     salon_id        BIGINT NOT NULL,
     day_of_week     INT NOT NULL CHECK (day_of_week BETWEEN 1 AND 7),
     start_time      TIME NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE working_hours (
 );
 
 CREATE TABLE appointment (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     salon_id        BIGINT NOT NULL,
     service_id      BIGINT NOT NULL,
     start_time      TIMESTAMP NOT NULL,
