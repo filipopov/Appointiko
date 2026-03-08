@@ -18,6 +18,8 @@
     <java.version>21</java.version>
     <node.version>v20.11.1</node.version>
     <npm.version>10.2.4</npm.version>
+    <skip.frontend>false</skip.frontend>
+    <copy.frontend.phase>generate-resources</copy.frontend.phase>
   </properties>
 
   <dependencies>
@@ -125,6 +127,7 @@
         <version>1.15.1</version>
         <configuration>
           <workingDirectory>frontend</workingDirectory>
+          <skip>${skip.frontend}</skip>
         </configuration>
         <executions>
           <execution>
@@ -158,7 +161,7 @@
         <executions>
           <execution>
             <id>copy-frontend-build</id>
-            <phase>generate-resources</phase>
+            <phase>${copy.frontend.phase}</phase>
             <goals><goal>copy-resources</goal></goals>
             <configuration>
               <outputDirectory>${project.build.directory}/classes/static</outputDirectory>
