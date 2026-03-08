@@ -4,7 +4,7 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
-RUN npm run build
+RUN npx tsc -b && npx vite build
 
 # Stage 2: Build backend (skip frontend-maven-plugin, use pre-built static files)
 FROM eclipse-temurin:21-jdk-alpine AS backend
