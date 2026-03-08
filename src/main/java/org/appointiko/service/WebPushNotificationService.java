@@ -63,6 +63,7 @@ public class WebPushNotificationService {
         if (pushService == null) return;
 
         List<PushSubscription> subscriptions = pushSubscriptionRepository.findBySalonId(salonId);
+        log.info("Sending push for salon {}: found {} subscriptions", salonId, subscriptions.size());
         String payload = "{\"title\":" + jsonEscape(title) + ",\"body\":" + jsonEscape(body) + ",\"url\":\"/dashboard\"}";
 
         for (PushSubscription sub : subscriptions) {
