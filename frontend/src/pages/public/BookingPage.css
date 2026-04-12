@@ -57,32 +57,38 @@
   margin-bottom: 16px;
 }
 
-/* === Sticky step progress wrapper === */
+/* === Fixed step progress wrapper === */
 .booking__steps-wrapper {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 50;
-  background: var(--bg);
-  margin: 0 -16px;
   padding: 12px 16px;
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--transition), box-shadow var(--transition);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  background: rgba(249, 247, 248, 0.9);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(249, 247, 248, 0.92);
 }
 
 [data-theme="dark"] .booking__steps-wrapper {
-  background: rgba(26, 22, 24, 0.9);
+  background: rgba(22, 18, 20, 0.92);
 }
 
-/* === Sticky service summary === */
+/* Spacer so content doesn't hide behind fixed bar */
+.booking__steps-spacer {
+  height: 58px;
+}
+
+/* === Fixed service summary === */
 .booking__sticky-summary {
-  position: sticky;
+  position: fixed;
   top: 58px;
+  left: 0;
+  right: 0;
   z-index: 49;
   background: var(--surface);
-  margin: 0 -16px;
   padding: 8px 16px;
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -90,6 +96,11 @@
   justify-content: space-between;
   gap: 8px;
   box-shadow: var(--shadow-sm);
+}
+
+/* Spacer for summary */
+.booking__summary-spacer {
+  height: 44px;
 }
 
 .booking__sticky-name {
@@ -355,17 +366,6 @@
 @media (max-width: 480px) {
   .booking {
     padding: 16px 12px;
-  }
-
-  .booking__steps-wrapper {
-    margin: 0 -12px;
-    padding: 10px 12px;
-  }
-
-  .booking__sticky-summary {
-    margin: 0 -12px;
-    padding: 8px 12px;
-    top: 54px;
   }
 
   .booking__salon-name {

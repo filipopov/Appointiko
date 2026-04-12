@@ -219,31 +219,36 @@ export default function BookingPage() {
       )}
 
       {step !== 'done' && (
-        <div className="booking__steps-wrapper">
-          <div className="booking__steps">
-            {stepOrder.map((s, i) => {
-              const state = getStepState(s)
-              return (
-                <div key={s} className={`booking__step booking__step--${state}`}>
-                  {i > 0 && (
-                    <div className={`booking__step-line ${stepOrder.indexOf(step) >= i ? 'booking__step-line--done' : ''}`} />
-                  )}
-                  <span className="booking__step-num">{state === 'done' ? '\u2713' : i + 1}</span>
-                </div>
-              )
-            })}
+        <>
+          <div className="booking__steps-wrapper">
+            <div className="booking__steps">
+              {stepOrder.map((s, i) => {
+                const state = getStepState(s)
+                return (
+                  <div key={s} className={`booking__step booking__step--${state}`}>
+                    {i > 0 && (
+                      <div className={`booking__step-line ${stepOrder.indexOf(step) >= i ? 'booking__step-line--done' : ''}`} />
+                    )}
+                    <span className="booking__step-num">{state === 'done' ? '\u2713' : i + 1}</span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        </div>
+          <div className="booking__steps-spacer" />
+        </>
       )}
 
-      {/* Sticky service summary */}
       {selectedService && step !== 'done' && step !== 'service' && (
-        <div className="booking__sticky-summary">
-          <span className="booking__sticky-name">{selectedService.name}</span>
-          <span className="booking__sticky-meta">
-            {selectedService.durationMinutes} min &middot; {selectedService.price} {t('booking.den')}
-          </span>
-        </div>
+        <>
+          <div className="booking__sticky-summary">
+            <span className="booking__sticky-name">{selectedService.name}</span>
+            <span className="booking__sticky-meta">
+              {selectedService.durationMinutes} min &middot; {selectedService.price} {t('booking.den')}
+            </span>
+          </div>
+          <div className="booking__summary-spacer" />
+        </>
       )}
 
       {step === 'done' ? (
