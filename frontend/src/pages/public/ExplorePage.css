@@ -166,33 +166,19 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Map marker styles */
-.explore__marker {
-  background: none;
-  border: none;
+/* Hide Leaflet branding */
+.leaflet-control-attribution a[href*="leaflet"] {
+  display: none !important;
 }
 
-.explore__marker-dot {
-  width: 28px;
-  height: 28px;
-  background: var(--primary);
-  border: 3px solid #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 10px;
-  transition: transform var(--transition);
+/* Map marker bounce on add */
+.leaflet-marker-icon {
+  transition: transform 0.2s ease;
 }
 
-.explore__marker--promoted .explore__marker-dot {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #d4a017, #f0c040);
-  border-color: #fff;
-  font-size: 14px;
+.leaflet-marker-icon:hover {
+  transform: translateY(-4px) scale(1.1);
+  z-index: 9999 !important;
 }
 
 .explore__popup {

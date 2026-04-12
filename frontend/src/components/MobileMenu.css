@@ -42,8 +42,12 @@
 .mobile-menu__backdrop {
   display: none;
   position: fixed;
-  inset: 0;
-  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 10000;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -69,7 +73,7 @@
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0;
+  width: 100%;
   background: var(--surface);
   border-radius: 20px 20px 0 0;
   padding: 8px 24px max(24px, env(safe-area-inset-bottom));

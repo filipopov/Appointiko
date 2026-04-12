@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api'
@@ -26,9 +26,23 @@ interface Salon {
 
 type ViewMode = 'grid' | 'map'
 
-// Default center: Skopje
 const DEFAULT_CENTER: [number, number] = [41.9981, 21.4254]
 const DEFAULT_ZOOM = 13
+
+const LIGHT_TILES = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+const DARK_TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+
+function getTheme() {
+  return document.documentElement.getAttribute('data-theme') || 'light'
+}
+
+function createMarkerSvg(promoted: boolean) {
+  const color = promoted ? '%23d4a017' : '%23c0567a'
+  const star = promoted ? `<path d="M12 2l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 16.8l-5.8 3.1 1.1-6.5L2.6 8.8l6.5-.9z" fill="%23fff" opacity="0.9"/>` : ''
+  const inner = promoted ? '' : `<circle cx="12" cy="11" r="3.5" fill="%23fff"/>`
+  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='46' viewBox='0 0 36 46'%3E%3Cdefs%3E%3Cfilter id='s'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='2' flood-opacity='0.3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M18 44C18 44 32 26 32 16A14 14 0 004 16c0 10 14 28 14 28z' fill='${color}' filter='url(%23s)'/%3E${inner}${star}%3C/svg%3E`
+}
 
 export default function ExplorePage() {
   const { t } = useTranslation()
@@ -39,6 +53,7 @@ export default function ExplorePage() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<L.Map | null>(null)
   const markersRef = useRef<L.LayerGroup | null>(null)
+  const tileLayerRef = useRef<L.TileLayer | null>(null)
 
   useEffect(() => {
     api.exploreSalons().then((data) => {
@@ -56,33 +71,46 @@ export default function ExplorePage() {
   const promoted = filtered.filter(s => s.promoted)
   const regular = filtered.filter(s => !s.promoted)
 
+  // Watch for theme changes to swap tiles
+  const updateTiles = useCallback(() => {
+    if (!mapInstanceRef.current || !tileLayerRef.current) return
+    const isDark = getTheme() === 'dark'
+    tileLayerRef.current.setUrl(isDark ? DARK_TILES : LIGHT_TILES)
+  }, [])
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => updateTiles())
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [updateTiles])
+
   // Map initialization and update
   useEffect(() => {
     if (view !== 'map' || !mapRef.current) return
 
     if (!mapInstanceRef.current) {
-      mapInstanceRef.current = L.map(mapRef.current).setView(DEFAULT_CENTER, DEFAULT_ZOOM)
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      mapInstanceRef.current = L.map(mapRef.current, { attributionControl: false }).setView(DEFAULT_CENTER, DEFAULT_ZOOM)
+      L.control.attribution({ prefix: false }).addTo(mapInstanceRef.current)
+      const isDark = getTheme() === 'dark'
+      tileLayerRef.current = L.tileLayer(isDark ? DARK_TILES : LIGHT_TILES, {
+        attribution: TILE_ATTR,
         maxZoom: 19,
       }).addTo(mapInstanceRef.current)
       markersRef.current = L.layerGroup().addTo(mapInstanceRef.current)
     }
 
-    // Invalidate size after render (tab switch)
     setTimeout(() => mapInstanceRef.current?.invalidateSize(), 100)
 
-    // Update markers
     markersRef.current?.clearLayers()
 
     const salonsWithCoords = filtered.filter(s => s.latitude && s.longitude)
 
     salonsWithCoords.forEach(salon => {
-      const icon = L.divIcon({
-        className: `explore__marker ${salon.promoted ? 'explore__marker--promoted' : ''}`,
-        html: `<div class="explore__marker-dot">${salon.promoted ? '&#9733;' : ''}</div>`,
-        iconSize: [salon.promoted ? 36 : 28, salon.promoted ? 36 : 28],
-        iconAnchor: [salon.promoted ? 18 : 14, salon.promoted ? 18 : 14],
+      const icon = L.icon({
+        iconUrl: createMarkerSvg(salon.promoted),
+        iconSize: [36, 46],
+        iconAnchor: [18, 44],
+        popupAnchor: [0, -40],
       })
 
       const marker = L.marker([salon.latitude!, salon.longitude!], { icon })
@@ -97,7 +125,6 @@ export default function ExplorePage() {
       markersRef.current?.addLayer(marker)
     })
 
-    // Fit bounds if salons exist
     if (salonsWithCoords.length > 0) {
       const bounds = L.latLngBounds(
         salonsWithCoords.map(s => [s.latitude!, s.longitude!] as [number, number])
@@ -106,13 +133,13 @@ export default function ExplorePage() {
     }
   }, [view, filtered, t])
 
-  // Cleanup map on unmount
   useEffect(() => {
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove()
         mapInstanceRef.current = null
         markersRef.current = null
+        tileLayerRef.current = null
       }
     }
   }, [])
@@ -172,17 +199,14 @@ export default function ExplorePage() {
         </div>
       ) : (
         <>
-          {/* Map View */}
           {view === 'map' && (
             <div className="explore__map-container">
               <div ref={mapRef} className="explore__map" />
             </div>
           )}
 
-          {/* Grid View */}
           {view === 'grid' && (
             <div className="explore__content">
-              {/* Promoted Section */}
               {promoted.length > 0 && (
                 <section className="explore__section">
                   <h2 className="explore__section-title">
@@ -196,7 +220,6 @@ export default function ExplorePage() {
                 </section>
               )}
 
-              {/* All Salons */}
               <section className="explore__section">
                 <h2 className="explore__section-title">{t('explore.allSalons')}</h2>
                 {regular.length === 0 && promoted.length === 0 ? (

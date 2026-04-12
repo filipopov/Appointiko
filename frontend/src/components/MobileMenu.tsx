@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import './MobileMenu.css'
 
@@ -84,7 +85,7 @@ export default function MobileMenu() {
         <span className="hamburger__line" />
       </button>
 
-      {(open || closing) && (
+      {(open || closing) && createPortal(
         <div
           className={`mobile-menu__backdrop ${closing ? 'mobile-menu__backdrop--closing' : ''}`}
           onClick={close}
@@ -142,7 +143,8 @@ export default function MobileMenu() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

@@ -189,6 +189,7 @@
   border: 2px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
+  color: var(--text);
   text-align: left;
   display: flex;
   justify-content: space-between;

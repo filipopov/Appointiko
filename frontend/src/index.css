@@ -134,6 +134,7 @@ a:hover {
 button {
   cursor: pointer;
   font-family: inherit;
+  color: var(--text);
   transition: background var(--transition), color var(--transition), border-color var(--transition), opacity var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 
