@@ -6,6 +6,7 @@ import LanguageSwitcher from '../../components/LanguageSwitcher'
 import Logo from '../../components/Logo'
 import ThemeToggle from '../../components/ThemeToggle'
 import MobileMenu from '../../components/MobileMenu'
+import Skeleton from '../../components/ui/Skeleton'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './ExplorePage.css'
@@ -31,7 +32,6 @@ const DEFAULT_ZOOM = 13
 
 const LIGHT_TILES = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 const DARK_TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
 
 function getTheme() {
   return document.documentElement.getAttribute('data-theme') || 'light'
@@ -71,7 +71,6 @@ export default function ExplorePage() {
   const promoted = filtered.filter(s => s.promoted)
   const regular = filtered.filter(s => !s.promoted)
 
-  // Watch for theme changes to swap tiles
   const updateTiles = useCallback(() => {
     if (!mapInstanceRef.current || !tileLayerRef.current) return
     const isDark = getTheme() === 'dark'
@@ -84,16 +83,25 @@ export default function ExplorePage() {
     return () => observer.disconnect()
   }, [updateTiles])
 
-  // Map initialization and update
+  // Initialize or re-attach map when switching to map view
   useEffect(() => {
     if (view !== 'map' || !mapRef.current) return
 
+    // If map instance exists but its container was removed from DOM, destroy it
+    if (mapInstanceRef.current) {
+      try {
+        mapInstanceRef.current.getContainer()
+      } catch {
+        mapInstanceRef.current = null
+        markersRef.current = null
+        tileLayerRef.current = null
+      }
+    }
+
     if (!mapInstanceRef.current) {
       mapInstanceRef.current = L.map(mapRef.current, { attributionControl: false }).setView(DEFAULT_CENTER, DEFAULT_ZOOM)
-      L.control.attribution({ prefix: false }).addTo(mapInstanceRef.current)
       const isDark = getTheme() === 'dark'
       tileLayerRef.current = L.tileLayer(isDark ? DARK_TILES : LIGHT_TILES, {
-        attribution: TILE_ATTR,
         maxZoom: 19,
       }).addTo(mapInstanceRef.current)
       markersRef.current = L.layerGroup().addTo(mapInstanceRef.current)
@@ -163,39 +171,41 @@ export default function ExplorePage() {
         <p className="explore__subtitle">{t('explore.subtitle')}</p>
       </section>
 
-      <div className="explore__controls">
-        <div className="explore__filter">
-          <select
-            value={cityFilter}
-            onChange={e => setCityFilter(e.target.value)}
-            className="explore__city-select"
-          >
-            <option value="">{t('explore.allCities')}</option>
-            {cities.map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-        </div>
+      {!loading && (
+        <div className="explore__controls">
+          <div className="explore__filter">
+            <select
+              value={cityFilter}
+              onChange={e => setCityFilter(e.target.value)}
+              className="explore__city-select"
+            >
+              <option value="">{t('explore.allCities')}</option>
+              {cities.map(city => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
 
-        <div className="explore__view-toggle">
-          <button
-            className={`explore__view-btn ${view === 'grid' ? 'explore__view-btn--active' : ''}`}
-            onClick={() => setView('grid')}
-          >
-            &#9638; {t('explore.gridView')}
-          </button>
-          <button
-            className={`explore__view-btn ${view === 'map' ? 'explore__view-btn--active' : ''}`}
-            onClick={() => setView('map')}
-          >
-            &#9873; {t('explore.mapView')}
-          </button>
+          <div className="explore__view-toggle">
+            <button
+              className={`explore__view-btn ${view === 'grid' ? 'explore__view-btn--active' : ''}`}
+              onClick={() => setView('grid')}
+            >
+              &#9638; {t('explore.gridView')}
+            </button>
+            <button
+              className={`explore__view-btn ${view === 'map' ? 'explore__view-btn--active' : ''}`}
+              onClick={() => setView('map')}
+            >
+              &#9873; {t('explore.mapView')}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {loading ? (
-        <div className="explore__loading">
-          <div className="explore__spinner" />
+        <div className="explore__skeleton">
+          <Skeleton rows={6} height={100} />
         </div>
       ) : (
         <>

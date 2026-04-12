@@ -63,6 +63,7 @@ export default function LandingPage() {
       </section>
 
       <section className="landing__steps">
+        <div className="landing__orb-steps" />
         <h2 className="landing__section-title reveal">{t('landing.howItWorks')}</h2>
         <div className="landing__steps-grid">
           <div className="landing__step reveal reveal--left reveal--delay-1">
@@ -84,6 +85,7 @@ export default function LandingPage() {
       </section>
 
       <section className="landing__features">
+        <div className="landing__orb-features" />
         <h2 className="landing__section-title reveal">{t('landing.featuresTitle')}</h2>
         <div className="landing__features-grid">
           <div className="landing__feature reveal reveal--left reveal--delay-1">
@@ -110,6 +112,7 @@ export default function LandingPage() {
       </section>
 
       <section className="landing__bottom-cta">
+        <div className="landing__orb-cta" />
         <h2 className="reveal">{t('landing.bottomCtaTitle')}</h2>
         <p className="reveal reveal--delay-1">{t('landing.bottomCtaDesc')}</p>
         <div className="reveal reveal--delay-2">

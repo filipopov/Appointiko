@@ -180,6 +180,56 @@
   100% { transform: scale(1) rotate(0); opacity: 1; }
 }
 
+/* === Section orbs === */
+.landing__orb-steps,
+.landing__orb-features,
+.landing__orb-cta {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.landing__orb-steps {
+  width: 500px;
+  height: 500px;
+  top: -100px;
+  right: -180px;
+  background: radial-gradient(circle, rgba(120,80,200,0.14) 0%, rgba(120,80,200,0.03) 50%, transparent 70%);
+  animation: orbFloat2 8s ease-in-out infinite;
+}
+
+.landing__orb-features {
+  width: 450px;
+  height: 450px;
+  bottom: -120px;
+  left: -140px;
+  background: radial-gradient(circle, rgba(192,86,122,0.16) 0%, rgba(192,86,122,0.03) 50%, transparent 70%);
+  animation: orbFloat3 7s ease-in-out infinite;
+}
+
+.landing__orb-cta {
+  width: 550px;
+  height: 550px;
+  top: -140px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(200,140,60,0.12) 0%, rgba(200,140,60,0.02) 50%, transparent 70%);
+  animation: orbFloat 9s ease-in-out infinite;
+}
+
+[data-theme="dark"] .landing__orb-steps {
+  background: radial-gradient(circle, rgba(140,100,220,0.10) 0%, rgba(140,100,220,0.02) 50%, transparent 70%);
+}
+
+[data-theme="dark"] .landing__orb-features {
+  background: radial-gradient(circle, rgba(224,122,158,0.10) 0%, rgba(224,122,158,0.02) 50%, transparent 70%);
+}
+
+[data-theme="dark"] .landing__orb-cta {
+  background: radial-gradient(circle, rgba(220,160,80,0.08) 0%, rgba(220,160,80,0.02) 50%, transparent 70%);
+}
+
 /* === Header === */
 .landing__header {
   display: flex;
@@ -331,6 +381,7 @@
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 .landing__section-title {
@@ -398,6 +449,7 @@
   border-radius: var(--radius-lg);
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 .landing__features-grid {
@@ -445,6 +497,7 @@
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 .landing__bottom-cta h2 {
@@ -507,6 +560,13 @@
     height: 400px;
     top: -80px;
   }
+
+  .landing__orb-steps,
+  .landing__orb-features,
+  .landing__orb-cta {
+    width: 300px;
+    height: 300px;
+  }
 }
 
 /* Reduce animations for users who prefer it */
@@ -525,11 +585,23 @@
     transition: none;
   }
 
-  .landing__orb {
+  .landing__orb,
+  .landing__orb-steps,
+  .landing__orb-features,
+  .landing__orb-cta {
+    animation: none;
+  }
+
+  .landing__orb::before,
+  .landing__orb::after {
     animation: none;
   }
 
   .landing__cta-btn--shimmer::after {
+    animation: none;
+  }
+
+  .landing__hero-gradient {
     animation: none;
   }
 }

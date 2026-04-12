@@ -2,9 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect, createContext, lazy, Suspense } from 'react'
 import { api } from './api'
 import { ToastProvider } from './components/ui/Toast'
+import PageLoader from './components/PageLoader'
 import LandingPage from './pages/LandingPage'
 
-// Lazy-load everything except the landing page (first paint)
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 const DashboardPage = lazy(() => import('./pages/owner/DashboardPage'))
@@ -20,20 +20,6 @@ export const AuthContext = createContext<{
   loading: boolean
 }>({ user: null, setUser: () => {}, loading: true })
 
-function PageLoader() {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-      <div style={{
-        width: 32, height: 32,
-        border: '3px solid var(--border)',
-        borderTopColor: 'var(--primary)',
-        borderRadius: '50%',
-        animation: 'spin 0.6s linear infinite',
-      }} />
-    </div>
-  )
-}
-
 function App() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -47,17 +33,14 @@ function App() {
       <ToastProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            {/* Landing page — eager loaded for instant first paint */}
             <Route path="/" element={
               user ? <Navigate to="/dashboard" /> : <LandingPage />
             } />
 
-            {/* Public pages */}
             <Route path="/explore" element={<ExplorePage />} />
             <Route path="/booking/:slug" element={<BookingPage />} />
             <Route path="/b/:slug" element={<BookingPage />} />
 
-            {/* Auth pages */}
             <Route path="/login" element={
               user ? <Navigate to="/dashboard" /> : <LoginPage />
             } />
@@ -65,7 +48,6 @@ function App() {
               user ? <Navigate to="/dashboard" /> : <RegisterPage />
             } />
 
-            {/* Owner pages */}
             <Route path="/dashboard" element={
               loading ? null : user ? <DashboardPage /> : <Navigate to="/login" />
             } />
@@ -79,7 +61,6 @@ function App() {
               loading ? null : user ? <SettingsPage /> : <Navigate to="/login" />
             } />
 
-            {/* Default redirect */}
             <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
           </Routes>
         </Suspense>

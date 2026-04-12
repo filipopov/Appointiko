@@ -266,6 +266,12 @@
   background: linear-gradient(135deg, #2a2618 0%, var(--surface) 100%);
 }
 
+.explore__skeleton {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
 .explore__empty {
   text-align: center;
   color: var(--text-secondary);
