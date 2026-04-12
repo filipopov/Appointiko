@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import QRCode from 'qrcode'
 import Card from './ui/Card'
 import './ShareLinkCard.css'
 
@@ -18,10 +17,13 @@ export default function ShareLinkCard({ slug }: Props) {
 
   useEffect(() => {
     if (showQR && canvasRef.current) {
-      QRCode.toCanvas(canvasRef.current, bookingUrl, {
-        width: 200,
-        margin: 2,
-        color: { dark: '#2d2830', light: '#ffffff' },
+      import('qrcode').then(QRCode => {
+        if (!canvasRef.current) return
+        QRCode.default.toCanvas(canvasRef.current, bookingUrl, {
+          width: 200,
+          margin: 2,
+          color: { dark: '#2d2830', light: '#ffffff' },
+        })
       })
     }
   }, [showQR, bookingUrl])

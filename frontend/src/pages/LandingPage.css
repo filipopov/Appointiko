@@ -125,6 +125,61 @@
 .reveal--delay-3 { transition-delay: 0.28s; }
 .reveal--delay-4 { transition-delay: 0.38s; }
 
+/* Directional variants */
+.reveal--left {
+  transform: translateX(-60px) translateY(20px) scale(0.95);
+}
+
+.reveal--right {
+  transform: translateX(60px) translateY(20px) scale(0.95);
+}
+
+.reveal--up {
+  transform: translateY(60px) scale(0.92);
+}
+
+.reveal--left.reveal--visible,
+.reveal--right.reveal--visible,
+.reveal--up.reveal--visible {
+  transform: translateX(0) translateY(0) scale(1);
+}
+
+/* Hero gradient text */
+.landing__hero-gradient {
+  background: linear-gradient(135deg, var(--text) 0%, var(--primary) 50%, var(--text) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+/* Step number pop animation */
+.reveal--visible .landing__step-num--pop {
+  animation: numPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+}
+
+@keyframes numPop {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Feature icon bounce */
+.reveal--visible .landing__feature-icon--bounce {
+  animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+}
+
+@keyframes iconBounce {
+  0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
 /* === Header === */
 .landing__header {
   display: flex;

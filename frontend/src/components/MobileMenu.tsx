@@ -19,7 +19,7 @@ export default function MobileMenu() {
   const [closing, setClosing] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark'>(getTheme)
   const sheetRef = useRef<HTMLDivElement>(null)
-  const dragRef = useRef({ startY: 0, currentY: 0, dragging: false })
+  const dragRef = useRef({ startY: 0, dragDist: 0, dragging: false })
 
   useEffect(() => {
     if (open) {
@@ -46,6 +46,7 @@ export default function MobileMenu() {
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!dragRef.current.dragging || !sheetRef.current) return
     const dy = e.touches[0].clientY - dragRef.current.startY
+    dragRef.current.dragDist = dy
     if (dy > 0) {
       sheetRef.current.style.transform = `translateY(${dy}px)`
       sheetRef.current.style.transition = 'none'
@@ -54,13 +55,16 @@ export default function MobileMenu() {
 
   const handleTouchEnd = useCallback(() => {
     if (!dragRef.current.dragging || !sheetRef.current) return
+    const dist = dragRef.current.dragDist
     dragRef.current.dragging = false
-    const dy = sheetRef.current.getBoundingClientRect().top -
-      (window.innerHeight - sheetRef.current.offsetHeight)
-    sheetRef.current.style.transition = ''
-    sheetRef.current.style.transform = ''
-    if (dy > 80) {
+    dragRef.current.dragDist = 0
+    if (dist > 60) {
+      sheetRef.current.style.transition = ''
+      sheetRef.current.style.transform = ''
       close()
+    } else {
+      sheetRef.current.style.transition = 'transform 0.25s cubic-bezier(0.32, 0.72, 0, 1)'
+      sheetRef.current.style.transform = 'translateY(0)'
     }
   }, [close])
 

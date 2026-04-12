@@ -166,8 +166,8 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Hide Leaflet branding */
-.leaflet-control-attribution a[href*="leaflet"] {
+/* Hide all map attribution */
+.leaflet-control-attribution {
   display: none !important;
 }
 
@@ -181,15 +181,36 @@
   z-index: 9999 !important;
 }
 
+.leaflet-popup-content-wrapper {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--surface) !important;
+}
+
+.leaflet-popup-close-button {
+  color: var(--text-secondary) !important;
+}
+
 .explore__popup {
   font-family: 'Inter', -apple-system, sans-serif;
   font-size: 13px;
   line-height: 1.5;
+  color: var(--text);
 }
 
 .explore__popup strong {
   font-size: 14px;
   color: var(--text);
+}
+
+.explore__popup span,
+.explore__popup small {
+  color: var(--text-secondary);
 }
 
 .explore__popup a {
