@@ -7,5 +7,8 @@ public record SalonUpdateRequest(
         String city,
         String address,
         String phone,
-        String instagram
+        String instagram,
+        String description,
+        Double latitude,
+        Double longitude
 ) {}

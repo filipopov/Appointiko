@@ -31,6 +31,15 @@ public class Salon {
     private String address;
     private String phone;
     private String instagram;
+    private String description;
+    private Double latitude;
+    private Double longitude;
+
+    @Column(nullable = false)
+    private boolean promoted = false;
+
+    @Column(name = "promoted_until")
+    private LocalDateTime promotedUntil;
 
     @Column(nullable = false)
     private boolean active = true;

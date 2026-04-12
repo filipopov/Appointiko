@@ -42,8 +42,20 @@
     "feature3Desc": "Fillo pa kosto. Përmirëso vetëm kur të nevojitet më shumë.",
     "feature4Title": "Në gjuhën lokale",
     "feature4Desc": "Plotësisht në maqedonisht, shqip dhe anglisht. I ndërtuar për këtë treg.",
+    "exploreSalons": "Shfleto sallonet",
     "bottomCtaTitle": "Gati për më shumë klientë?",
     "bottomCtaDesc": "Regjistrohu për 1 minutë dhe fillo të marrësh rezervime sot."
+  },
+  "explore": {
+    "title": "Gjej një sallon pranë teje",
+    "subtitle": "Shfleto sallonet, kontrollo shërbimet dhe rezervo termin për disa sekonda.",
+    "allCities": "Të gjitha qytetet",
+    "gridView": "Lista",
+    "mapView": "Harta",
+    "featured": "Sallonet e promovuara",
+    "allSalons": "Të gjitha sallonet",
+    "noSalons": "Nuk u gjetën sallone. Kontrolloni përsëri së shpejti!",
+    "bookNow": "Rezervo"
   },
   "booking": {
     "title": "Rezervo termin",
@@ -130,6 +142,11 @@
     "address": "Adresa",
     "phone": "Telefoni",
     "instagram": "Instagram",
+    "description": "Përshkrimi",
+    "descriptionPlaceholder": "Tregojuni klientëve për sallonin tuaj...",
+    "latitude": "Gjerësia gjeografike",
+    "longitude": "Gjatësia gjeografike",
+    "locationHint": "Shtoni koordinatat që klientët t'ju gjejnë në hartë. Klikoni me të djathtën në Google Maps për t'i kopjuar.",
     "save": "Ruaj",
     "bookingLink": "Linku për rezervim",
     "saved": "U ruajt!",

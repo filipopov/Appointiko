@@ -8,5 +8,9 @@ public record SalonInfo(
         String address,
         String phone,
         String instagram,
+        String description,
+        Double latitude,
+        Double longitude,
+        boolean promoted,
         boolean active
 ) {}

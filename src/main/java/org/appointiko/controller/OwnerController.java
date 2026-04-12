@@ -46,7 +46,8 @@ public class OwnerController {
     @PutMapping("/salon")
     public ResponseEntity<SalonInfo> updateSalon(Authentication auth, @Valid @RequestBody SalonUpdateRequest req) {
         Salon salon = getOwnerSalon(auth);
-        salon = salonMgmtService.updateSalon(salon.getId(), req.name(), req.city(), req.address(), req.phone(), req.instagram());
+        salon = salonMgmtService.updateSalon(salon.getId(), req.name(), req.city(), req.address(), req.phone(), req.instagram(),
+                req.description(), req.latitude(), req.longitude());
         return ResponseEntity.ok(toSalonInfo(salon));
     }
 
@@ -202,7 +203,8 @@ public class OwnerController {
 
     private SalonInfo toSalonInfo(Salon s) {
         return new SalonInfo(s.getId(), s.getName(), s.getSlug(), s.getCity(),
-                s.getAddress(), s.getPhone(), s.getInstagram(), s.isActive());
+                s.getAddress(), s.getPhone(), s.getInstagram(), s.getDescription(),
+                s.getLatitude(), s.getLongitude(), s.isPromoted(), s.isActive());
     }
 
     private ServiceInfo toServiceInfo(SalonService s) {

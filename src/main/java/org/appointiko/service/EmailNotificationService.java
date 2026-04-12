@@ -1,27 +1,28 @@
 package org.appointiko.service;
 
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class EmailNotificationService {
 
-    private final JavaMailSender mailSender;
+    private final Resend resend;
     private final String fromAddress;
     private final boolean enabled;
 
     public EmailNotificationService(
-            JavaMailSender mailSender,
-            @Value("${spring.mail.username:}") String fromAddress) {
-        this.mailSender = mailSender;
+            @Value("${resend.api-key:}") String apiKey,
+            @Value("${resend.from:Appointiko <onboarding@resend.dev>}") String fromAddress) {
         this.fromAddress = fromAddress;
-        this.enabled = !fromAddress.isEmpty();
+        this.enabled = apiKey != null && !apiKey.isEmpty();
+        this.resend = enabled ? new Resend(apiKey) : null;
         if (!enabled) {
-            log.warn("Email sender address not configured — email notifications disabled");
+            log.warn("Resend API key not configured — email notifications disabled");
         }
     }
 
@@ -34,12 +35,6 @@ public class EmailNotificationService {
         if (!enabled) return;
 
         try {
-            var message = mailSender.createMimeMessage();
-            var helper = new MimeMessageHelper(message, "UTF-8");
-            helper.setFrom(fromAddress);
-            helper.setTo(toEmail);
-            helper.setSubject("Appointiko: " + clientName + " - " + serviceName);
-
             String html = """
                 <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
                   <h2 style="color:#c0567a;margin:0 0 16px">Nov termin!</h2>
@@ -63,10 +58,16 @@ public class EmailNotificationService {
                         : ""
             );
 
-            helper.setText(html, true);
-            mailSender.send(message);
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(fromAddress)
+                    .to(toEmail)
+                    .subject("Appointiko: " + clientName + " - " + serviceName)
+                    .html(html)
+                    .build();
+
+            resend.emails().send(params);
             log.info("Booking email sent to {}", toEmail);
-        } catch (Exception e) {
+        } catch (ResendException e) {
             log.warn("Failed to send booking email to {}: {}", toEmail, e.getMessage());
         }
     }

@@ -87,6 +87,32 @@
   transform: translateY(-1px);
 }
 
+.landing__hero-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.landing__explore-btn {
+  display: inline-block;
+  padding: 14px 36px;
+  background: transparent;
+  color: var(--primary);
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  border: 2px solid var(--primary);
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.landing__explore-btn:hover {
+  background: var(--primary-bg);
+  transform: translateY(-1px);
+}
+
 .landing__hero-free {
   margin-top: 12px;
   font-size: 13px;

@@ -89,4 +89,8 @@ export const api = {
     request<{ bookingsThisMonth: number }>(`/api/public/salons/${slug}/stats`),
   publicClientLookup: (slug: string, phone: string) =>
     request<{ clientName?: string }>(`/api/public/salons/${slug}/client-lookup?phone=${encodeURIComponent(phone)}`),
+
+  // Explore
+  exploreSalons: (city?: string) =>
+    request<any[]>(`/api/public/explore/salons${city ? `?city=${encodeURIComponent(city)}` : ''}`),
 }

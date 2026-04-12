@@ -42,8 +42,20 @@
     "feature3Desc": "Start at no cost. Upgrade only when you need more.",
     "feature4Title": "Local language support",
     "feature4Desc": "Fully in Macedonian, Albanian, and English. Built for this market.",
+    "exploreSalons": "Browse salons",
     "bottomCtaTitle": "Ready for more clients?",
     "bottomCtaDesc": "Sign up in 1 minute and start receiving bookings today."
+  },
+  "explore": {
+    "title": "Find a salon near you",
+    "subtitle": "Browse salons, check their services, and book an appointment in seconds.",
+    "allCities": "All cities",
+    "gridView": "Grid",
+    "mapView": "Map",
+    "featured": "Featured salons",
+    "allSalons": "All salons",
+    "noSalons": "No salons found. Check back soon!",
+    "bookNow": "Book now"
   },
   "booking": {
     "title": "Book an appointment",
@@ -130,6 +142,11 @@
     "address": "Address",
     "phone": "Phone",
     "instagram": "Instagram",
+    "description": "Description",
+    "descriptionPlaceholder": "Tell clients about your salon...",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "locationHint": "Add coordinates so clients can find you on the map. Right-click on Google Maps to copy them.",
     "save": "Save",
     "bookingLink": "Booking link",
     "saved": "Saved!",

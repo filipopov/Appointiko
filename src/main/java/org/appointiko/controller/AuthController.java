@@ -74,7 +74,9 @@ public class AuthController {
         SalonInfo salonInfo = new SalonInfo(
                 salon.getId(), salon.getName(), salon.getSlug(),
                 salon.getCity(), salon.getAddress(), salon.getPhone(),
-                salon.getInstagram(), salon.isActive());
+                salon.getInstagram(), salon.getDescription(),
+                salon.getLatitude(), salon.getLongitude(),
+                salon.isPromoted(), salon.isActive());
         return new OwnerInfo(owner.getId(), owner.getEmail(), owner.getPhone(), salonInfo);
     }
 }

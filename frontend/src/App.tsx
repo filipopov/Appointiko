@@ -10,6 +10,7 @@ import ServicesPage from './pages/owner/ServicesPage'
 import WorkingHoursPage from './pages/owner/WorkingHoursPage'
 import SettingsPage from './pages/owner/SettingsPage'
 import BookingPage from './pages/public/BookingPage'
+import ExplorePage from './pages/public/ExplorePage'
 
 export const AuthContext = createContext<{
   user: any
@@ -34,7 +35,8 @@ function App() {
             user ? <Navigate to="/dashboard" /> : <LandingPage />
           } />
 
-          {/* Public booking page */}
+          {/* Public pages */}
+          <Route path="/explore" element={<ExplorePage />} />
           <Route path="/b/:slug" element={<BookingPage />} />
 
           {/* Auth pages */}

@@ -19,7 +19,10 @@ export default function LandingPage() {
       <section className="landing__hero">
         <h1 className="landing__hero-title">{t('landing.heroTitle')}</h1>
         <p className="landing__hero-subtitle">{t('landing.heroSubtitle')}</p>
-        <Link to="/register" className="landing__cta-btn">{t('landing.cta')}</Link>
+        <div className="landing__hero-buttons">
+          <Link to="/register" className="landing__cta-btn">{t('landing.cta')}</Link>
+          <Link to="/explore" className="landing__explore-btn">{t('landing.exploreSalons')}</Link>
+        </div>
         <p className="landing__hero-free">{t('landing.free')}</p>
       </section>
 

@@ -46,7 +46,8 @@ public class SalonMgmtService {
     }
 
     @Transactional
-    public Salon updateSalon(Long salonId, String name, String city, String address, String phone, String instagram) {
+    public Salon updateSalon(Long salonId, String name, String city, String address, String phone, String instagram,
+                             String description, Double latitude, Double longitude) {
         Salon salon = salonRepository.findById(salonId)
                 .orElseThrow(() -> new IllegalStateException("SALON_NOT_FOUND"));
         salon.setName(name);
@@ -54,7 +55,17 @@ public class SalonMgmtService {
         salon.setAddress(address);
         salon.setPhone(phone);
         salon.setInstagram(instagram);
+        salon.setDescription(description);
+        salon.setLatitude(latitude);
+        salon.setLongitude(longitude);
         return salonRepository.save(salon);
+    }
+
+    public List<Salon> getExploreSalons(String city) {
+        if (city != null && !city.isBlank()) {
+            return salonRepository.findActiveByCityOrderByPromotedDescCreatedAtDesc(city);
+        }
+        return salonRepository.findByActiveTrueOrderByPromotedDescCreatedAtDesc();
     }
 
     // -- Services --
