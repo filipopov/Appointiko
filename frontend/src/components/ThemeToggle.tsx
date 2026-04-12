@@ -6,18 +6,32 @@ function getInitialTheme(): 'light' | 'dark' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
+function applyTheme(theme: 'light' | 'dark') {
+  const root = document.documentElement
+  root.classList.add('theme-transition')
+  root.setAttribute('data-theme', theme)
+  localStorage.setItem('theme', theme)
+  setTimeout(() => root.classList.remove('theme-transition'), 450)
+}
+
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>(getInitialTheme)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('theme', theme)
-  }, [theme])
+  }, [])
+
+  const toggle = () => {
+    const next = theme === 'light' ? 'dark' : 'light'
+    setTheme(next)
+    applyTheme(next)
+  }
 
   return (
     <button
       className="theme-toggle"
-      onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+      onClick={toggle}
       aria-label="Toggle dark mode"
       title={theme === 'light' ? 'Dark mode' : 'Light mode'}
     >

@@ -83,7 +83,7 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
       <header className="layout__header">
         <div className="layout__left">
           <div className="layout__brand-group">
-            <span className="layout__brand"><Logo size={24} /> Appointiko</span>
+            <Link to="/" className="layout__brand"><Logo size={24} /> Appointiko</Link>
             {salonName && <span className="layout__salon-name">{salonName}</span>}
           </div>
           <nav className="layout__nav">

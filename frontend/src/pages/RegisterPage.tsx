@@ -46,7 +46,7 @@ export default function RegisterPage() {
     <div className="register-page">
       <div className="register-page__container">
         <div className="register-page__header">
-          <h1 className="register-page__brand"><Logo size={30} /> Appointiko</h1>
+          <Link to="/" className="register-page__brand"><Logo size={30} /> Appointiko</Link>
           <div className="register-page__header-right">
             <div className="desktop-only">
               <ThemeToggle />

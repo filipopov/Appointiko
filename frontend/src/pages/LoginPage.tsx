@@ -40,7 +40,7 @@ export default function LoginPage() {
     <div className="login-page">
       <div className="login-page__container">
         <div className="login-page__header">
-          <h1 className="login-page__brand"><Logo size={30} /> Appointiko</h1>
+          <Link to="/" className="login-page__brand"><Logo size={30} /> Appointiko</Link>
           <div className="login-page__header-right">
             <div className="desktop-only">
               <ThemeToggle />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import './MobileMenu.css'
 
@@ -15,9 +15,11 @@ function getTheme(): 'light' | 'dark' {
 export default function MobileMenu() {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
+  const [closing, setClosing] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark'>(getTheme)
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef({ startY: 0, currentY: 0, dragging: false })
 
-  // Lock body scroll when open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden'
@@ -27,17 +29,54 @@ export default function MobileMenu() {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  const toggleTheme = (t: 'light' | 'dark') => {
-    setTheme(t)
-    document.documentElement.setAttribute('data-theme', t)
-    localStorage.setItem('theme', t)
+  const close = useCallback(() => {
+    setClosing(true)
+    setTimeout(() => {
+      setOpen(false)
+      setClosing(false)
+    }, 280)
+  }, [])
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    dragRef.current.startY = e.touches[0].clientY
+    dragRef.current.dragging = true
+  }, [])
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!dragRef.current.dragging || !sheetRef.current) return
+    const dy = e.touches[0].clientY - dragRef.current.startY
+    if (dy > 0) {
+      sheetRef.current.style.transform = `translateY(${dy}px)`
+      sheetRef.current.style.transition = 'none'
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    if (!dragRef.current.dragging || !sheetRef.current) return
+    dragRef.current.dragging = false
+    const dy = sheetRef.current.getBoundingClientRect().top -
+      (window.innerHeight - sheetRef.current.offsetHeight)
+    sheetRef.current.style.transition = ''
+    sheetRef.current.style.transform = ''
+    if (dy > 80) {
+      close()
+    }
+  }, [close])
+
+  const toggleTheme = (newTheme: 'light' | 'dark') => {
+    setTheme(newTheme)
+    const root = document.documentElement
+    root.classList.add('theme-transition')
+    root.setAttribute('data-theme', newTheme)
+    localStorage.setItem('theme', newTheme)
+    setTimeout(() => root.classList.remove('theme-transition'), 450)
   }
 
   return (
     <>
       <button
         className={`hamburger ${open ? 'hamburger--open' : ''}`}
-        onClick={() => setOpen(!open)}
+        onClick={() => open ? close() : setOpen(true)}
         aria-label="Menu"
       >
         <span className="hamburger__line" />
@@ -45,9 +84,19 @@ export default function MobileMenu() {
         <span className="hamburger__line" />
       </button>
 
-      {open && (
-        <div className="mobile-menu__backdrop" onClick={() => setOpen(false)}>
-          <div className="mobile-menu__sheet" onClick={e => e.stopPropagation()}>
+      {(open || closing) && (
+        <div
+          className={`mobile-menu__backdrop ${closing ? 'mobile-menu__backdrop--closing' : ''}`}
+          onClick={close}
+        >
+          <div
+            ref={sheetRef}
+            className={`mobile-menu__sheet ${closing ? 'mobile-menu__sheet--closing' : ''}`}
+            onClick={e => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <div className="mobile-menu__handle" />
 
             <div className="mobile-menu__section">
@@ -85,7 +134,7 @@ export default function MobileMenu() {
                   <button
                     key={l.code}
                     className={`mobile-menu__lang-btn ${i18n.language === l.code ? 'mobile-menu__lang-btn--active' : ''}`}
-                    onClick={() => { i18n.changeLanguage(l.code); setOpen(false) }}
+                    onClick={() => { i18n.changeLanguage(l.code); close() }}
                   >
                     {l.label}
                   </button>
