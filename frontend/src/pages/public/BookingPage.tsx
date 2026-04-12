@@ -227,7 +227,10 @@ export default function BookingPage() {
                 return (
                   <div key={s} className={`booking__step booking__step--${state}`}>
                     {i > 0 && (
-                      <div className={`booking__step-line ${stepOrder.indexOf(step) >= i ? 'booking__step-line--done' : ''}`} />
+                      <div className={`booking__step-line ${
+                        stepOrder.indexOf(step) > i ? 'booking__step-line--done' :
+                        stepOrder.indexOf(step) === i ? 'booking__step-line--active' : ''
+                      }`} />
                     )}
                     <span className="booking__step-num">{state === 'done' ? '\u2713' : i + 1}</span>
                   </div>
