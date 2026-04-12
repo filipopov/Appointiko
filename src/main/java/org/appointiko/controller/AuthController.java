@@ -29,7 +29,7 @@ public class AuthController {
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req, HttpServletRequest httpReq) {
         try {
             Owner owner = authService.register(req.email(), req.password(), req.phone());
-            salonMgmtService.createSalon(owner.getId(), req.salonName());
+            salonMgmtService.createSalon(owner.getId(), req.salonName(), req.city(), req.address());
 
             // Auto-login after registration
             Authentication auth = authenticationManager.authenticate(

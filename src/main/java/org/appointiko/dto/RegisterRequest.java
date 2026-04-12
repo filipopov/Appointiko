@@ -9,5 +9,7 @@ public record RegisterRequest(
         @NotBlank @Email String email,
         @NotBlank @Size(min = 6) String password,
         @MacedonianPhone String phone,
-        @NotBlank String salonName
+        @NotBlank String salonName,
+        @NotBlank String city,
+        @NotBlank String address
 ) {}

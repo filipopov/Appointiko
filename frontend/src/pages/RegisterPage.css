@@ -48,6 +48,38 @@
   border-radius: var(--radius);
 }
 
+.register-page__select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.register-page__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.register-page__select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color 0.15s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.register-page__select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
 .register-page__footer {
   margin-top: 20px;
   font-size: 13px;

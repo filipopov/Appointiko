@@ -8,6 +8,7 @@ import Input from '../components/ui/Input'
 import Card from '../components/ui/Card'
 import PhoneInput from '../components/ui/PhoneInput'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import { NORTH_MACEDONIA_CITIES } from '../constants/cities'
 import './RegisterPage.css'
 
 export default function RegisterPage() {
@@ -18,6 +19,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [phone, setPhone] = useState('')
   const [salonName, setSalonName] = useState('')
+  const [city, setCity] = useState('')
+  const [address, setAddress] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -26,7 +29,7 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
     try {
-      const user = await api.register({ email, password, phone: phone || undefined, salonName })
+      const user = await api.register({ email, password, phone: phone || undefined, salonName, city, address })
       setUser(user)
       navigate('/dashboard')
     } catch (err: any) {
@@ -47,6 +50,21 @@ export default function RegisterPage() {
           <h2 className="register-page__title">{t('auth.register')}</h2>
           <form onSubmit={handleSubmit} className="register-page__form">
             <Input label={t('auth.salonName')} value={salonName} onChange={e => setSalonName(e.target.value)} required />
+            <div className="register-page__select-group">
+              <label className="register-page__label">{t('auth.city')}</label>
+              <select
+                className="register-page__select"
+                value={city}
+                onChange={e => setCity(e.target.value)}
+                required
+              >
+                <option value="">{t('auth.selectCity')}</option>
+                {NORTH_MACEDONIA_CITIES.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <Input label={t('auth.address')} value={address} onChange={e => setAddress(e.target.value)} required placeholder={t('auth.addressPlaceholder')} />
             <Input label={t('auth.email')} type="email" value={email} onChange={e => setEmail(e.target.value)} required />
             <Input label={t('auth.password')} type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
             <PhoneInput label={t('auth.phone')} value={phone} onChange={setPhone} />

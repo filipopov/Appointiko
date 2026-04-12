@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import ShareLinkCard from '../../components/ShareLinkCard'
 import { useToast } from '../../components/ui/Toast'
+import { NORTH_MACEDONIA_CITIES } from '../../constants/cities'
 import './SettingsPage.css'
 
 export default function SettingsPage() {
@@ -52,7 +53,19 @@ export default function SettingsPage() {
       <Card className="settings__form">
         <div className="settings__fields">
           <Input label={t('settings.name')} value={name} onChange={e => setName(e.target.value)} />
-          <Input label={t('settings.city')} value={city} onChange={e => setCity(e.target.value)} />
+          <div className="settings__select-group">
+            <label className="settings__label">{t('settings.city')}</label>
+            <select
+              className="settings__select"
+              value={city}
+              onChange={e => setCity(e.target.value)}
+            >
+              <option value="">{t('auth.selectCity')}</option>
+              {NORTH_MACEDONIA_CITIES.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
           <Input label={t('settings.address')} value={address} onChange={e => setAddress(e.target.value)} />
           <Input label={t('settings.phone')} value={phone} onChange={e => setPhone(e.target.value)} />
           <Input label={t('settings.instagram')} value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@yoursalon" />

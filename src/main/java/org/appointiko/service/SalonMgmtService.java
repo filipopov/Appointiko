@@ -24,10 +24,12 @@ public class SalonMgmtService {
     private final WorkingHoursRepository workingHoursRepository;
 
     @Transactional
-    public Salon createSalon(Long ownerId, String name) {
+    public Salon createSalon(Long ownerId, String name, String city, String address) {
         Salon salon = new Salon();
         salon.setOwnerId(ownerId);
         salon.setName(name);
+        salon.setCity(city);
+        salon.setAddress(address);
         salon.setSlug(generateUniqueSlug(name));
         salon = salonRepository.save(salon);
         initDefaultWorkingHours(salon.getId());
