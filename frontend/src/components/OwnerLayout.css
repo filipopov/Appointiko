@@ -117,6 +117,11 @@
   color: var(--text);
 }
 
+/* === Mobile menu trigger (hidden on desktop) === */
+.layout__mobile-right {
+  display: none;
+}
+
 /* === Main === */
 .layout__main {
   flex: 1;
@@ -149,6 +154,11 @@
 
   .layout__right {
     display: none;
+  }
+
+  .layout__mobile-right {
+    display: flex;
+    align-items: center;
   }
 
   .layout__salon-name {

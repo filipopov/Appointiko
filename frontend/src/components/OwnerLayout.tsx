@@ -7,6 +7,7 @@ import { subscribeToPush, isPushSupported } from '../pushManager'
 import LanguageSwitcher from './LanguageSwitcher'
 import Logo from './Logo'
 import ThemeToggle from './ThemeToggle'
+import MobileMenu from './MobileMenu'
 import './OwnerLayout.css'
 
 const navItems = [
@@ -104,6 +105,9 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
           <button className="layout__logout" onClick={handleLogout}>
             {t('nav.logout')}
           </button>
+        </div>
+        <div className="layout__mobile-right">
+          <MobileMenu />
         </div>
       </header>
 

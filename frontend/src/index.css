@@ -89,17 +89,6 @@
   background: var(--bg);
 }
 
-@media (max-width: 400px) {
-  .theme-toggle {
-    width: 32px;
-    height: 32px;
-  }
-
-  .theme-toggle svg {
-    width: 16px;
-    height: 16px;
-  }
-}
 
 html {
   scroll-behavior: smooth;
@@ -149,6 +138,19 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(192,86,122,0.15);
+}
+
+/* === Desktop-only utility === */
+.desktop-only {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
 }
 
 /* Page-enter animation */

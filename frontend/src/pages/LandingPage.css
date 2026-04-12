@@ -281,17 +281,3 @@
   }
 }
 
-@media (max-width: 400px) {
-  .landing__header-right {
-    gap: 6px;
-  }
-
-  .landing__login-link {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  .landing__brand {
-    font-size: 18px;
-  }
-}

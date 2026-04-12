@@ -10,6 +10,7 @@ import PhoneInput from '../components/ui/PhoneInput'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import Logo from '../components/Logo'
 import ThemeToggle from '../components/ThemeToggle'
+import MobileMenu from '../components/MobileMenu'
 import { NORTH_MACEDONIA_CITIES } from '../constants/cities'
 import './RegisterPage.css'
 
@@ -46,8 +47,13 @@ export default function RegisterPage() {
       <div className="register-page__container">
         <div className="register-page__header">
           <h1 className="register-page__brand"><Logo size={30} /> Appointiko</h1>
-          <ThemeToggle />
-          <LanguageSwitcher />
+          <div className="register-page__header-right">
+            <div className="desktop-only">
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
+            <MobileMenu />
+          </div>
         </div>
         <Card>
           <h2 className="register-page__title">{t('auth.register')}</h2>

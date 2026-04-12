@@ -10,6 +10,7 @@ import PhoneInput from '../../components/ui/PhoneInput'
 import Skeleton from '../../components/ui/Skeleton'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import ThemeToggle from '../../components/ThemeToggle'
+import MobileMenu from '../../components/MobileMenu'
 import { isValidMkPhone, cleanPhone } from '../../utils/phone'
 import './BookingPage.css'
 
@@ -203,8 +204,11 @@ export default function BookingPage() {
           )}
         </div>
         <div className="booking__header-right">
-          <ThemeToggle />
-          <LanguageSwitcher />
+          <div className="desktop-only">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
+          <MobileMenu />
         </div>
       </div>
 

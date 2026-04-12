@@ -9,6 +9,7 @@ import Card from '../components/ui/Card'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import Logo from '../components/Logo'
 import ThemeToggle from '../components/ThemeToggle'
+import MobileMenu from '../components/MobileMenu'
 import './LoginPage.css'
 
 export default function LoginPage() {
@@ -40,8 +41,13 @@ export default function LoginPage() {
       <div className="login-page__container">
         <div className="login-page__header">
           <h1 className="login-page__brand"><Logo size={30} /> Appointiko</h1>
-          <ThemeToggle />
-          <LanguageSwitcher />
+          <div className="login-page__header-right">
+            <div className="desktop-only">
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
+            <MobileMenu />
+          </div>
         </div>
         <Card>
           <h2 className="login-page__title">{t('auth.login')}</h2>

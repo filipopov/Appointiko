@@ -31,6 +31,12 @@
   letter-spacing: -0.02em;
 }
 
+.register-page__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .register-page__title {
   margin-bottom: 24px;
   font-size: 20px;
@@ -90,12 +96,3 @@
   color: var(--text-secondary);
 }
 
-@media (max-width: 400px) {
-  .register-page__header {
-    gap: 8px;
-  }
-
-  .register-page__brand {
-    font-size: 20px;
-  }
-}

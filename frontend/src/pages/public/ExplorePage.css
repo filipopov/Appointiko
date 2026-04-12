@@ -440,17 +440,3 @@
   }
 }
 
-@media (max-width: 400px) {
-  .explore__header-right {
-    gap: 6px;
-  }
-
-  .explore__login-link {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-
-  .explore__brand {
-    font-size: 18px;
-  }
-}

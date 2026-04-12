@@ -169,6 +169,12 @@
     "setHours": "Set working hours",
     "shareLink": "Share your booking link"
   },
+  "menu": {
+    "appearance": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language"
+  },
   "errors": {
     "EMAIL_EXISTS": "Email already registered",
     "INVALID_CREDENTIALS": "Invalid email or password",

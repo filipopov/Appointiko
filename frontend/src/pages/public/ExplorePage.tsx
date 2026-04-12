@@ -5,6 +5,7 @@ import { api } from '../../api'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import Logo from '../../components/Logo'
 import ThemeToggle from '../../components/ThemeToggle'
+import MobileMenu from '../../components/MobileMenu'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './ExplorePage.css'
@@ -121,9 +122,12 @@ export default function ExplorePage() {
       <header className="explore__header">
         <Link to="/" className="explore__brand"><Logo size={28} /> Appointiko</Link>
         <div className="explore__header-right">
-          <ThemeToggle />
-          <LanguageSwitcher />
+          <div className="desktop-only">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
           <Link to="/login" className="explore__login-link">{t('auth.login')}</Link>
+          <MobileMenu />
         </div>
       </header>
 

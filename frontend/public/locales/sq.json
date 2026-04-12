@@ -169,6 +169,12 @@
     "setHours": "Vendos orarin e punës",
     "shareLink": "Ndaj linkun për rezervim"
   },
+  "menu": {
+    "appearance": "Pamja",
+    "light": "Ndritshme",
+    "dark": "Errët",
+    "language": "Gjuha"
+  },
   "errors": {
     "EMAIL_EXISTS": "Email-i është regjistruar tashmë",
     "INVALID_CREDENTIALS": "Email ose fjalëkalim i gabuar",

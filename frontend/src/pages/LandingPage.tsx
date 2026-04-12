@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import Logo from '../components/Logo'
 import ThemeToggle from '../components/ThemeToggle'
+import MobileMenu from '../components/MobileMenu'
 import './LandingPage.css'
 
 export default function LandingPage() {
@@ -13,9 +14,12 @@ export default function LandingPage() {
       <header className="landing__header">
         <span className="landing__brand"><Logo size={28} /> Appointiko</span>
         <div className="landing__header-right">
-          <ThemeToggle />
-          <LanguageSwitcher />
+          <div className="desktop-only">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
           <Link to="/login" className="landing__login-link">{t('auth.login')}</Link>
+          <MobileMenu />
         </div>
       </header>
 

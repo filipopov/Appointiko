@@ -31,6 +31,12 @@
   letter-spacing: -0.02em;
 }
 
+.login-page__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .login-page__title {
   margin-bottom: 24px;
   font-size: 20px;
@@ -58,12 +64,3 @@
   color: var(--text-secondary);
 }
 
-@media (max-width: 400px) {
-  .login-page__header {
-    gap: 8px;
-  }
-
-  .login-page__brand {
-    font-size: 20px;
-  }
-}
