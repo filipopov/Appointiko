@@ -1,0 +1,24 @@
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 99999;
+  background: transparent;
+  pointer-events: none;
+}
+
+.nav-progress__bar {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 0 3px 3px 0;
+  animation: navProgress 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+  box-shadow: 0 0 8px rgba(192, 86, 122, 0.4);
+}
+
+@keyframes navProgress {
+  0% { width: 0; opacity: 1; }
+  70% { width: 100%; opacity: 1; }
+  100% { width: 100%; opacity: 0; }
+}

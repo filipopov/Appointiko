@@ -3,6 +3,7 @@ import { useState, useEffect, createContext, lazy, Suspense } from 'react'
 import { api } from './api'
 import { ToastProvider } from './components/ui/Toast'
 import PageLoader from './components/PageLoader'
+import NavigationProgress from './components/NavigationProgress'
 import LandingPage from './pages/LandingPage'
 
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -31,6 +32,7 @@ function App() {
   return (
     <AuthContext.Provider value={{ user, setUser, loading }}>
       <ToastProvider>
+        <NavigationProgress />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={

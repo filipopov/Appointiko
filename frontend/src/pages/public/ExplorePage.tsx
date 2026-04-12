@@ -83,20 +83,9 @@ export default function ExplorePage() {
     return () => observer.disconnect()
   }, [updateTiles])
 
-  // Initialize or re-attach map when switching to map view
+  // Initialize map once, invalidate on view switch
   useEffect(() => {
-    if (view !== 'map' || !mapRef.current) return
-
-    // If map instance exists but its container was removed from DOM, destroy it
-    if (mapInstanceRef.current) {
-      try {
-        mapInstanceRef.current.getContainer()
-      } catch {
-        mapInstanceRef.current = null
-        markersRef.current = null
-        tileLayerRef.current = null
-      }
-    }
+    if (!mapRef.current) return
 
     if (!mapInstanceRef.current) {
       mapInstanceRef.current = L.map(mapRef.current, { attributionControl: false }).setView(DEFAULT_CENTER, DEFAULT_ZOOM)
@@ -107,7 +96,9 @@ export default function ExplorePage() {
       markersRef.current = L.layerGroup().addTo(mapInstanceRef.current)
     }
 
-    setTimeout(() => mapInstanceRef.current?.invalidateSize(), 100)
+    if (view === 'map') {
+      setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50)
+    }
 
     markersRef.current?.clearLayers()
 
@@ -203,18 +194,17 @@ export default function ExplorePage() {
         </div>
       )}
 
+      {/* Map is always mounted, hidden via CSS to preserve Leaflet state */}
+      <div className="explore__map-container" style={{ display: !loading && view === 'map' ? 'block' : 'none' }}>
+        <div ref={mapRef} className="explore__map" />
+      </div>
+
       {loading ? (
         <div className="explore__skeleton">
           <Skeleton rows={6} height={100} />
         </div>
       ) : (
         <>
-          {view === 'map' && (
-            <div className="explore__map-container">
-              <div ref={mapRef} className="explore__map" />
-            </div>
-          )}
-
           {view === 'grid' && (
             <div className="explore__content">
               {promoted.length > 0 && (

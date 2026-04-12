@@ -150,9 +150,13 @@ input, select, textarea {
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 
-/* Prevent horizontal scroll */
-html, body {
+/* Prevent horizontal scroll — only on body to preserve position:sticky */
+body {
   overflow-x: hidden;
+}
+
+html {
+  overflow-x: clip;
 }
 
 input:focus, select:focus, textarea:focus {
