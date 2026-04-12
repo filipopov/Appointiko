@@ -8,6 +8,8 @@ import Input from '../components/ui/Input'
 import Card from '../components/ui/Card'
 import PhoneInput from '../components/ui/PhoneInput'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import Logo from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 import { NORTH_MACEDONIA_CITIES } from '../constants/cities'
 import './RegisterPage.css'
 
@@ -43,7 +45,8 @@ export default function RegisterPage() {
     <div className="register-page">
       <div className="register-page__container">
         <div className="register-page__header">
-          <h1 className="register-page__brand">Appointiko</h1>
+          <h1 className="register-page__brand"><Logo size={30} /> Appointiko</h1>
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
         <Card>

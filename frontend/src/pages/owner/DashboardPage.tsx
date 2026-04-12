@@ -256,7 +256,7 @@ export default function DashboardPage() {
                   <p className="dash__empty-cta">
                     {t('dashboard.shareToGet')}{' '}
                     <button className="dash__empty-link" onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/b/${slug}`)
+                      navigator.clipboard.writeText(`${window.location.origin}/booking/${slug}`)
                       toast(t('settings.copied'), 'info')
                     }}>
                       {t('dashboard.copyLink')}

@@ -22,6 +22,9 @@
 }
 
 .register-page__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 26px;
   color: var(--primary);
   font-weight: 700;

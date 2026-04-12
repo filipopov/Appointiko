@@ -5,6 +5,8 @@ import { AuthContext } from '../App'
 import { api } from '../api'
 import { subscribeToPush, isPushSupported } from '../pushManager'
 import LanguageSwitcher from './LanguageSwitcher'
+import Logo from './Logo'
+import ThemeToggle from './ThemeToggle'
 import './OwnerLayout.css'
 
 const navItems = [
@@ -80,7 +82,7 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
       <header className="layout__header">
         <div className="layout__left">
           <div className="layout__brand-group">
-            <span className="layout__brand">Appointiko</span>
+            <span className="layout__brand"><Logo size={24} /> Appointiko</span>
             {salonName && <span className="layout__salon-name">{salonName}</span>}
           </div>
           <nav className="layout__nav">
@@ -97,6 +99,7 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
           </nav>
         </div>
         <div className="layout__right">
+          <ThemeToggle />
           <LanguageSwitcher />
           <button className="layout__logout" onClick={handleLogout}>
             {t('nav.logout')}

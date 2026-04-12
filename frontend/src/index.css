@@ -43,6 +43,52 @@
   --transition-slow: 0.35s ease;
 }
 
+/* Dark theme */
+[data-theme="dark"] {
+  --primary: #d4739a;
+  --primary-light: #a85878;
+  --primary-dark: #e8a0be;
+  --primary-bg: #2a1f24;
+
+  --bg: #1a1618;
+  --surface: #242022;
+  --text: #e8e4e6;
+  --text-secondary: #9a9098;
+  --border: #3a3438;
+
+  --success: #6bc48a;
+  --success-bg: #1a2e20;
+  --error: #e06060;
+  --error-bg: #2e1a1a;
+  --warning: #e0b050;
+  --warning-bg: #2e2618;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-secondary);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--text-secondary);
+  background: var(--bg);
+}
+
 html {
   scroll-behavior: smooth;
 }

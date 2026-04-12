@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import Logo from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 import './LandingPage.css'
 
 export default function LandingPage() {
@@ -9,8 +11,9 @@ export default function LandingPage() {
   return (
     <div className="landing">
       <header className="landing__header">
-        <span className="landing__brand">Appointiko</span>
+        <span className="landing__brand"><Logo size={28} /> Appointiko</span>
         <div className="landing__header-right">
+          <ThemeToggle />
           <LanguageSwitcher />
           <Link to="/login" className="landing__login-link">{t('auth.login')}</Link>
         </div>

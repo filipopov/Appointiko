@@ -132,7 +132,7 @@ export default function ShareLinkCard({ slug }: Props) {
   const [showQR, setShowQR] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const bookingUrl = `${window.location.origin}/b/${slug}`
+  const bookingUrl = `${window.location.origin}/booking/${slug}`
 
   useEffect(() => {
     if (showQR && canvasRef.current) {

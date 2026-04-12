@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
+import Logo from '../../components/Logo'
+import ThemeToggle from '../../components/ThemeToggle'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './ExplorePage.css'
@@ -88,7 +90,7 @@ export default function ExplorePage() {
           <strong>${salon.name}</strong>
           ${salon.city ? `<br><span>${salon.city}</span>` : ''}
           ${salon.address ? `<br><small>${salon.address}</small>` : ''}
-          <br><a href="/b/${salon.slug}">${t('explore.bookNow')}</a>
+          <br><a href="/booking/${salon.slug}">${t('explore.bookNow')}</a>
         </div>
       `)
       markersRef.current?.addLayer(marker)
@@ -117,8 +119,9 @@ export default function ExplorePage() {
   return (
     <div className="explore">
       <header className="explore__header">
-        <Link to="/" className="explore__brand">Appointiko</Link>
+        <Link to="/" className="explore__brand"><Logo size={28} /> Appointiko</Link>
         <div className="explore__header-right">
+          <ThemeToggle />
           <LanguageSwitcher />
           <Link to="/login" className="explore__login-link">{t('auth.login')}</Link>
         </div>
@@ -216,7 +219,7 @@ export default function ExplorePage() {
 
 function SalonCard({ salon, promoted, t }: { salon: Salon; promoted?: boolean; t: any }) {
   return (
-    <Link to={`/b/${salon.slug}`} className={`explore__card ${promoted ? 'explore__card--promoted' : ''}`}>
+    <Link to={`/booking/${salon.slug}`} className={`explore__card ${promoted ? 'explore__card--promoted' : ''}`}>
       <div className="explore__card-top">
         <div className="explore__card-avatar">
           {salon.name.charAt(0).toUpperCase()}

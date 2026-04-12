@@ -37,7 +37,8 @@ function App() {
 
           {/* Public pages */}
           <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/b/:slug" element={<BookingPage />} />
+          <Route path="/booking/:slug" element={<BookingPage />} />
+          <Route path="/b/:slug" element={<BookingPage />} /> {/* legacy redirect */}
 
           {/* Auth pages */}
           <Route path="/login" element={

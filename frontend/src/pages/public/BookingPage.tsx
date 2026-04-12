@@ -9,6 +9,7 @@ import CalendarPicker from '../../components/ui/CalendarPicker'
 import PhoneInput from '../../components/ui/PhoneInput'
 import Skeleton from '../../components/ui/Skeleton'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
+import ThemeToggle from '../../components/ThemeToggle'
 import { isValidMkPhone, cleanPhone } from '../../utils/phone'
 import './BookingPage.css'
 
@@ -201,6 +202,7 @@ export default function BookingPage() {
             </p>
           )}
         </div>
+        <ThemeToggle />
         <LanguageSwitcher />
       </div>
 

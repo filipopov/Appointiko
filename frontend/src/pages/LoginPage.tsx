@@ -7,6 +7,8 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import Card from '../components/ui/Card'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import Logo from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 import './LoginPage.css'
 
 export default function LoginPage() {
@@ -37,7 +39,8 @@ export default function LoginPage() {
     <div className="login-page">
       <div className="login-page__container">
         <div className="login-page__header">
-          <h1 className="login-page__brand">Appointiko</h1>
+          <h1 className="login-page__brand"><Logo size={30} /> Appointiko</h1>
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
         <Card>

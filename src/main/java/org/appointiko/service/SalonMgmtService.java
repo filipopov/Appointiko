@@ -22,6 +22,7 @@ public class SalonMgmtService {
     private final SalonRepository salonRepository;
     private final SalonServiceRepository salonServiceRepository;
     private final WorkingHoursRepository workingHoursRepository;
+    private final GeocodingService geocodingService;
 
     @Transactional
     public Salon createSalon(Long ownerId, String name, String city, String address) {
@@ -31,6 +32,11 @@ public class SalonMgmtService {
         salon.setCity(city);
         salon.setAddress(address);
         salon.setSlug(generateUniqueSlug(name));
+        double[] coords = geocodingService.geocode(address, city);
+        if (coords != null) {
+            salon.setLatitude(coords[0]);
+            salon.setLongitude(coords[1]);
+        }
         salon = salonRepository.save(salon);
         initDefaultWorkingHours(salon.getId());
         initDefaultServices(salon.getId());
@@ -53,13 +59,28 @@ public class SalonMgmtService {
         Salon salon = salonRepository.findById(salonId)
                 .orElseThrow(() -> new IllegalStateException("SALON_NOT_FOUND"));
         salon.setName(name);
-        salon.setCity(city);
-        salon.setAddress(address);
         salon.setPhone(phone);
         salon.setInstagram(instagram);
         salon.setDescription(description);
-        salon.setLatitude(latitude);
-        salon.setLongitude(longitude);
+
+        // Re-geocode if city or address changed
+        boolean addressChanged = !java.util.Objects.equals(salon.getCity(), city)
+                || !java.util.Objects.equals(salon.getAddress(), address);
+        salon.setCity(city);
+        salon.setAddress(address);
+
+        if (addressChanged) {
+            double[] coords = geocodingService.geocode(address, city);
+            if (coords != null) {
+                salon.setLatitude(coords[0]);
+                salon.setLongitude(coords[1]);
+            }
+        } else {
+            // Keep manually provided coordinates if address didn't change
+            salon.setLatitude(latitude);
+            salon.setLongitude(longitude);
+        }
+
         return salonRepository.save(salon);
     }
 
