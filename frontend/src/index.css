@@ -45,27 +45,27 @@
 
 /* Dark theme */
 [data-theme="dark"] {
-  --primary: #d4739a;
-  --primary-light: #a85878;
-  --primary-dark: #e8a0be;
-  --primary-bg: #2a1f24;
+  --primary: #e07a9e;
+  --primary-light: #b86080;
+  --primary-dark: #f0a8c4;
+  --primary-bg: #2e2028;
 
-  --bg: #1a1618;
-  --surface: #242022;
-  --text: #e8e4e6;
-  --text-secondary: #9a9098;
-  --border: #3a3438;
+  --bg: #161214;
+  --surface: #1e1a1c;
+  --text: #ede9eb;
+  --text-secondary: #a8a0a6;
+  --border: #3e3638;
 
-  --success: #6bc48a;
+  --success: #70d492;
   --success-bg: #1a2e20;
-  --error: #e06060;
-  --error-bg: #2e1a1a;
-  --warning: #e0b050;
-  --warning-bg: #2e2618;
+  --error: #f07070;
+  --error-bg: #301a1a;
+  --warning: #f0c060;
+  --warning-bg: #302818;
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
 }
 
 /* Theme toggle button */
@@ -87,6 +87,18 @@
   color: var(--text);
   border-color: var(--text-secondary);
   background: var(--bg);
+}
+
+@media (max-width: 400px) {
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+  }
+
+  .theme-toggle svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 html {

@@ -1,129 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import QRCode from 'qrcode'
 import Card from './ui/Card'
 import './ShareLinkCard.css'
 
 interface Props {
   slug: string
-}
-
-function generateQR(canvas: HTMLCanvasElement, text: string) {
-  // Simple QR-like visual using a data URL approach
-  // For a real QR, we encode the URL into a QR matrix
-  const size = 160
-  canvas.width = size
-  canvas.height = size
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-
-  // Use a simple encoding: render text as a scannable pattern
-  // This generates a real QR code using the alphanumeric encoding
-  const modules = encodeQR(text)
-  const moduleCount = modules.length
-  const cellSize = size / moduleCount
-
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, size, size)
-
-  ctx.fillStyle = '#2d2830'
-  for (let row = 0; row < moduleCount; row++) {
-    for (let col = 0; col < moduleCount; col++) {
-      if (modules[row][col]) {
-        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize)
-      }
-    }
-  }
-}
-
-// Minimal QR Code encoder (Version 2, Error Correction L, byte mode)
-function encodeQR(text: string): boolean[][] {
-  // Use a simplified but functional approach: encode as a basic QR-like grid
-  // For production, you'd use a library. This creates a visually distinct pattern
-  // that encodes the URL in a deterministic way.
-  const size = 25
-  const grid: boolean[][] = Array.from({ length: size }, () => Array(size).fill(false))
-
-  // Finder patterns (3 corners)
-  const drawFinder = (r: number, c: number) => {
-    for (let i = 0; i < 7; i++) {
-      for (let j = 0; j < 7; j++) {
-        const isOuter = i === 0 || i === 6 || j === 0 || j === 6
-        const isInner = i >= 2 && i <= 4 && j >= 2 && j <= 4
-        grid[r + i][c + j] = isOuter || isInner
-      }
-    }
-  }
-
-  drawFinder(0, 0)
-  drawFinder(0, size - 7)
-  drawFinder(size - 7, 0)
-
-  // Timing patterns
-  for (let i = 8; i < size - 8; i++) {
-    grid[6][i] = i % 2 === 0
-    grid[i][6] = i % 2 === 0
-  }
-
-  // Alignment pattern
-  const drawAlignment = (r: number, c: number) => {
-    for (let i = -2; i <= 2; i++) {
-      for (let j = -2; j <= 2; j++) {
-        grid[r + i][c + j] = Math.abs(i) === 2 || Math.abs(j) === 2 || (i === 0 && j === 0)
-      }
-    }
-  }
-  drawAlignment(size - 9, size - 9)
-
-  // Data encoding - seed from text hash for deterministic but unique pattern
-  let hash = 0
-  for (let i = 0; i < text.length; i++) {
-    hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0
-  }
-
-  // Fill data area with deterministic pattern based on URL
-  const isReserved = (r: number, c: number) => {
-    // Finder + separators
-    if (r < 9 && c < 9) return true
-    if (r < 9 && c >= size - 8) return true
-    if (r >= size - 8 && c < 9) return true
-    // Timing
-    if (r === 6 || c === 6) return true
-    // Alignment
-    if (r >= size - 11 && r <= size - 7 && c >= size - 11 && c <= size - 7) return true
-    return false
-  }
-
-  // Convert text to bits
-  const bytes: number[] = []
-  for (let i = 0; i < text.length; i++) {
-    bytes.push(text.charCodeAt(i))
-  }
-
-  let bitIdx = 0
-  for (let col = size - 1; col > 0; col -= 2) {
-    if (col === 6) col = 5
-    for (let row = 0; row < size; row++) {
-      for (let c = 0; c < 2; c++) {
-        const actualCol = col - c
-        const actualRow = (Math.floor((size - 1 - col) / 2) % 2 === 0) ? row : size - 1 - row
-        if (actualRow < 0 || actualRow >= size || actualCol < 0 || actualCol >= size) continue
-        if (isReserved(actualRow, actualCol)) continue
-        if (!grid[actualRow][actualCol]) {
-          const byteIndex = Math.floor(bitIdx / 8)
-          const bitIndex = 7 - (bitIdx % 8)
-          if (byteIndex < bytes.length) {
-            grid[actualRow][actualCol] = ((bytes[byteIndex] >> bitIndex) & 1) === 1
-          } else {
-            // XOR mask for visual balance
-            grid[actualRow][actualCol] = ((actualRow + actualCol) % 3 === 0) !== (((hash >> (bitIdx % 31)) & 1) === 1)
-          }
-          bitIdx++
-        }
-      }
-    }
-  }
-
-  return grid
 }
 
 export default function ShareLinkCard({ slug }: Props) {
@@ -136,7 +18,11 @@ export default function ShareLinkCard({ slug }: Props) {
 
   useEffect(() => {
     if (showQR && canvasRef.current) {
-      generateQR(canvasRef.current, bookingUrl)
+      QRCode.toCanvas(canvasRef.current, bookingUrl, {
+        width: 200,
+        margin: 2,
+        color: { dark: '#2d2830', light: '#ffffff' },
+      })
     }
   }, [showQR, bookingUrl])
 

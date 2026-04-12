@@ -143,6 +143,10 @@
     display: none;
   }
 
+  .layout__left {
+    gap: 12px;
+  }
+
   .layout__right {
     display: none;
   }

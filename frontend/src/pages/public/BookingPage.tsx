@@ -202,8 +202,10 @@ export default function BookingPage() {
             </p>
           )}
         </div>
-        <ThemeToggle />
-        <LanguageSwitcher />
+        <div className="booking__header-right">
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
       </div>
 
       {bookingsCount >= 5 && (

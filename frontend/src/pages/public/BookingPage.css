@@ -12,6 +12,14 @@
   align-items: flex-start;
   margin-bottom: 16px;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.booking__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .booking__salon-name {
@@ -62,6 +70,10 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   background: rgba(249, 247, 248, 0.9);
+}
+
+[data-theme="dark"] .booking__steps-wrapper {
+  background: rgba(26, 22, 24, 0.9);
 }
 
 /* === Sticky service summary === */

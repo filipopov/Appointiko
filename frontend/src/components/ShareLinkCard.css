@@ -95,7 +95,7 @@
 }
 
 .share-card__share-btn--viber:hover {
-  background: #f3f0ff;
+  background: rgba(115, 96, 242, 0.1);
 }
 
 .share-card__share-btn--whatsapp {
@@ -104,7 +104,7 @@
 }
 
 .share-card__share-btn--whatsapp:hover {
-  background: #edfff3;
+  background: rgba(37, 211, 102, 0.1);
 }
 
 .share-card__share-btn--qr {
