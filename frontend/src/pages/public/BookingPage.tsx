@@ -182,42 +182,6 @@ export default function BookingPage() {
 
   return (
     <div className="booking">
-      <div className="booking__header">
-        <div>
-          <h1 className="booking__salon-name">{salon.name}</h1>
-          {salon.address && (
-            <p className="booking__salon-address">
-              {salon.address}{salon.city ? `, ${salon.city}` : ''}
-            </p>
-          )}
-          {todayHours && (
-            <p className="booking__salon-hours">
-              {todayHours.isWorkingDay
-                ? todayHours.blocks.map((b: any, i: number) => (
-                    <span key={i}>
-                      {i > 0 ? ', ' : ''}
-                      {(b.startTime || '').substring(0, 5)} - {(b.endTime || '').substring(0, 5)}
-                    </span>
-                  ))
-                : t('booking.closed')}
-            </p>
-          )}
-        </div>
-        <div className="booking__header-right">
-          <div className="desktop-only">
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
-          <MobileMenu />
-        </div>
-      </div>
-
-      {bookingsCount >= 5 && (
-        <div className="booking__social-proof">
-          {t('booking.socialProof', { count: bookingsCount, salon: salon.name })}
-        </div>
-      )}
-
       {step !== 'done' && (
         <>
           <div className="booking__steps-wrapper">
@@ -252,6 +216,42 @@ export default function BookingPage() {
           </div>
           <div className="booking__summary-spacer" />
         </>
+      )}
+
+      <div className="booking__header">
+        <div>
+          <h1 className="booking__salon-name">{salon.name}</h1>
+          {salon.address && (
+            <p className="booking__salon-address">
+              {salon.address}{salon.city ? `, ${salon.city}` : ''}
+            </p>
+          )}
+          {todayHours && (
+            <p className="booking__salon-hours">
+              {todayHours.isWorkingDay
+                ? todayHours.blocks.map((b: any, i: number) => (
+                    <span key={i}>
+                      {i > 0 ? ', ' : ''}
+                      {(b.startTime || '').substring(0, 5)} - {(b.endTime || '').substring(0, 5)}
+                    </span>
+                  ))
+                : t('booking.closed')}
+            </p>
+          )}
+        </div>
+        <div className="booking__header-right">
+          <div className="desktop-only">
+            <ThemeToggle />
+            <LanguageSwitcher />
+          </div>
+          <MobileMenu />
+        </div>
+      </div>
+
+      {bookingsCount >= 5 && (
+        <div className="booking__social-proof">
+          {t('booking.socialProof', { count: bookingsCount, salon: salon.name })}
+        </div>
       )}
 
       {step === 'done' ? (
