@@ -93,4 +93,14 @@ export const api = {
   // Explore
   exploreSalons: (city?: string) =>
     request<any[]>(`/api/public/explore/salons${city ? `?city=${encodeURIComponent(city)}` : ''}`),
+
+  // Admin
+  adminGetSalons: () => request<any[]>('/api/admin/salons'),
+  adminGetSalon: (id: number) => request<any>(`/api/admin/salons/${id}`),
+  adminActivate: (id: number, data: { tier: string; billingCycle: string; paymentNote: string }) =>
+    request<any>(`/api/admin/salons/${id}/activate`, { method: 'POST', body: JSON.stringify(data) }),
+  adminDeactivate: (id: number) =>
+    request<any>(`/api/admin/salons/${id}/deactivate`, { method: 'POST' }),
+  adminBoost: (id: number, days: number) =>
+    request<any>(`/api/admin/salons/${id}/boost`, { method: 'POST', body: JSON.stringify({ days }) }),
 }

@@ -18,10 +18,17 @@ public class NotificationService {
     private final EmailNotificationService emailService;
     private final SalonRepository salonRepository;
     private final OwnerRepository ownerRepository;
+    private final PlanService planService;
 
     @Async
     public void notifyNewBooking(Long salonId, String clientName, String serviceName,
                                   String date, String time, String clientPhone) {
+        // Only send notifications to Standard+ salons
+        if (!planService.hasNotificationAccess(salonId)) {
+            log.debug("Skipping notification for salon {} (FREE tier)", salonId);
+            return;
+        }
+
         // Push notification
         try {
             String title = "\uD83D\uDCCB " + clientName;

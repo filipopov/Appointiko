@@ -26,6 +26,9 @@ public class Owner {
 
     private String phone;
 
+    @Column(nullable = false)
+    private boolean admin = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

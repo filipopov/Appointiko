@@ -100,6 +100,9 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
           </nav>
         </div>
         <div className="layout__right">
+          {user?.admin && (
+            <Link to="/admin" className="layout__admin-link">{t('admin.title')}</Link>
+          )}
           <ThemeToggle />
           <LanguageSwitcher />
           <button className="layout__logout" onClick={handleLogout}>

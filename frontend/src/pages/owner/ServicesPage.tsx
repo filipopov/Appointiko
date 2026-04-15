@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api'
+import { AuthContext } from '../../App'
 import OwnerLayout from '../../components/OwnerLayout'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
+import UpgradePrompt from '../../components/UpgradePrompt'
 import { useToast } from '../../components/ui/Toast'
 import './ServicesPage.css'
 
 export default function ServicesPage() {
   const { t } = useTranslation()
   const toast = useToast()
+  const { user } = useContext(AuthContext)
   const [services, setServices] = useState<any[]>([])
   const [editing, setEditing] = useState<any>(null)
   const [name, setName] = useState('')
@@ -25,16 +28,27 @@ export default function ServicesPage() {
 
   useEffect(load, [])
 
+  const [limitReached, setLimitReached] = useState(false)
+
   const handleSave = async () => {
     if (!name.trim()) return
-    if (editing?.id) {
-      await api.updateService(editing.id, { name, durationMinutes: duration, price, active: true, displayOrder: editing.displayOrder || 0 })
-    } else {
-      await api.createService({ name, durationMinutes: duration, price, active: true, displayOrder: services.length })
+    try {
+      if (editing?.id) {
+        await api.updateService(editing.id, { name, durationMinutes: duration, price, active: true, displayOrder: editing.displayOrder || 0 })
+      } else {
+        await api.createService({ name, durationMinutes: duration, price, active: true, displayOrder: services.length })
+      }
+      setLimitReached(false)
+      resetForm()
+      load()
+      toast(t('settings.saved'))
+    } catch (err: any) {
+      if (err?.code === 'PLAN_LIMIT_REACHED') {
+        setLimitReached(true)
+      } else {
+        toast(t(`errors.${err?.code || 'UNKNOWN'}`), 'error')
+      }
     }
-    resetForm()
-    load()
-    toast(t('settings.saved'))
   }
 
   const handleDelete = async () => {
@@ -62,6 +76,8 @@ export default function ServicesPage() {
   return (
     <OwnerLayout>
       <h2 className="svc__title">{t('services.title')}</h2>
+
+      {limitReached && <UpgradePrompt type="service-limit" />}
 
       <Card className="svc__form">
         <div className="svc__form-fields">

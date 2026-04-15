@@ -160,6 +160,117 @@
   line-height: 1.4;
 }
 
+/* === Plan & Billing === */
+.settings__section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.settings__plan {
+  margin-bottom: 28px;
+}
+
+.settings__plan-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.settings__plan-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.settings__plan-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.settings__plan-tier {
+  font-weight: 700;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.settings__plan-tier--free { background: #f3f4f6; color: #6b7280; }
+.settings__plan-tier--standard { background: #dbeafe; color: #2563eb; }
+.settings__plan-tier--premium { background: #fef3c7; color: #d97706; }
+
+[data-theme="dark"] .settings__plan-tier--free { background: #374151; color: #9ca3af; }
+[data-theme="dark"] .settings__plan-tier--standard { background: #1e3a5f; color: #60a5fa; }
+[data-theme="dark"] .settings__plan-tier--premium { background: #422006; color: #fbbf24; }
+
+.settings__plan-trial {
+  font-size: 11px;
+  font-weight: 600;
+  color: #d4a017;
+}
+
+.settings__upgrade {
+  background: var(--primary-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 8px;
+}
+
+.settings__upgrade h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.settings__upgrade p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.settings__bank-details {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.settings__bank-details strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.settings__bank-details p {
+  font-size: 13px;
+  margin-bottom: 2px;
+  color: var(--text-secondary);
+}
+
+.settings__price-list {
+  display: flex;
+  gap: 16px;
+}
+
+.settings__price-list p {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
 /* === Mobile === */
 @media (max-width: 480px) {
   .settings__link-box {

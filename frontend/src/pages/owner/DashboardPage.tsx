@@ -11,6 +11,8 @@ import Skeleton from '../../components/ui/Skeleton'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import OnboardingChecklist from '../../components/OnboardingChecklist'
 import ShareLinkCard from '../../components/ShareLinkCard'
+import TrialBanner from '../../components/TrialBanner'
+import UpgradePrompt from '../../components/UpgradePrompt'
 import { useToast } from '../../components/ui/Toast'
 import './DashboardPage.css'
 
@@ -227,6 +229,19 @@ export default function DashboardPage() {
         {/* Right: Appointments */}
         <div className="dash__content">
           {slug && <OnboardingChecklist slug={slug} />}
+
+          {user?.salon && (
+            <TrialBanner
+              trialEndsAt={user.salon.trialEndsAt}
+              trialActive={user.salon.trialActive}
+              effectiveTier={user.salon.effectiveTier}
+              tier={user.salon.tier}
+            />
+          )}
+
+          {user?.salon?.effectiveTier === 'FREE' && user.salon.trialEndsAt && (
+            <UpgradePrompt type="no-notifications" />
+          )}
 
           <div className="dash__content-header">
             <h2 className="dash__title">{t('nav.dashboard')}</h2>

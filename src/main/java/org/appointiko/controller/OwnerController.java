@@ -8,9 +8,12 @@ import org.appointiko.model.Owner;
 import org.appointiko.model.Salon;
 import org.appointiko.model.SalonService;
 import org.appointiko.model.WorkingHours;
+import org.appointiko.model.PlanTier;
+import org.appointiko.model.SalonPlan;
 import org.appointiko.service.AuthService;
 import org.appointiko.service.BookingService;
 import org.appointiko.service.DashboardService;
+import org.appointiko.service.PlanService;
 import org.appointiko.service.SalonMgmtService;
 import org.appointiko.service.WebPushNotificationService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,6 +37,7 @@ public class OwnerController {
     private final DashboardService dashboardService;
     private final BookingService bookingService;
     private final WebPushNotificationService webPushService;
+    private final PlanService planService;
 
     // -- Salon --
 
@@ -61,11 +65,15 @@ public class OwnerController {
     }
 
     @PostMapping("/services")
-    public ResponseEntity<ServiceInfo> createService(Authentication auth, @Valid @RequestBody ServiceRequest req) {
+    public ResponseEntity<?> createService(Authentication auth, @Valid @RequestBody ServiceRequest req) {
         Salon salon = getOwnerSalon(auth);
-        SalonService svc = salonMgmtService.createService(
-                salon.getId(), req.name(), req.durationMinutes(), req.price(), req.displayOrder());
-        return ResponseEntity.ok(toServiceInfo(svc));
+        try {
+            SalonService svc = salonMgmtService.createService(
+                    salon.getId(), req.name(), req.durationMinutes(), req.price(), req.displayOrder());
+            return ResponseEntity.ok(toServiceInfo(svc));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), e.getMessage()));
+        }
     }
 
     @PutMapping("/services/{id}")
@@ -202,9 +210,18 @@ public class OwnerController {
     }
 
     private SalonInfo toSalonInfo(Salon s) {
+        SalonPlan plan = planService.getPlan(s.getId());
+        PlanTier effectiveTier = planService.getEffectiveTier(s.getId());
+        boolean trialActive = plan != null && plan.getTrialEndsAt() != null
+                && plan.getTrialEndsAt().isAfter(java.time.LocalDateTime.now()) && !plan.isTrialUsed();
         return new SalonInfo(s.getId(), s.getName(), s.getSlug(), s.getCity(),
                 s.getAddress(), s.getPhone(), s.getInstagram(), s.getDescription(),
-                s.getLatitude(), s.getLongitude(), s.isPromoted(), s.isActive());
+                s.getLatitude(), s.getLongitude(), s.isPromoted(), s.isActive(),
+                plan != null ? plan.getTier().name() : "FREE",
+                effectiveTier.name(),
+                trialActive,
+                plan != null ? plan.getTrialEndsAt() : null,
+                plan != null ? plan.getPaidUntil() : null);
     }
 
     private ServiceInfo toServiceInfo(SalonService s) {

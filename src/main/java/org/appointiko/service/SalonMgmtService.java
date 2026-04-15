@@ -23,6 +23,7 @@ public class SalonMgmtService {
     private final SalonServiceRepository salonServiceRepository;
     private final WorkingHoursRepository workingHoursRepository;
     private final GeocodingService geocodingService;
+    private final PlanService planService;
 
     @Transactional
     public Salon createSalon(Long ownerId, String name, String city, String address) {
@@ -38,6 +39,7 @@ public class SalonMgmtService {
             salon.setLongitude(coords[1]);
         }
         salon = salonRepository.save(salon);
+        planService.getOrCreatePlan(salon.getId());
         initDefaultWorkingHours(salon.getId());
         initDefaultServices(salon.getId());
         return salon;
@@ -85,10 +87,16 @@ public class SalonMgmtService {
     }
 
     public List<Salon> getExploreSalons(String city) {
+        List<Salon> salons;
         if (city != null && !city.isBlank()) {
-            return salonRepository.findActiveByCityOrderByPromotedDescCreatedAtDesc(city);
+            salons = salonRepository.findActiveByCityOrderByPromotedDescCreatedAtDesc(city);
+        } else {
+            salons = salonRepository.findByActiveTrueOrderByPromotedDescCreatedAtDesc();
         }
-        return salonRepository.findByActiveTrueOrderByPromotedDescCreatedAtDesc();
+        // Only show salons with Standard+ tier (or active trial) in explore
+        return salons.stream()
+                .filter(s -> planService.hasExploreAccess(s.getId()))
+                .toList();
     }
 
     // -- Services --
@@ -107,13 +115,23 @@ public class SalonMgmtService {
 
     @Transactional
     public SalonService createService(Long salonId, String name, int durationMinutes, int price, int displayOrder) {
+        int currentCount = salonServiceRepository.findBySalonIdOrderByDisplayOrder(salonId).size();
+        if (!planService.canAddService(salonId, currentCount)) {
+            throw new IllegalStateException("PLAN_LIMIT_REACHED");
+        }
+
         SalonService service = new SalonService();
         service.setSalonId(salonId);
         service.setName(name);
         service.setDurationMinutes(durationMinutes);
         service.setPrice(price);
         service.setDisplayOrder(displayOrder);
-        return salonServiceRepository.save(service);
+        SalonService saved = salonServiceRepository.save(service);
+
+        // Activate trial on first service creation (after default services)
+        planService.activateTrial(salonId);
+
+        return saved;
     }
 
     @Transactional

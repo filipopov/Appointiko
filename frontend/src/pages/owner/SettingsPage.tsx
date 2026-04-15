@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api'
+import { AuthContext } from '../../App'
 import OwnerLayout from '../../components/OwnerLayout'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
@@ -13,6 +14,7 @@ import './SettingsPage.css'
 export default function SettingsPage() {
   const { t } = useTranslation()
   const toast = useToast()
+  const { user } = useContext(AuthContext)
   const [name, setName] = useState('')
   const [city, setCity] = useState('')
   const [address, setAddress] = useState('')
@@ -90,6 +92,61 @@ export default function SettingsPage() {
       </Card>
 
       {slug && <ShareLinkCard slug={slug} />}
+
+      {/* Plan & Billing */}
+      <div id="plan">
+        <h3 className="settings__section-title">{t('plan.title')}</h3>
+        <Card className="settings__plan">
+          <div className="settings__plan-info">
+            <div className="settings__plan-row">
+              <span className="settings__plan-label">{t('plan.currentTier')}</span>
+              <span className={`settings__plan-tier settings__plan-tier--${(user?.salon?.tier || 'FREE').toLowerCase()}`}>
+                {user?.salon?.tier || 'FREE'}
+              </span>
+            </div>
+            <div className="settings__plan-row">
+              <span className="settings__plan-label">{t('plan.effectiveTier')}</span>
+              <span className={`settings__plan-tier settings__plan-tier--${(user?.salon?.effectiveTier || 'FREE').toLowerCase()}`}>
+                {user?.salon?.effectiveTier || 'FREE'}
+                {user?.salon?.trialActive && <span className="settings__plan-trial"> ({t('trial.active')})</span>}
+              </span>
+            </div>
+            {user?.salon?.paidUntil && (
+              <div className="settings__plan-row">
+                <span className="settings__plan-label">{t('plan.paidUntil')}</span>
+                <span>{new Date(user.salon.paidUntil).toLocaleDateString()}</span>
+              </div>
+            )}
+            {user?.salon?.trialActive && user?.salon?.trialEndsAt && (
+              <div className="settings__plan-row">
+                <span className="settings__plan-label">{t('trial.active')}</span>
+                <span>
+                  {t('trial.daysLeft', {
+                    days: Math.max(0, Math.ceil((new Date(user.salon.trialEndsAt).getTime() - Date.now()) / 86400000))
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {(user?.salon?.effectiveTier === 'FREE' || user?.salon?.tier === 'FREE') && (
+            <div className="settings__upgrade">
+              <h4>{t('plan.upgradeTitle')}</h4>
+              <p>{t('plan.upgradeMessage')}</p>
+              <div className="settings__bank-details">
+                <strong>{t('plan.bankDetails')}</strong>
+                <p>{t('plan.bankName')}</p>
+                <p>{t('plan.accountNumber')}</p>
+                <p>{t('plan.reference', { id: user?.salon?.id })}</p>
+              </div>
+              <div className="settings__price-list">
+                <p>{t('plan.standardPrice')}</p>
+                <p>{t('plan.premiumPrice')}</p>
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
     </OwnerLayout>
   )
 }

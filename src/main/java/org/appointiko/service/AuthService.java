@@ -3,6 +3,7 @@ package org.appointiko.service;
 import lombok.RequiredArgsConstructor;
 import org.appointiko.model.Owner;
 import org.appointiko.repo.OwnerRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,7 +25,11 @@ public class AuthService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Owner owner = ownerRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Owner not found: " + email));
-        return new User(owner.getEmail(), owner.getPasswordHash(), List.of());
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        if (owner.isAdmin()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+        return new User(owner.getEmail(), owner.getPasswordHash(), authorities);
     }
 
     public Owner register(String email, String password, String phone) {

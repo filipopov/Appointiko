@@ -111,6 +111,56 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <section className="landing__pricing" id="pricing">
+        <h2 className="landing__section-title reveal">{t('pricing.title')}</h2>
+        <p className="landing__pricing-subtitle reveal reveal--delay-1">{t('pricing.subtitle')}</p>
+        <div className="landing__pricing-grid">
+          <div className="landing__pricing-card reveal reveal--left reveal--delay-1">
+            <div className="landing__pricing-tier">{t('pricing.free')}</div>
+            <div className="landing__pricing-price">{t('pricing.freePrice')} <span>{t('pricing.freePerMonth')}</span></div>
+            <p className="landing__pricing-desc">{t('pricing.freeDesc')}</p>
+            <ul className="landing__pricing-features">
+              <li>{t('pricing.freeF1')}</li>
+              <li>{t('pricing.freeF2')}</li>
+              <li>{t('pricing.freeF3')}</li>
+              <li className="landing__pricing-excluded">{t('pricing.freeF4')}</li>
+              <li className="landing__pricing-excluded">{t('pricing.freeF5')}</li>
+            </ul>
+            <Link to="/register" className="landing__pricing-btn">{t('pricing.getStarted')}</Link>
+          </div>
+
+          <div className="landing__pricing-card landing__pricing-card--popular reveal reveal--up reveal--delay-2">
+            <div className="landing__pricing-badge">{t('pricing.popular')}</div>
+            <div className="landing__pricing-tier">{t('pricing.standard')}</div>
+            <div className="landing__pricing-price">{t('pricing.standardPrice')} <span>{t('pricing.standardPerMonth')}</span></div>
+            <p className="landing__pricing-desc">{t('pricing.standardDesc')}</p>
+            <ul className="landing__pricing-features">
+              <li>{t('pricing.standardF1')}</li>
+              <li>{t('pricing.standardF2')}</li>
+              <li>{t('pricing.standardF3')}</li>
+              <li>{t('pricing.standardF4')}</li>
+              <li>{t('pricing.standardF5')}</li>
+            </ul>
+            <Link to="/register" className="landing__pricing-btn landing__pricing-btn--primary">{t('pricing.getStarted')}</Link>
+          </div>
+
+          <div className="landing__pricing-card reveal reveal--right reveal--delay-3">
+            <div className="landing__pricing-tier">{t('pricing.premium')}</div>
+            <div className="landing__pricing-price">{t('pricing.premiumPrice')} <span>{t('pricing.premiumPerMonth')}</span></div>
+            <p className="landing__pricing-desc">{t('pricing.premiumDesc')}</p>
+            <ul className="landing__pricing-features">
+              <li>{t('pricing.premiumF1')}</li>
+              <li>{t('pricing.premiumF2')}</li>
+              <li>{t('pricing.premiumF3')}</li>
+              <li>{t('pricing.premiumF4')}</li>
+              <li>{t('pricing.premiumF5')}</li>
+            </ul>
+            <Link to="/register" className="landing__pricing-btn">{t('pricing.getStarted')}</Link>
+          </div>
+        </div>
+        <p className="landing__pricing-note reveal reveal--delay-4">{t('pricing.paymentNote')}</p>
+      </section>
+
       <section className="landing__bottom-cta">
         <div className="landing__orb-cta" />
         <h2 className="reveal">{t('landing.bottomCtaTitle')}</h2>

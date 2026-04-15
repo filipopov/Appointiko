@@ -100,6 +100,27 @@
   gap: 8px;
 }
 
+.layout__admin-link {
+  padding: 6px 14px;
+  border: 1px solid #d4a017;
+  border-radius: var(--radius-full);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: #d4a017;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: background 0.15s ease;
+}
+
+.layout__admin-link:hover {
+  background: #fef3c7;
+  color: #d4a017;
+}
+
+[data-theme="dark"] .layout__admin-link:hover { background: #422006; }
+
 .layout__logout {
   padding: 6px 14px;
   border: 1px solid var(--border);

@@ -6,8 +6,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.appointiko.dto.*;
 import org.appointiko.model.Owner;
+import org.appointiko.model.PlanTier;
 import org.appointiko.model.Salon;
+import org.appointiko.model.SalonPlan;
 import org.appointiko.service.AuthService;
+import org.appointiko.service.PlanService;
 import org.appointiko.service.SalonMgmtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +26,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final SalonMgmtService salonMgmtService;
+    private final PlanService planService;
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
@@ -71,12 +75,21 @@ public class AuthController {
 
     private OwnerInfo buildOwnerInfo(Owner owner) {
         Salon salon = salonMgmtService.getSalonByOwner(owner.getId());
+        SalonPlan plan = planService.getPlan(salon.getId());
+        PlanTier effectiveTier = planService.getEffectiveTier(salon.getId());
+        boolean trialActive = plan != null && plan.getTrialEndsAt() != null
+                && plan.getTrialEndsAt().isAfter(java.time.LocalDateTime.now()) && !plan.isTrialUsed();
         SalonInfo salonInfo = new SalonInfo(
                 salon.getId(), salon.getName(), salon.getSlug(),
                 salon.getCity(), salon.getAddress(), salon.getPhone(),
                 salon.getInstagram(), salon.getDescription(),
                 salon.getLatitude(), salon.getLongitude(),
-                salon.isPromoted(), salon.isActive());
-        return new OwnerInfo(owner.getId(), owner.getEmail(), owner.getPhone(), salonInfo);
+                salon.isPromoted(), salon.isActive(),
+                plan != null ? plan.getTier().name() : "FREE",
+                effectiveTier.name(),
+                trialActive,
+                plan != null ? plan.getTrialEndsAt() : null,
+                plan != null ? plan.getPaidUntil() : null);
+        return new OwnerInfo(owner.getId(), owner.getEmail(), owner.getPhone(), salonInfo, owner.isAdmin());
     }
 }
