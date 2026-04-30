@@ -23,6 +23,13 @@ interface Salon {
   latitude: number | null
   longitude: number | null
   promoted: boolean
+  imageUpdatedAt: string | null
+}
+
+function imageUrl(salon: Salon): string | null {
+  return salon.imageUpdatedAt
+    ? `/api/public/salons/${salon.slug}/image?v=${encodeURIComponent(salon.imageUpdatedAt)}`
+    : null
 }
 
 type ViewMode = 'grid' | 'map'
@@ -42,6 +49,15 @@ function createMarkerSvg(promoted: boolean) {
   const star = promoted ? `<path d="M12 2l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 16.8l-5.8 3.1 1.1-6.5L2.6 8.8l6.5-.9z" fill="%23fff" opacity="0.9"/>` : ''
   const inner = promoted ? '' : `<circle cx="12" cy="11" r="3.5" fill="%23fff"/>`
   return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='46' viewBox='0 0 36 46'%3E%3Cdefs%3E%3Cfilter id='s'%3E%3CfeDropShadow dx='0' dy='2' stdDeviation='2' flood-opacity='0.3'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M18 44C18 44 32 26 32 16A14 14 0 004 16c0 10 14 28 14 28z' fill='${color}' filter='url(%23s)'/%3E${inner}${star}%3C/svg%3E`
+}
+
+function createImageMarkerHtml(salon: Salon): string {
+  const ring = salon.promoted ? '#d4a017' : '#c0567a'
+  const url = imageUrl(salon)
+  const inner = url
+    ? `<img src="${url}" alt="" />`
+    : `<span class="map-marker__fallback">${(salon.name.charAt(0) || '?').toUpperCase()}</span>`
+  return `<div class="map-marker" style="--ring:${ring}">${inner}${salon.promoted ? '<span class="map-marker__star">★</span>' : ''}</div>`
 }
 
 export default function ExplorePage() {
@@ -105,12 +121,20 @@ export default function ExplorePage() {
     const salonsWithCoords = filtered.filter(s => s.latitude && s.longitude)
 
     salonsWithCoords.forEach(salon => {
-      const icon = L.icon({
-        iconUrl: createMarkerSvg(salon.promoted),
-        iconSize: [36, 46],
-        iconAnchor: [18, 44],
-        popupAnchor: [0, -40],
-      })
+      const icon = salon.imageUpdatedAt
+        ? L.divIcon({
+            html: createImageMarkerHtml(salon),
+            className: 'map-marker-wrap',
+            iconSize: [44, 44],
+            iconAnchor: [22, 44],
+            popupAnchor: [0, -40],
+          })
+        : L.icon({
+            iconUrl: createMarkerSvg(salon.promoted),
+            iconSize: [36, 46],
+            iconAnchor: [18, 44],
+            popupAnchor: [0, -40],
+          })
 
       const marker = L.marker([salon.latitude!, salon.longitude!], { icon })
       marker.bindPopup(`
@@ -245,11 +269,16 @@ export default function ExplorePage() {
 }
 
 function SalonCard({ salon, promoted, t }: { salon: Salon; promoted?: boolean; t: any }) {
+  const img = imageUrl(salon)
   return (
     <Link to={`/booking/${salon.slug}`} className={`explore__card ${promoted ? 'explore__card--promoted' : ''}`}>
       <div className="explore__card-top">
         <div className="explore__card-avatar">
-          {salon.name.charAt(0).toUpperCase()}
+          {img ? (
+            <img src={img} alt="" loading="lazy" />
+          ) : (
+            salon.name.charAt(0).toUpperCase()
+          )}
         </div>
         <div className="explore__card-info">
           <h3 className="explore__card-name">

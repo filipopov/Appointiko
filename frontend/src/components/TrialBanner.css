@@ -6,6 +6,29 @@
   overflow: hidden;
 }
 
+/* Sticky variant — used at OwnerLayout root so the trial state is always visible. */
+.trial-banner--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin-bottom: 0;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+@media (min-width: 769px) {
+  .trial-banner--sticky {
+    position: static;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    margin: 0 24px 16px;
+  }
+  .trial-banner--sticky.trial-banner--active { border-color: #f59e0b; }
+  .trial-banner--sticky.trial-banner--urgent { border-color: #ef4444; }
+}
+
 .trial-banner--active {
   background: linear-gradient(135deg, #fef3c7, #fff7ed);
   border: 1px solid #f59e0b;

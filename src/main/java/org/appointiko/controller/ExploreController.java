@@ -25,6 +25,7 @@ public class ExploreController {
     private SalonInfo toSalonInfo(Salon s) {
         return new SalonInfo(s.getId(), s.getName(), s.getSlug(), s.getCity(),
                 s.getAddress(), s.getPhone(), s.getInstagram(), s.getDescription(),
-                s.getLatitude(), s.getLongitude(), s.isPromoted(), s.isActive());
+                s.getLatitude(), s.getLongitude(), s.isPromoted(), s.isActive())
+                .withImageUpdatedAt(s.getImageUpdatedAt());
     }
 }

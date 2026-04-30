@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.appointiko.model.Salon;
 import org.appointiko.model.SalonService;
 import org.appointiko.model.WorkingHours;
+import org.appointiko.model.SalonImage;
+import org.appointiko.model.WorkingHoursOverride;
+import org.appointiko.repo.SalonImageRepository;
 import org.appointiko.repo.SalonRepository;
 import org.appointiko.repo.SalonServiceRepository;
+import org.appointiko.repo.WorkingHoursOverrideRepository;
 import org.appointiko.repo.WorkingHoursRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,8 @@ public class SalonMgmtService {
     private final SalonRepository salonRepository;
     private final SalonServiceRepository salonServiceRepository;
     private final WorkingHoursRepository workingHoursRepository;
+    private final WorkingHoursOverrideRepository overrideRepository;
+    private final SalonImageRepository imageRepository;
     private final GeocodingService geocodingService;
     private final PlanService planService;
 
@@ -217,6 +223,92 @@ public class SalonMgmtService {
             wh.setSalonId(salonId);
             workingHoursRepository.save(wh);
         }
+    }
+
+    // -- Working Hours overrides (per-date) --
+
+    public List<WorkingHoursOverride> getUpcomingOverrides(Long salonId) {
+        return overrideRepository
+                .findBySalonIdAndOverrideDateGreaterThanEqualOrderByOverrideDateAscBlockOrderAsc(
+                        salonId, java.time.LocalDate.now());
+    }
+
+    @Transactional
+    public void setOverrideForDate(Long salonId, java.time.LocalDate date,
+                                   boolean isWorking, List<java.time.LocalTime[]> blocks) {
+        overrideRepository.deleteBySalonIdAndDate(salonId, date);
+        overrideRepository.flush();
+        if (!isWorking || blocks == null || blocks.isEmpty()) {
+            // Store a single non-working marker row.
+            WorkingHoursOverride o = new WorkingHoursOverride();
+            o.setSalonId(salonId);
+            o.setOverrideDate(date);
+            o.setBlockOrder(0);
+            o.setStartTime(java.time.LocalTime.of(9, 0));
+            o.setEndTime(java.time.LocalTime.of(17, 0));
+            o.setWorkingDay(false);
+            overrideRepository.save(o);
+            return;
+        }
+        for (int i = 0; i < blocks.size(); i++) {
+            java.time.LocalTime[] b = blocks.get(i);
+            WorkingHoursOverride o = new WorkingHoursOverride();
+            o.setSalonId(salonId);
+            o.setOverrideDate(date);
+            o.setBlockOrder(i);
+            o.setStartTime(b[0]);
+            o.setEndTime(b[1]);
+            o.setWorkingDay(true);
+            overrideRepository.save(o);
+        }
+    }
+
+    @Transactional
+    public void deleteOverride(Long salonId, java.time.LocalDate date) {
+        overrideRepository.deleteBySalonIdAndDate(salonId, date);
+    }
+
+    // -- Salon image / logo --
+
+    private static final java.util.Set<String> ALLOWED_IMAGE_TYPES = java.util.Set.of(
+            "image/jpeg", "image/png", "image/webp", "image/gif");
+    private static final int MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB
+
+    @Transactional
+    public void setImage(Long salonId, byte[] data, String contentType) {
+        if (data == null || data.length == 0) {
+            throw new IllegalArgumentException("IMAGE_EMPTY");
+        }
+        if (data.length > MAX_IMAGE_BYTES) {
+            throw new IllegalArgumentException("IMAGE_TOO_LARGE");
+        }
+        if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
+            throw new IllegalArgumentException("IMAGE_TYPE_UNSUPPORTED");
+        }
+
+        SalonImage img = imageRepository.findById(salonId).orElseGet(SalonImage::new);
+        img.setSalonId(salonId);
+        img.setData(data);
+        img.setContentType(contentType.toLowerCase());
+        img.setUploadedAt(java.time.LocalDateTime.now());
+        imageRepository.save(img);
+
+        Salon salon = salonRepository.findById(salonId).orElseThrow();
+        salon.setImageUpdatedAt(img.getUploadedAt());
+        salonRepository.save(salon);
+    }
+
+    @Transactional
+    public void deleteImage(Long salonId) {
+        imageRepository.deleteById(salonId);
+        salonRepository.findById(salonId).ifPresent(s -> {
+            s.setImageUpdatedAt(null);
+            salonRepository.save(s);
+        });
+    }
+
+    public SalonImage getImage(Long salonId) {
+        return imageRepository.findById(salonId).orElse(null);
     }
 
     private void initDefaultWorkingHours(Long salonId) {

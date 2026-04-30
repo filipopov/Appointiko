@@ -22,6 +22,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -62,6 +64,28 @@ public class OwnerController {
         salon = salonMgmtService.updateSalon(salon.getId(), req.name(), req.city(), req.address(), req.phone(), req.instagram(),
                 req.description(), req.latitude(), req.longitude());
         return ResponseEntity.ok(toSalonInfo(salon));
+    }
+
+    // -- Salon image --
+
+    @PostMapping("/salon/image")
+    public ResponseEntity<?> uploadImage(Authentication auth, @RequestParam("file") MultipartFile file) {
+        Salon salon = getOwnerSalon(auth);
+        try {
+            salonMgmtService.setImage(salon.getId(), file.getBytes(), file.getContentType());
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), e.getMessage()));
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("IMAGE_READ_FAILED", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/salon/image")
+    public ResponseEntity<Void> deleteImage(Authentication auth) {
+        Salon salon = getOwnerSalon(auth);
+        salonMgmtService.deleteImage(salon.getId());
+        return ResponseEntity.noContent().build();
     }
 
     // -- Services --
@@ -154,6 +178,49 @@ public class OwnerController {
         return ResponseEntity.ok(groupByDay(saved));
     }
 
+    // -- Working Hours overrides (per-date) --
+
+    @GetMapping("/working-hours/overrides")
+    public ResponseEntity<List<WorkingHoursOverrideDto>> getOverrides(Authentication auth) {
+        Salon salon = getOwnerSalon(auth);
+        var overrides = salonMgmtService.getUpcomingOverrides(salon.getId());
+
+        Map<LocalDate, List<WorkingHoursOverrideDto.TimeBlock>> blocksByDate = new LinkedHashMap<>();
+        Map<LocalDate, Boolean> workingByDate = new LinkedHashMap<>();
+        for (var ov : overrides) {
+            workingByDate.put(ov.getOverrideDate(), ov.isWorkingDay());
+            if (ov.isWorkingDay()) {
+                blocksByDate.computeIfAbsent(ov.getOverrideDate(), k -> new ArrayList<>())
+                        .add(new WorkingHoursOverrideDto.TimeBlock(ov.getStartTime(), ov.getEndTime()));
+            }
+        }
+        List<WorkingHoursOverrideDto> result = new ArrayList<>();
+        for (var entry : workingByDate.entrySet()) {
+            result.add(new WorkingHoursOverrideDto(
+                    entry.getKey(),
+                    entry.getValue(),
+                    blocksByDate.getOrDefault(entry.getKey(), List.of())));
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/working-hours/overrides")
+    public ResponseEntity<Void> upsertOverride(Authentication auth, @RequestBody WorkingHoursOverrideDto req) {
+        Salon salon = getOwnerSalon(auth);
+        List<java.time.LocalTime[]> blocks = req.blocks() == null ? List.of()
+                : req.blocks().stream().map(b -> new java.time.LocalTime[]{b.startTime(), b.endTime()}).toList();
+        salonMgmtService.setOverrideForDate(salon.getId(), req.date(), req.isWorkingDay(), blocks);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/working-hours/overrides/{date}")
+    public ResponseEntity<Void> deleteOverride(Authentication auth,
+                                                @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        Salon salon = getOwnerSalon(auth);
+        salonMgmtService.deleteOverride(salon.getId(), date);
+        return ResponseEntity.noContent().build();
+    }
+
     // -- Appointments --
 
     @GetMapping("/appointments")
@@ -171,7 +238,7 @@ public class OwnerController {
             Appointment appointment = bookingService.book(
                     salon.getId(), req.serviceId(), req.startTime(),
                     req.clientName(), req.clientPhone() != null ? req.clientPhone() : "",
-                    req.comment());
+                    req.clientEmail(), req.comment());
             return ResponseEntity.ok(new AppointmentInfo(
                     appointment.getId(), appointment.getServiceId(), null, 0,
                     appointment.getStartTime(), appointment.getEndTime(),
@@ -275,7 +342,8 @@ public class OwnerController {
                 effectiveTier.name(),
                 trialActive,
                 plan != null ? plan.getTrialEndsAt() : null,
-                plan != null ? plan.getPaidUntil() : null);
+                plan != null ? plan.getPaidUntil() : null,
+                s.getImageUpdatedAt());
     }
 
     private ServiceInfo toServiceInfo(SalonService s) {

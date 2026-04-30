@@ -183,6 +183,26 @@ class PlanServiceTest {
     }
 
     @Test
+    void deactivate_alsoExpiresActiveTrial() {
+        SalonPlan plan = planService.getOrCreatePlan(salon.getId());
+        plan.setTrialStartedAt(LocalDateTime.now().minusDays(1));
+        plan.setTrialEndsAt(LocalDateTime.now().plusDays(6));
+        plan.setTrialUsed(false);
+        planRepo.save(plan);
+
+        // Sanity: tier should be PREMIUM during trial
+        assertThat(planService.getEffectiveTier(salon.getId())).isEqualTo(PlanTier.PREMIUM);
+
+        planService.deactivate(salon.getId());
+
+        SalonPlan after = planRepo.findBySalonId(salon.getId()).orElseThrow();
+        assertThat(after.isTrialUsed()).isTrue();
+        assertThat(after.getTrialEndsAt()).isBeforeOrEqualTo(LocalDateTime.now());
+        // And effective tier is now FREE
+        assertThat(planService.getEffectiveTier(salon.getId())).isEqualTo(PlanTier.FREE);
+    }
+
+    @Test
     void deactivate_resetsTierAndPromotion() {
         SalonPlan plan = planService.getOrCreatePlan(salon.getId());
         plan.setTier(PlanTier.PREMIUM);

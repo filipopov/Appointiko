@@ -31,6 +31,22 @@ export const api = {
   updateSalon: (data: any) =>
     request('/api/owner/salon', { method: 'PUT', body: JSON.stringify(data) }),
 
+  // Owner - Salon image
+  uploadSalonImage: async (file: File): Promise<void> => {
+    const fd = new FormData()
+    fd.append('file', file)
+    const res = await fetch('/api/owner/salon/image', {
+      method: 'POST',
+      body: fd,
+      credentials: 'same-origin',
+    })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ code: 'UNKNOWN' }))
+      throw body
+    }
+  },
+  deleteSalonImage: () => request('/api/owner/salon/image', { method: 'DELETE' }),
+
   // Owner - Services
   getServices: () => request<any[]>('/api/owner/services'),
   createService: (data: any) =>
@@ -45,10 +61,17 @@ export const api = {
   setWorkingHours: (data: { days: any[] }) =>
     request('/api/owner/working-hours', { method: 'PUT', body: JSON.stringify(data) }),
 
+  // Owner - Working Hours date overrides
+  getHoursOverrides: () => request<any[]>('/api/owner/working-hours/overrides'),
+  setHoursOverride: (data: { date: string; isWorkingDay: boolean; blocks: { startTime: string; endTime: string }[] }) =>
+    request('/api/owner/working-hours/overrides', { method: 'PUT', body: JSON.stringify(data) }),
+  deleteHoursOverride: (date: string) =>
+    request(`/api/owner/working-hours/overrides/${date}`, { method: 'DELETE' }),
+
   // Owner - Appointments
   getAppointments: (date: string) =>
     request<any[]>(`/api/owner/appointments?date=${date}`),
-  createAppointment: (data: { serviceId: number; startTime: string; clientName: string; clientPhone?: string; comment?: string }) =>
+  createAppointment: (data: { serviceId: number; startTime: string; clientName: string; clientPhone?: string; clientEmail?: string; comment?: string }) =>
     request('/api/owner/appointments', { method: 'POST', body: JSON.stringify(data) }),
   cancelAppointment: (id: number) =>
     request(`/api/owner/appointments/${id}/cancel`, { method: 'PATCH' }),

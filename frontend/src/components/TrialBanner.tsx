@@ -7,10 +7,12 @@ interface Props {
   trialActive: boolean
   effectiveTier: string
   tier: string
+  sticky?: boolean
 }
 
-export default function TrialBanner({ trialEndsAt, trialActive, effectiveTier, tier }: Props) {
+export default function TrialBanner({ trialEndsAt, trialActive, effectiveTier, tier, sticky }: Props) {
   const { t } = useTranslation()
+  const stickyClass = sticky ? ' trial-banner--sticky' : ''
 
   // Trial is active — show countdown
   if (trialActive && trialEndsAt) {
@@ -18,7 +20,7 @@ export default function TrialBanner({ trialEndsAt, trialActive, effectiveTier, t
     const urgent = days <= 1
 
     return (
-      <div className={`trial-banner ${urgent ? 'trial-banner--urgent' : 'trial-banner--active'}`}>
+      <div className={`trial-banner ${urgent ? 'trial-banner--urgent' : 'trial-banner--active'}${stickyClass}`}>
         <div className="trial-banner__content">
           <div className="trial-banner__label">
             <span className="trial-banner__icon">&#9733;</span>
@@ -29,7 +31,7 @@ export default function TrialBanner({ trialEndsAt, trialActive, effectiveTier, t
           </span>
         </div>
         <p className="trial-banner__message">{t('trial.message')}</p>
-        <Link to="/dashboard/settings#plan" className="trial-banner__cta">{t('trial.upgrade')}</Link>
+        <Link to="/dashboard/plan" className="trial-banner__cta">{t('trial.upgrade')}</Link>
       </div>
     )
   }
@@ -37,12 +39,12 @@ export default function TrialBanner({ trialEndsAt, trialActive, effectiveTier, t
   // Trial expired, now on FREE — show upgrade nudge
   if (effectiveTier === 'FREE' && tier === 'FREE' && trialEndsAt) {
     return (
-      <div className="trial-banner trial-banner--expired">
+      <div className={`trial-banner trial-banner--expired${stickyClass}`}>
         <div className="trial-banner__content">
           <div className="trial-banner__label">{t('trial.expired')}</div>
         </div>
         <p className="trial-banner__message">{t('trial.expiredMessage')}</p>
-        <Link to="/dashboard/settings#plan" className="trial-banner__cta">{t('trial.upgrade')}</Link>
+        <Link to="/dashboard/plan" className="trial-banner__cta">{t('trial.upgrade')}</Link>
       </div>
     )
   }

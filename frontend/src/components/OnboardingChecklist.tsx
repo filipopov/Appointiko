@@ -48,15 +48,16 @@ export default function OnboardingChecklist({ slug, trialActive, trialEndsAt }: 
         </div>
         <button className="onboarding__dismiss" onClick={() => setDismissed(true)} aria-label="Dismiss">&times;</button>
       </div>
+      <p className="onboarding__intro">{t('onboarding.intro')}</p>
       <div className="onboarding__steps">
-        {steps.map(step => (
+        {steps.map((step, i) => (
           <Link
             key={step.key}
             to={step.link}
             className={`onboarding__step ${step.done ? 'onboarding__step--done' : ''}`}
           >
             <span className="onboarding__step-check">
-              {step.done ? '\u2713' : ''}
+              {step.done ? '\u2713' : (i + 1)}
             </span>
             <span className="onboarding__step-label">{step.label}</span>
             {!step.done && <span className="onboarding__step-arrow">&rsaquo;</span>}

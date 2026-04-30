@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.appointiko.dto.*;
 import org.appointiko.model.Appointment;
 import org.appointiko.model.Salon;
+import org.appointiko.model.SalonImage;
 import org.appointiko.model.SalonService;
 import org.appointiko.model.WorkingHours;
 import org.appointiko.repo.AppointmentRepository;
@@ -12,8 +13,12 @@ import org.appointiko.service.BookingService;
 import org.appointiko.service.NotificationService;
 import org.appointiko.service.SalonMgmtService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +44,21 @@ public class PublicController {
                 salon.getCity(), salon.getAddress(), salon.getPhone(),
                 salon.getInstagram(), salon.getDescription(),
                 salon.getLatitude(), salon.getLongitude(),
-                salon.isPromoted(), salon.isActive()));
+                salon.isPromoted(), salon.isActive())
+                .withImageUpdatedAt(salon.getImageUpdatedAt()));
+    }
+
+    @GetMapping("/image")
+    public ResponseEntity<byte[]> getImage(@PathVariable String slug) {
+        Salon salon = salonMgmtService.getSalonBySlug(slug);
+        SalonImage img = salonMgmtService.getImage(salon.getId());
+        if (img == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(img.getContentType()))
+                .cacheControl(CacheControl.maxAge(Duration.ofDays(7)).cachePublic())
+                .body(img.getData());
     }
 
     @GetMapping("/services")

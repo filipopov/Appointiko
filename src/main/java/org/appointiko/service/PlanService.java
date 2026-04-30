@@ -108,6 +108,7 @@ public class PlanService {
 
     /**
      * Admin deactivates / downgrades a salon to FREE.
+     * Also expires any active trial — otherwise getEffectiveTier would keep returning PREMIUM.
      */
     @Transactional
     public SalonPlan deactivate(Long salonId) {
@@ -115,6 +116,11 @@ public class PlanService {
         plan.setTier(PlanTier.FREE);
         plan.setPaidUntil(null);
         plan.setBillingCycle(null);
+        // Expire any active trial so the salon truly drops to FREE immediately.
+        if (plan.getTrialEndsAt() != null && plan.getTrialEndsAt().isAfter(LocalDateTime.now())) {
+            plan.setTrialEndsAt(LocalDateTime.now());
+        }
+        plan.setTrialUsed(true);
         planRepo.save(plan);
 
         Salon salon = salonRepo.findById(salonId).orElse(null);

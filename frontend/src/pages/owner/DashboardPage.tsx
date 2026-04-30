@@ -11,7 +11,6 @@ import Skeleton from '../../components/ui/Skeleton'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import OnboardingChecklist from '../../components/OnboardingChecklist'
 import ShareLinkCard from '../../components/ShareLinkCard'
-import TrialBanner from '../../components/TrialBanner'
 import UpgradePrompt from '../../components/UpgradePrompt'
 import { useToast } from '../../components/ui/Toast'
 import './DashboardPage.css'
@@ -67,6 +66,7 @@ export default function DashboardPage() {
   const [maTime, setMaTime] = useState('10:00')
   const [maClientName, setMaClientName] = useState('')
   const [maClientPhone, setMaClientPhone] = useState('')
+  const [maClientEmail, setMaClientEmail] = useState('')
   const [maComment, setMaComment] = useState('')
   const [maError, setMaError] = useState('')
   const [maSaving, setMaSaving] = useState(false)
@@ -120,6 +120,7 @@ export default function DashboardPage() {
     setMaTime('10:00')
     setMaClientName('')
     setMaClientPhone('')
+    setMaClientEmail('')
     setMaComment('')
     setMaError('')
   }
@@ -135,6 +136,7 @@ export default function DashboardPage() {
         startTime,
         clientName: maClientName.trim(),
         clientPhone: maClientPhone.trim() || undefined,
+        clientEmail: maClientEmail.trim() || undefined,
         comment: maComment.trim() || undefined,
       })
       closeModal()
@@ -236,15 +238,6 @@ export default function DashboardPage() {
             />
           )}
 
-          {user?.salon && (
-            <TrialBanner
-              trialEndsAt={user.salon.trialEndsAt}
-              trialActive={user.salon.trialActive}
-              effectiveTier={user.salon.effectiveTier}
-              tier={user.salon.tier}
-            />
-          )}
-
           {user?.salon?.effectiveTier === 'FREE' && user.salon.trialEndsAt && (
             <UpgradePrompt type="no-notifications" />
           )}
@@ -327,8 +320,11 @@ export default function DashboardPage() {
       </div>
 
       {/* FAB: Add appointment */}
-      <button className="dash__fab" onClick={openModal} title={t('dashboard.addAppointment')}>
-        +
+      <button className="dash__fab" onClick={openModal} title={t('dashboard.addAppointment')} aria-label={t('dashboard.addAppointment')}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
       </button>
 
       {/* Confirm dialog */}
@@ -372,6 +368,7 @@ export default function DashboardPage() {
               </div>
               <Input label={t('booking.name')} value={maClientName} onChange={e => setMaClientName(e.target.value)} required />
               <Input label={t('booking.phone')} value={maClientPhone} onChange={e => setMaClientPhone(e.target.value)} />
+              <Input label={t('booking.emailOptional')} type="email" value={maClientEmail} onChange={e => setMaClientEmail(e.target.value)} />
               <div className="input-group">
                 <label className="input-group__label">{t('booking.comment')}</label>
                 <textarea

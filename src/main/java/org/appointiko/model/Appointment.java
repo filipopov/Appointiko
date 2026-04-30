@@ -36,6 +36,9 @@ public class Appointment {
     @Column(name = "client_phone", nullable = false)
     private String clientPhone;
 
+    @Column(name = "client_email", length = 200)
+    private String clientEmail;
+
     @Column(length = 500)
     private String comment;
 

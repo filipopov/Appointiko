@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.appointiko.model.*;
 import org.appointiko.repo.AppointmentRepository;
 import org.appointiko.repo.SalonServiceRepository;
+import org.appointiko.repo.WorkingHoursOverrideRepository;
 import org.appointiko.repo.WorkingHoursRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class BookingService {
 
     private final SalonServiceRepository salonServiceRepository;
     private final WorkingHoursRepository workingHoursRepository;
+    private final WorkingHoursOverrideRepository overrideRepository;
     private final AppointmentRepository appointmentRepository;
     private final EntityManager entityManager;
 
@@ -35,9 +37,18 @@ public class BookingService {
             return List.of();
         }
 
+        // Calendar override takes precedence over the day-of-week schedule.
+        var overrides = overrideRepository.findBySalonIdAndOverrideDateOrderByBlockOrderAsc(salonId, date);
+        boolean useOverride = !overrides.isEmpty();
+        if (useOverride && !overrides.get(0).isWorkingDay()) {
+            return List.of();
+        }
+
         int dayOfWeek = date.getDayOfWeek().getValue(); // 1=Monday .. 7=Sunday
-        List<WorkingHours> blocks = workingHoursRepository.findBySalonIdAndDayOfWeek(salonId, dayOfWeek);
-        if (blocks.isEmpty() || !blocks.get(0).isWorkingDay()) {
+        List<WorkingHours> blocks = useOverride
+                ? List.of()
+                : workingHoursRepository.findBySalonIdAndDayOfWeek(salonId, dayOfWeek);
+        if (!useOverride && (blocks.isEmpty() || !blocks.get(0).isWorkingDay())) {
             return List.of();
         }
 
@@ -49,12 +60,21 @@ public class BookingService {
         int duration = service.getDurationMinutes();
         List<LocalTime> slots = new ArrayList<>();
 
-        for (WorkingHours block : blocks) {
-            if (!block.isWorkingDay()) continue;
-            LocalTime cursor = block.getStartTime();
-            LocalTime blockEnd = block.getEndTime();
+        record Window(LocalTime start, LocalTime end) {}
+        List<Window> windows = new ArrayList<>();
+        if (useOverride) {
+            for (var ov : overrides) {
+                if (ov.isWorkingDay()) windows.add(new Window(ov.getStartTime(), ov.getEndTime()));
+            }
+        } else {
+            for (WorkingHours block : blocks) {
+                if (block.isWorkingDay()) windows.add(new Window(block.getStartTime(), block.getEndTime()));
+            }
+        }
 
-            while (!cursor.plusMinutes(duration).isAfter(blockEnd)) {
+        for (Window w : windows) {
+            LocalTime cursor = w.start;
+            while (!cursor.plusMinutes(duration).isAfter(w.end)) {
                 LocalDateTime candidateStart = date.atTime(cursor);
                 LocalDateTime candidateEnd = candidateStart.plusMinutes(duration);
 
@@ -73,6 +93,12 @@ public class BookingService {
     @Transactional
     public Appointment book(Long salonId, Long serviceId, LocalDateTime startTime,
                             String clientName, String clientPhone, String comment) {
+        return book(salonId, serviceId, startTime, clientName, clientPhone, null, comment);
+    }
+
+    @Transactional
+    public Appointment book(Long salonId, Long serviceId, LocalDateTime startTime,
+                            String clientName, String clientPhone, String clientEmail, String comment) {
         SalonService service = salonServiceRepository.findById(serviceId)
                 .orElseThrow(() -> new IllegalArgumentException("SERVICE_NOT_FOUND"));
         if (!service.getSalonId().equals(salonId)) {
@@ -96,17 +122,29 @@ public class BookingService {
             throw new IllegalStateException("SLOT_TAKEN");
         }
 
-        // Validate against working hours — appointment must fit within ANY block
-        int dayOfWeek = startTime.getDayOfWeek().getValue();
-        List<WorkingHours> blocks = workingHoursRepository.findBySalonIdAndDayOfWeek(salonId, dayOfWeek);
-        if (blocks.isEmpty() || !blocks.get(0).isWorkingDay()) {
-            throw new IllegalStateException("NOT_WORKING_DAY");
+        // Validate against working hours — overrides win over weekly schedule.
+        LocalDate date = startTime.toLocalDate();
+        var overrides = overrideRepository.findBySalonIdAndOverrideDateOrderByBlockOrderAsc(salonId, date);
+        boolean fitsInBlock;
+        if (!overrides.isEmpty()) {
+            if (!overrides.get(0).isWorkingDay()) {
+                throw new IllegalStateException("NOT_WORKING_DAY");
+            }
+            fitsInBlock = overrides.stream().anyMatch(ov ->
+                    ov.isWorkingDay()
+                            && !startTime.toLocalTime().isBefore(ov.getStartTime())
+                            && !endTime.toLocalTime().isAfter(ov.getEndTime()));
+        } else {
+            int dayOfWeek = startTime.getDayOfWeek().getValue();
+            List<WorkingHours> blocks = workingHoursRepository.findBySalonIdAndDayOfWeek(salonId, dayOfWeek);
+            if (blocks.isEmpty() || !blocks.get(0).isWorkingDay()) {
+                throw new IllegalStateException("NOT_WORKING_DAY");
+            }
+            fitsInBlock = blocks.stream().anyMatch(block ->
+                    block.isWorkingDay()
+                            && !startTime.toLocalTime().isBefore(block.getStartTime())
+                            && !endTime.toLocalTime().isAfter(block.getEndTime()));
         }
-
-        boolean fitsInBlock = blocks.stream().anyMatch(block ->
-                block.isWorkingDay()
-                        && !startTime.toLocalTime().isBefore(block.getStartTime())
-                        && !endTime.toLocalTime().isAfter(block.getEndTime()));
 
         if (!fitsInBlock) {
             throw new IllegalStateException("OUTSIDE_WORKING_HOURS");
@@ -119,6 +157,7 @@ public class BookingService {
         appointment.setEndTime(endTime);
         appointment.setClientName(clientName);
         appointment.setClientPhone(clientPhone);
+        appointment.setClientEmail(clientEmail);
         appointment.setComment(comment);
         appointment.setStatus(AppointmentStatus.CONFIRMED);
         return appointmentRepository.save(appointment);

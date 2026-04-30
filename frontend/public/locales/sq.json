@@ -6,6 +6,7 @@
     "dashboard": "Paneli",
     "services": "Shërbimet",
     "hours": "Orari",
+    "plan": "Plani",
     "settings": "Cilësimet",
     "logout": "Dil"
   },
@@ -70,6 +71,7 @@
     "yourInfo": "Të dhënat tuaja",
     "name": "Emri yt",
     "phone": "Numri i telefonit",
+    "emailOptional": "Email (opsionale)",
     "comment": "Shënim (opsional)",
     "commentPlaceholder": "Kërkesa të veçanta ose shënime...",
     "book": "Rezervo",
@@ -138,7 +140,14 @@
     "thursday": "E enjte",
     "friday": "E premte",
     "saturday": "E shtunë",
-    "sunday": "E diel"
+    "sunday": "E diel",
+    "overridesTitle": "Data specifike",
+    "overridesDesc": "Anuloni orarin e zakonshëm për ditë specifike (festa, orare të veçanta, ditë pushimi).",
+    "openOnDate": "Hapur në këtë datë",
+    "closed": "Mbyllur",
+    "saveOverride": "Ruaj datën",
+    "removeOverride": "Hiq",
+    "confirmRemoveOverride": "Të heqim këtë anulim?"
   },
   "settings": {
     "title": "Cilësimet e sallonit",
@@ -167,6 +176,7 @@
     "title": "Mirësevjen! Përgatit sallonin",
     "subtitle": "Përfundo këto hapa për të filluar të marrësh rezervime.",
     "subtitleTrial": "Prova jote Premium falas është aktive — edhe {{days}} ditë. Përfundo konfigurimin për të përfituar maksimumin.",
+    "intro": "Tre hapa të shpejtë dhe je online. Trokit në secilin hap për të vazhduar.",
     "addServices": "Personalizo shërbimet",
     "setHours": "Vendos orarin e punës",
     "shareLink": "Ndaj linkun për rezervim"
@@ -243,6 +253,16 @@
     "notInExplore": "Salloni nuk shihet në Eksploro",
     "notInExploreMessage": "Përmirëso në Standard që klientët të të gjejnë dhe të rezervojnë direkt."
   },
+  "image": {
+    "upload": "Ngarko foto",
+    "change": "Ndrysho foton",
+    "remove": "Hiq foton",
+    "uploaded": "Fotoja u ngarkua.",
+    "removed": "Fotoja u hoq.",
+    "tooLarge": "Fotoja është shumë e madhe. Maksimumi 2MB.",
+    "unsupportedType": "Lejohen vetëm JPG, PNG, WebP ose GIF.",
+    "confirmRemove": "Të heqim këtë foto?"
+  },
   "serviceTrim": {
     "title": "Zgjidh 2 shërbime për t'i mbajtur aktive",
     "desc": "Prova Premium ka përfunduar. Plani Falas lejon 2 shërbime aktive — aktualisht ke {{count}}.",
@@ -318,7 +338,11 @@
     "NOT_WORKING_DAY": "Salloni është i mbyllur këtë ditë",
     "OUTSIDE_WORKING_HOURS": "Termini është jashtë orarit të punës",
     "UNKNOWN": "Diçka shkoi keq",
-    "PLAN_LIMIT_REACHED": "Limiti i shërbimeve u arrit. Përmirëso planin për të shtuar më shumë."
+    "PLAN_LIMIT_REACHED": "Limiti i shërbimeve u arrit. Përmirëso planin për të shtuar më shumë.",
+    "IMAGE_TOO_LARGE": "Fotoja është shumë e madhe. Maksimumi 2MB.",
+    "IMAGE_TYPE_UNSUPPORTED": "Lloji i fotos nuk mbështetet. Përdor JPG, PNG, WebP ose GIF.",
+    "IMAGE_EMPTY": "Zgjidh një foto.",
+    "IMAGE_READ_FAILED": "Nuk mund të lexohet fotoja."
   },
   "days": {
     "1": "Hën",

@@ -6,6 +6,7 @@
     "dashboard": "Dashboard",
     "services": "Services",
     "hours": "Hours",
+    "plan": "Plan",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -70,6 +71,7 @@
     "yourInfo": "Your information",
     "name": "Your name",
     "phone": "Phone number",
+    "emailOptional": "Email (optional)",
     "comment": "Note (optional)",
     "commentPlaceholder": "Any special requests or notes...",
     "book": "Book",
@@ -138,7 +140,14 @@
     "thursday": "Thursday",
     "friday": "Friday",
     "saturday": "Saturday",
-    "sunday": "Sunday"
+    "sunday": "Sunday",
+    "overridesTitle": "Specific dates",
+    "overridesDesc": "Override your weekly schedule for specific days (holidays, special hours, days off).",
+    "openOnDate": "Open on this date",
+    "closed": "Closed",
+    "saveOverride": "Save date",
+    "removeOverride": "Remove",
+    "confirmRemoveOverride": "Remove this date override?"
   },
   "settings": {
     "title": "Salon Settings",
@@ -167,6 +176,7 @@
     "title": "Welcome! Set up your salon",
     "subtitle": "Complete these steps to start receiving bookings.",
     "subtitleTrial": "Your free Premium trial is active — {{days}} days left. Finish setup to make the most of it.",
+    "intro": "Three quick steps and you're live. Tap each card to jump straight there.",
     "addServices": "Customize your services",
     "setHours": "Set working hours",
     "shareLink": "Share your booking link"
@@ -243,6 +253,16 @@
     "notInExplore": "Your salon is not visible in Explore",
     "notInExploreMessage": "Upgrade to Standard so clients can find and book you directly."
   },
+  "image": {
+    "upload": "Upload photo",
+    "change": "Change photo",
+    "remove": "Remove photo",
+    "uploaded": "Photo uploaded.",
+    "removed": "Photo removed.",
+    "tooLarge": "Image is too large. Max 2MB.",
+    "unsupportedType": "Only JPG, PNG, WebP, or GIF images are allowed.",
+    "confirmRemove": "Remove this photo?"
+  },
   "serviceTrim": {
     "title": "Pick 2 services to keep active",
     "desc": "Your Premium trial has ended. The Free plan allows 2 active services — you currently have {{count}}.",
@@ -318,7 +338,11 @@
     "NOT_WORKING_DAY": "The salon is closed on this day",
     "OUTSIDE_WORKING_HOURS": "Appointment is outside working hours",
     "UNKNOWN": "Something went wrong",
-    "PLAN_LIMIT_REACHED": "Service limit reached. Upgrade your plan to add more services."
+    "PLAN_LIMIT_REACHED": "Service limit reached. Upgrade your plan to add more services.",
+    "IMAGE_TOO_LARGE": "Image is too large. Max 2MB.",
+    "IMAGE_TYPE_UNSUPPORTED": "Image type not supported. Use JPG, PNG, WebP, or GIF.",
+    "IMAGE_EMPTY": "Please choose an image file.",
+    "IMAGE_READ_FAILED": "Could not read image file."
   },
   "days": {
     "1": "Mon",

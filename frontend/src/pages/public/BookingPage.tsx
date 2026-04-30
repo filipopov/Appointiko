@@ -219,25 +219,35 @@ export default function BookingPage() {
       )}
 
       <div className="booking__header">
-        <div>
-          <h1 className="booking__salon-name">{salon.name}</h1>
-          {salon.address && (
-            <p className="booking__salon-address">
-              {salon.address}{salon.city ? `, ${salon.city}` : ''}
-            </p>
+        <div className="booking__header-left">
+          {salon.imageUpdatedAt && (
+            <img
+              className="booking__salon-image"
+              src={`/api/public/salons/${salon.slug}/image?v=${encodeURIComponent(salon.imageUpdatedAt)}`}
+              alt=""
+              loading="lazy"
+            />
           )}
-          {todayHours && (
-            <p className="booking__salon-hours">
-              {todayHours.isWorkingDay
-                ? todayHours.blocks.map((b: any, i: number) => (
-                    <span key={i}>
-                      {i > 0 ? ', ' : ''}
-                      {(b.startTime || '').substring(0, 5)} - {(b.endTime || '').substring(0, 5)}
-                    </span>
-                  ))
-                : t('booking.closed')}
-            </p>
-          )}
+          <div>
+            <h1 className="booking__salon-name">{salon.name}</h1>
+            {salon.address && (
+              <p className="booking__salon-address">
+                {salon.address}{salon.city ? `, ${salon.city}` : ''}
+              </p>
+            )}
+            {todayHours && (
+              <p className="booking__salon-hours">
+                {todayHours.isWorkingDay
+                  ? todayHours.blocks.map((b: any, i: number) => (
+                      <span key={i}>
+                        {i > 0 ? ', ' : ''}
+                        {(b.startTime || '').substring(0, 5)} - {(b.endTime || '').substring(0, 5)}
+                      </span>
+                    ))
+                  : t('booking.closed')}
+              </p>
+            )}
+          </div>
         </div>
         <div className="booking__header-right">
           <div className="desktop-only">

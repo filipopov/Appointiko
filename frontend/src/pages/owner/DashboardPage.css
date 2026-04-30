@@ -361,16 +361,20 @@
   border-radius: 50%;
   background: var(--primary);
   color: #fff;
-  font-size: 28px;
-  font-weight: 300;
   border: none;
+  padding: 0;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(192, 86, 122, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 0;
   transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
   z-index: 90;
+}
+
+.dash__fab svg {
+  display: block;
 }
 
 .dash__fab:hover {

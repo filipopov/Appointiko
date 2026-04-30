@@ -9,6 +9,8 @@ import Logo from './Logo'
 import ThemeToggle from './ThemeToggle'
 import MobileMenu from './MobileMenu'
 import ServiceTrimModal from './ServiceTrimModal'
+import TrialBanner from './TrialBanner'
+import SalonAvatar from './SalonAvatar'
 import './OwnerLayout.css'
 
 const navItems = [
@@ -40,6 +42,16 @@ const navItems = [
       <svg className="layout__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="8" r="6.5" />
         <path d="M8 4.5v4l2.5 1.5" />
+      </svg>
+    ),
+  },
+  {
+    path: '/dashboard/plan',
+    key: 'nav.plan',
+    icon: (
+      <svg className="layout__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3.5" width="12" height="9" rx="1.5" />
+        <path d="M2 6.5h12M5 9.5h2" />
       </svg>
     ),
   },
@@ -86,7 +98,17 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
         <div className="layout__left">
           <div className="layout__brand-group">
             <Link to="/" className="layout__brand"><Logo size={24} /> Appointiko</Link>
-            {salonName && <span className="layout__salon-name">{salonName}</span>}
+            {salonName && (
+              <span className="layout__salon-name">
+                <SalonAvatar
+                  slug={user?.salon?.slug}
+                  imageUpdatedAt={user?.salon?.imageUpdatedAt}
+                  name={salonName}
+                  size={28}
+                />
+                {salonName}
+              </span>
+            )}
           </div>
           <nav className="layout__nav">
             {navItems.map(item => (
@@ -115,6 +137,16 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
           <MobileMenu />
         </div>
       </header>
+
+      {user?.salon && (
+        <TrialBanner
+          trialEndsAt={user.salon.trialEndsAt}
+          trialActive={!!user.salon.trialActive}
+          effectiveTier={user.salon.effectiveTier}
+          tier={user.salon.tier}
+          sticky
+        />
+      )}
 
       <main className="layout__main">
         {children}
