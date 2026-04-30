@@ -30,6 +30,24 @@ public class EmailNotificationService {
         return enabled;
     }
 
+    public boolean sendHtml(String toEmail, String subject, String html) {
+        if (!enabled) return false;
+        try {
+            CreateEmailOptions params = CreateEmailOptions.builder()
+                    .from(fromAddress)
+                    .to(toEmail)
+                    .subject(subject)
+                    .html(html)
+                    .build();
+            resend.emails().send(params);
+            log.info("Email '{}' sent to {}", subject, toEmail);
+            return true;
+        } catch (ResendException e) {
+            log.warn("Failed to send email '{}' to {}: {}", subject, toEmail, e.getMessage());
+            return false;
+        }
+    }
+
     public void sendBookingNotification(String toEmail, String clientName, String serviceName,
                                          String date, String time, String clientPhone) {
         if (!enabled) return;

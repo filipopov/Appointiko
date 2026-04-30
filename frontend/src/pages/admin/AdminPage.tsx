@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../api'
@@ -7,6 +7,11 @@ import Button from '../../components/ui/Button'
 import Card from '../../components/ui/Card'
 import { useToast } from '../../components/ui/Toast'
 import './AdminPage.css'
+
+const TIER_PRICE_MKD: Record<string, number> = {
+  STANDARD: 999,
+  PREMIUM: 1999,
+}
 
 interface AdminSalon {
   id: number
@@ -49,6 +54,28 @@ export default function AdminPage() {
   }
 
   useEffect(load, [])
+
+  const stats = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0]
+    const nowIso = new Date().toISOString()
+    let paid = 0
+    let free = 0
+    let trialing = 0
+    let overdue = 0
+    let mrr = 0
+    for (const s of salons) {
+      if (s.trialEndsAt && !s.trialUsed && s.trialEndsAt > nowIso) trialing++
+      if (s.paidUntil && s.paidUntil < today && s.tier !== 'FREE') overdue++
+      if (s.effectiveTier === 'FREE') {
+        free++
+      } else if (s.tier !== 'FREE' && s.paidUntil && s.paidUntil >= today) {
+        paid++
+        const price = TIER_PRICE_MKD[s.tier] || 0
+        mrr += s.billingCycle === 'ANNUAL' ? Math.round(price * 0.8) : price
+      }
+    }
+    return { total: salons.length, paid, free, trialing, overdue, mrr }
+  }, [salons])
 
   const filtered = salons.filter(s => {
     if (search && !s.name.toLowerCase().includes(search.toLowerCase()) && !s.slug.includes(search.toLowerCase())) {
@@ -133,6 +160,33 @@ export default function AdminPage() {
       </header>
 
       <div className="admin__container">
+        <div className="admin__stats">
+          <div className="admin__stat">
+            <div className="admin__stat-num">{stats.total}</div>
+            <div className="admin__stat-label">{t('admin.statTotal')}</div>
+          </div>
+          <div className="admin__stat admin__stat--success">
+            <div className="admin__stat-num">{stats.paid}</div>
+            <div className="admin__stat-label">{t('admin.statPaid')}</div>
+          </div>
+          <div className="admin__stat">
+            <div className="admin__stat-num">{stats.trialing}</div>
+            <div className="admin__stat-label">{t('admin.statTrialing')}</div>
+          </div>
+          <div className="admin__stat">
+            <div className="admin__stat-num">{stats.free}</div>
+            <div className="admin__stat-label">{t('admin.statFree')}</div>
+          </div>
+          <div className={`admin__stat ${stats.overdue > 0 ? 'admin__stat--danger' : ''}`}>
+            <div className="admin__stat-num">{stats.overdue}</div>
+            <div className="admin__stat-label">{t('admin.statOverdue')}</div>
+          </div>
+          <div className="admin__stat admin__stat--primary">
+            <div className="admin__stat-num">{stats.mrr.toLocaleString()}</div>
+            <div className="admin__stat-label">{t('admin.statMrr')}</div>
+          </div>
+        </div>
+
         <div className="admin__controls">
           <input
             className="admin__search"

@@ -65,6 +65,14 @@ export const api = {
   subscribePush: (data: { endpoint: string; p256dh: string; auth: string }) =>
     request('/api/owner/push/subscribe', { method: 'POST', body: JSON.stringify(data) }),
 
+  // Owner - Boost request
+  requestBoost: (days: number) =>
+    request('/api/owner/boost-request', { method: 'POST', body: JSON.stringify({ days }) }),
+
+  // Owner - Keep active services (post-trial trim)
+  keepServices: (activeIds: number[]) =>
+    request('/api/owner/services/keep', { method: 'POST', body: JSON.stringify({ activeIds }) }),
+
   // Public - Push
   getVapidKey: async (): Promise<string | null> => {
     try {

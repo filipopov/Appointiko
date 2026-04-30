@@ -47,6 +47,7 @@
     "feature4Title": "Local language support",
     "feature4Desc": "Fully in Macedonian, Albanian, and English. Built for this market.",
     "exploreSalons": "Browse salons",
+    "pricingNav": "Pricing",
     "bottomCtaTitle": "Ready for more clients?",
     "bottomCtaDesc": "Sign up in 1 minute and start receiving bookings today."
   },
@@ -165,7 +166,8 @@
   "onboarding": {
     "title": "Welcome! Set up your salon",
     "subtitle": "Complete these steps to start receiving bookings.",
-    "addServices": "Review your services",
+    "subtitleTrial": "Your free Premium trial is active — {{days}} days left. Finish setup to make the most of it.",
+    "addServices": "Customize your services",
     "setHours": "Set working hours",
     "shareLink": "Share your booking link"
   },
@@ -241,6 +243,27 @@
     "notInExplore": "Your salon is not visible in Explore",
     "notInExploreMessage": "Upgrade to Standard so clients can find and book you directly."
   },
+  "serviceTrim": {
+    "title": "Pick 2 services to keep active",
+    "desc": "Your Premium trial has ended. The Free plan allows 2 active services — you currently have {{count}}.",
+    "pickHint": "Choose 2 services. The rest will be deactivated (not deleted, you can re-enable after upgrade).",
+    "selected": "{{picked}} of {{max}} selected",
+    "confirm": "Save selection",
+    "saved": "Services updated.",
+    "orUpgrade": "Or keep all your services —"
+  },
+  "boost": {
+    "title": "Request a promo boost",
+    "description": "Boost your salon to the top of Explore for a limited time. Pay via bank transfer; we activate your boost within 24 hours.",
+    "reference": "Reference: BOOST {{id}}",
+    "priceWeek": "7 days: 499 MKD",
+    "priceMonth": "30 days: 1,499 MKD",
+    "duration7": "7 days",
+    "duration30": "30 days",
+    "requestBtn": "Send request",
+    "submitted": "Request sent — we'll activate it after payment confirmation.",
+    "requested": "Request sent"
+  },
   "admin": {
     "title": "Admin Panel",
     "salons": "All Salons",
@@ -256,6 +279,12 @@
     "boost": "Boost",
     "boost7": "7 days",
     "boost30": "30 days",
+    "statTotal": "Total salons",
+    "statPaid": "Paid",
+    "statTrialing": "On trial",
+    "statFree": "Free",
+    "statOverdue": "Overdue",
+    "statMrr": "Est. MRR (MKD)",
     "tier": "Tier",
     "effectiveTier": "Effective",
     "trialStatus": "Trial",
@@ -283,6 +312,7 @@
     "INVALID_CREDENTIALS": "Invalid email or password",
     "SLOT_TAKEN": "This slot is no longer available",
     "SERVICE_NOT_FOUND": "Service not found",
+    "SERVICE_INACTIVE": "This service is no longer available",
     "SALON_NOT_FOUND": "Salon not found",
     "INVALID_PHONE": "Invalid Macedonian phone number",
     "NOT_WORKING_DAY": "The salon is closed on this day",

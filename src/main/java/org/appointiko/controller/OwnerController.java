@@ -13,9 +13,11 @@ import org.appointiko.model.SalonPlan;
 import org.appointiko.service.AuthService;
 import org.appointiko.service.BookingService;
 import org.appointiko.service.DashboardService;
+import org.appointiko.service.EmailNotificationService;
 import org.appointiko.service.PlanService;
 import org.appointiko.service.SalonMgmtService;
 import org.appointiko.service.WebPushNotificationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -38,6 +40,13 @@ public class OwnerController {
     private final BookingService bookingService;
     private final WebPushNotificationService webPushService;
     private final PlanService planService;
+    private final EmailNotificationService emailService;
+
+    @Value("${app.admin-email}")
+    private String adminEmail;
+
+    @Value("${app.base-url}")
+    private String appBaseUrl;
 
     // -- Salon --
 
@@ -90,6 +99,17 @@ public class OwnerController {
         Salon salon = getOwnerSalon(auth);
         salonMgmtService.deleteService(id, salon.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/services/keep")
+    public ResponseEntity<?> keepServices(Authentication auth, @RequestBody KeepServicesRequest req) {
+        Salon salon = getOwnerSalon(auth);
+        try {
+            salonMgmtService.keepActiveServices(salon.getId(), req.activeIds());
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage(), e.getMessage()));
+        }
     }
 
     // -- Working Hours --
@@ -193,6 +213,40 @@ public class OwnerController {
         return ResponseEntity.ok(new OnboardingStatus(hasServices, hasCustomHours));
     }
 
+    // -- Boost request (Standard+ owners ask admin to promote them) --
+
+    @PostMapping("/boost-request")
+    public ResponseEntity<?> requestBoost(Authentication auth, @Valid @RequestBody BoostRequestOwner req) {
+        Salon salon = getOwnerSalon(auth);
+        PlanTier effective = planService.getEffectiveTier(salon.getId());
+        if (effective == PlanTier.FREE) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("PLAN_LIMIT_REACHED",
+                    "Boost requires Standard or Premium plan."));
+        }
+
+        Owner owner = authService.getByEmail(auth.getName());
+        String adminUrl = appBaseUrl + "/admin";
+        String html = """
+            <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#222">
+              <h2 style="color:#c0567a;margin:0 0 16px">New boost request</h2>
+              <p><b>Salon:</b> %s (ID %d)</p>
+              <p><b>Owner:</b> %s</p>
+              <p><b>City:</b> %s</p>
+              <p><b>Requested duration:</b> %d days</p>
+              <p>Awaiting payment confirmation. Once received, activate via the admin panel:</p>
+              <p><a href="%s">%s</a></p>
+            </div>
+            """.formatted(
+                escape(salon.getName()), salon.getId(),
+                escape(owner.getEmail()),
+                escape(salon.getCity() != null ? salon.getCity() : ""),
+                req.days(),
+                adminUrl, adminUrl);
+
+        emailService.sendHtml(adminEmail, "Boost request: " + salon.getName() + " (" + req.days() + "d)", html);
+        return ResponseEntity.noContent().build();
+    }
+
     // -- Push Notifications --
 
     @PostMapping("/push/subscribe")
@@ -227,6 +281,11 @@ public class OwnerController {
     private ServiceInfo toServiceInfo(SalonService s) {
         return new ServiceInfo(s.getId(), s.getName(), s.getDurationMinutes(),
                 s.getPrice(), s.isActive(), s.getDisplayOrder());
+    }
+
+    private static String escape(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
 
     private List<WorkingHoursEntry> groupByDay(List<WorkingHours> all) {

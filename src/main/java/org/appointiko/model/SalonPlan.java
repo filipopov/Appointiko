@@ -46,6 +46,14 @@ public class SalonPlan {
     @Column(name = "payment_note")
     private String paymentNote; // admin notes ("paid via Halkbank 12/04")
 
+    // Highest trial-nudge day already emailed (0=none, then 1/3/5/6/7).
+    @Column(name = "trial_nudge_stage", nullable = false)
+    private int trialNudgeStage = 0;
+
+    // Highest payment-reminder threshold already emailed (0=none, then days-before-expiry: 30/14/7/3/1).
+    @Column(name = "payment_reminder_stage", nullable = false)
+    private int paymentReminderStage = 0;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

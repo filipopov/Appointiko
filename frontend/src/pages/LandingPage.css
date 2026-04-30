@@ -253,6 +253,21 @@
   gap: 16px;
 }
 
+.landing__nav-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  transition: color var(--transition), background var(--transition);
+}
+
+.landing__nav-link:hover {
+  color: var(--primary);
+  background: var(--surface-hover, rgba(0, 0, 0, 0.04));
+}
+
 .landing__login-link {
   font-size: 14px;
   font-weight: 600;

@@ -149,6 +149,32 @@ public class SalonMgmtService {
         return salonServiceRepository.save(service);
     }
 
+    /**
+     * Sets only the given service IDs as active=true; deactivates all others.
+     * Used by FREE-tier owners after trial expiry to pick which services to keep.
+     */
+    @Transactional
+    public void keepActiveServices(Long salonId, List<Long> keepIds) {
+        if (keepIds == null) keepIds = List.of();
+        if (keepIds.size() > 2 && planService.getEffectiveTier(salonId) == org.appointiko.model.PlanTier.FREE) {
+            throw new IllegalStateException("PLAN_LIMIT_REACHED");
+        }
+        List<SalonService> all = salonServiceRepository.findBySalonIdOrderByDisplayOrder(salonId);
+        for (SalonService svc : all) {
+            boolean shouldBeActive = keepIds.contains(svc.getId());
+            if (svc.isActive() != shouldBeActive) {
+                svc.setActive(shouldBeActive);
+                salonServiceRepository.save(svc);
+            }
+        }
+    }
+
+    public boolean needsServiceTrim(Long salonId) {
+        if (planService.getEffectiveTier(salonId) != org.appointiko.model.PlanTier.FREE) return false;
+        long activeCount = salonServiceRepository.findBySalonIdAndActiveTrueOrderByDisplayOrder(salonId).size();
+        return activeCount > 2;
+    }
+
     @Transactional
     public void deleteService(Long serviceId, Long salonId) {
         SalonService service = salonServiceRepository.findById(serviceId)

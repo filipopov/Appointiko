@@ -145,8 +145,62 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
+
+          {user?.salon?.effectiveTier && user.salon.effectiveTier !== 'FREE' && (
+            <BoostRequest salonId={user.salon.id} />
+          )}
         </Card>
       </div>
     </OwnerLayout>
+  )
+}
+
+function BoostRequest({ salonId }: { salonId: number }) {
+  const { t } = useTranslation()
+  const toast = useToast()
+  const [days, setDays] = useState<7 | 30>(7)
+  const [submitting, setSubmitting] = useState(false)
+  const [done, setDone] = useState(false)
+
+  const submit = async () => {
+    setSubmitting(true)
+    try {
+      await api.requestBoost(days)
+      setDone(true)
+      toast(t('boost.submitted'), 'success')
+    } catch {
+      toast(t('errors.UNKNOWN'), 'error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="settings__boost">
+      <h4>{t('boost.title')}</h4>
+      <p>{t('boost.description')}</p>
+      <div className="settings__bank-details">
+        <strong>{t('plan.bankDetails')}</strong>
+        <p>{t('plan.bankName')}</p>
+        <p>{t('plan.accountNumber')}</p>
+        <p>{t('boost.reference', { id: salonId })}</p>
+        <p className="settings__boost-prices">
+          {t('boost.priceWeek')} &middot; {t('boost.priceMonth')}
+        </p>
+      </div>
+      <div className="settings__boost-controls">
+        <label>
+          <input type="radio" name="boost-days" checked={days === 7} onChange={() => setDays(7)} />
+          {t('boost.duration7')}
+        </label>
+        <label>
+          <input type="radio" name="boost-days" checked={days === 30} onChange={() => setDays(30)} />
+          {t('boost.duration30')}
+        </label>
+      </div>
+      <Button onClick={submit} disabled={submitting || done}>
+        {done ? t('boost.requested') : t('boost.requestBtn')}
+      </Button>
+    </div>
   )
 }

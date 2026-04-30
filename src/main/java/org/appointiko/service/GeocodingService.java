@@ -11,12 +11,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Slf4j
 @Service
 public class GeocodingService {
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(3))
+            .build();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -37,6 +40,7 @@ public class GeocodingService {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .header("User-Agent", "Appointiko/1.0")
+                    .timeout(Duration.ofSeconds(5))
                     .GET()
                     .build();
 

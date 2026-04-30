@@ -31,6 +31,9 @@ public class BookingService {
     public List<LocalTime> getAvailableSlots(Long salonId, LocalDate date, Long serviceId) {
         SalonService service = salonServiceRepository.findById(serviceId)
                 .orElseThrow(() -> new IllegalArgumentException("SERVICE_NOT_FOUND"));
+        if (!service.isActive()) {
+            return List.of();
+        }
 
         int dayOfWeek = date.getDayOfWeek().getValue(); // 1=Monday .. 7=Sunday
         List<WorkingHours> blocks = workingHoursRepository.findBySalonIdAndDayOfWeek(salonId, dayOfWeek);
@@ -74,6 +77,9 @@ public class BookingService {
                 .orElseThrow(() -> new IllegalArgumentException("SERVICE_NOT_FOUND"));
         if (!service.getSalonId().equals(salonId)) {
             throw new IllegalArgumentException("SERVICE_NOT_FOUND");
+        }
+        if (!service.isActive()) {
+            throw new IllegalStateException("SERVICE_INACTIVE");
         }
 
         LocalDateTime endTime = startTime.plusMinutes(service.getDurationMinutes());

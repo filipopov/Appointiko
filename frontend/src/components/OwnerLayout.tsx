@@ -8,6 +8,7 @@ import LanguageSwitcher from './LanguageSwitcher'
 import Logo from './Logo'
 import ThemeToggle from './ThemeToggle'
 import MobileMenu from './MobileMenu'
+import ServiceTrimModal from './ServiceTrimModal'
 import './OwnerLayout.css'
 
 const navItems = [
@@ -62,6 +63,7 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
 
   const salonName = user?.salon?.name
   const pushInitRef = useRef(false)
+  const [trimTrigger, setTrimTrigger] = useState(0)
 
   // Auto-subscribe to push notifications on first visit
   useEffect(() => {
@@ -137,6 +139,12 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
           <span className="layout__tab-label">{t('nav.logout')}</span>
         </button>
       </nav>
+
+      <ServiceTrimModal
+        effectiveTier={user?.salon?.effectiveTier}
+        trigger={trimTrigger}
+        onResolved={() => setTrimTrigger(n => n + 1)}
+      />
     </div>
   )
 }

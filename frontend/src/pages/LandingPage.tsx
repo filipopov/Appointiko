@@ -45,6 +45,7 @@ export default function LandingPage() {
             <ThemeToggle />
             <LanguageSwitcher />
           </div>
+          <a href="#pricing" className="landing__nav-link desktop-only">{t('landing.pricingNav')}</a>
           <Link to="/login" className="landing__login-link">{t('auth.login')}</Link>
           <MobileMenu />
         </div>

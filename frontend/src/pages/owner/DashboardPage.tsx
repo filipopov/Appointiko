@@ -228,7 +228,13 @@ export default function DashboardPage() {
 
         {/* Right: Appointments */}
         <div className="dash__content">
-          {slug && <OnboardingChecklist slug={slug} />}
+          {slug && (
+            <OnboardingChecklist
+              slug={slug}
+              trialActive={user?.salon?.trialActive}
+              trialEndsAt={user?.salon?.trialEndsAt}
+            />
+          )}
 
           {user?.salon && (
             <TrialBanner

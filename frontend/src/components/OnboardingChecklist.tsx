@@ -7,9 +7,11 @@ import './OnboardingChecklist.css'
 
 interface Props {
   slug: string
+  trialActive?: boolean
+  trialEndsAt?: string | null
 }
 
-export default function OnboardingChecklist({ slug }: Props) {
+export default function OnboardingChecklist({ slug, trialActive, trialEndsAt }: Props) {
   const { t } = useTranslation()
   const [status, setStatus] = useState<{ hasServices: boolean; hasCustomHours: boolean } | null>(null)
   const [dismissed, setDismissed] = useState(false)
@@ -23,6 +25,10 @@ export default function OnboardingChecklist({ slug }: Props) {
   const allDone = status.hasServices && status.hasCustomHours
   if (allDone) return null
 
+  const trialDays = trialActive && trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / 86400000))
+    : 0
+
   const steps = [
     { key: 'services', done: status.hasServices, label: t('onboarding.addServices'), link: '/dashboard/services' },
     { key: 'hours', done: status.hasCustomHours, label: t('onboarding.setHours'), link: '/dashboard/hours' },
@@ -34,7 +40,11 @@ export default function OnboardingChecklist({ slug }: Props) {
       <div className="onboarding__header">
         <div>
           <h3 className="onboarding__title">{t('onboarding.title')}</h3>
-          <p className="onboarding__subtitle">{t('onboarding.subtitle')}</p>
+          <p className="onboarding__subtitle">
+            {trialActive
+              ? t('onboarding.subtitleTrial', { days: trialDays })
+              : t('onboarding.subtitle')}
+          </p>
         </div>
         <button className="onboarding__dismiss" onClick={() => setDismissed(true)} aria-label="Dismiss">&times;</button>
       </div>

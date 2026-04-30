@@ -47,6 +47,7 @@
     "feature4Title": "Në gjuhën lokale",
     "feature4Desc": "Plotësisht në maqedonisht, shqip dhe anglisht. I ndërtuar për këtë treg.",
     "exploreSalons": "Shfleto sallonet",
+    "pricingNav": "Çmimet",
     "bottomCtaTitle": "Gati për më shumë klientë?",
     "bottomCtaDesc": "Regjistrohu për 1 minutë dhe fillo të marrësh rezervime sot."
   },
@@ -165,7 +166,8 @@
   "onboarding": {
     "title": "Mirësevjen! Përgatit sallonin",
     "subtitle": "Përfundo këto hapa për të filluar të marrësh rezervime.",
-    "addServices": "Shiko shërbimet",
+    "subtitleTrial": "Prova jote Premium falas është aktive — edhe {{days}} ditë. Përfundo konfigurimin për të përfituar maksimumin.",
+    "addServices": "Personalizo shërbimet",
     "setHours": "Vendos orarin e punës",
     "shareLink": "Ndaj linkun për rezervim"
   },
@@ -241,6 +243,27 @@
     "notInExplore": "Salloni nuk shihet në Eksploro",
     "notInExploreMessage": "Përmirëso në Standard që klientët të të gjejnë dhe të rezervojnë direkt."
   },
+  "serviceTrim": {
+    "title": "Zgjidh 2 shërbime për t'i mbajtur aktive",
+    "desc": "Prova Premium ka përfunduar. Plani Falas lejon 2 shërbime aktive — aktualisht ke {{count}}.",
+    "pickHint": "Zgjidh 2 shërbime. Të tjerat do të çaktivizohen (nuk fshihen — mund t'i riaktivizosh pas përmirësimit).",
+    "selected": "{{picked}} nga {{max}} të zgjedhura",
+    "confirm": "Ruaj zgjedhjen",
+    "saved": "Shërbimet u përditësuan.",
+    "orUpgrade": "Ose mbaji të gjitha shërbimet —"
+  },
+  "boost": {
+    "title": "Kërko një boost promovues",
+    "description": "Vendos sallonin tënd në krye të Eksploros për një kohë të kufizuar. Paguaj me transfer bankar; e aktivizojmë brenda 24 orëve.",
+    "reference": "Referenca: BOOST {{id}}",
+    "priceWeek": "7 ditë: 499 den",
+    "priceMonth": "30 ditë: 1,499 den",
+    "duration7": "7 ditë",
+    "duration30": "30 ditë",
+    "requestBtn": "Dërgo kërkesën",
+    "submitted": "Kërkesa u dërgua — do ta aktivizojmë pas konfirmimit të pagesës.",
+    "requested": "Kërkesa u dërgua"
+  },
   "admin": {
     "title": "Paneli Admin",
     "salons": "Të gjitha sallonet",
@@ -256,6 +279,12 @@
     "boost": "Boost",
     "boost7": "7 ditë",
     "boost30": "30 ditë",
+    "statTotal": "Sallonet",
+    "statPaid": "Të paguar",
+    "statTrialing": "Në provë",
+    "statFree": "Falas",
+    "statOverdue": "Të vonuar",
+    "statMrr": "MRR (den)",
     "tier": "Niveli",
     "effectiveTier": "Efektiv",
     "trialStatus": "Prova",
@@ -282,7 +311,8 @@
     "EMAIL_EXISTS": "Email-i është regjistruar tashmë",
     "INVALID_CREDENTIALS": "Email ose fjalëkalim i gabuar",
     "SLOT_TAKEN": "Ky termin nuk është më i lirë",
-    "SERVICE_NOT_FOUND": "Shërbimi nuk u gjet",
+    "SERVICE_INACTIVE": "Ky shërbim nuk është më në dispozicion",
+    "SERVICE_NOT_FOUND":"Shërbimi nuk u gjet",
     "SALON_NOT_FOUND": "Salloni nuk u gjet",
     "INVALID_PHONE": "Numër i pavlefshëm i telefonit maqedonas",
     "NOT_WORKING_DAY": "Salloni është i mbyllur këtë ditë",
