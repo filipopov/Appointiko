@@ -84,10 +84,6 @@ export const api = {
   getOnboardingStatus: () =>
     request<{ hasServices: boolean; hasCustomHours: boolean }>('/api/owner/onboarding-status'),
 
-  // Owner - Push notifications
-  subscribePush: (data: { endpoint: string; p256dh: string; auth: string }) =>
-    request('/api/owner/push/subscribe', { method: 'POST', body: JSON.stringify(data) }),
-
   // Owner - Boost request
   requestBoost: (days: number) =>
     request('/api/owner/boost-request', { method: 'POST', body: JSON.stringify({ days }) }),
@@ -95,17 +91,6 @@ export const api = {
   // Owner - Keep active services (post-trial trim)
   keepServices: (activeIds: number[]) =>
     request('/api/owner/services/keep', { method: 'POST', body: JSON.stringify({ activeIds }) }),
-
-  // Public - Push
-  getVapidKey: async (): Promise<string | null> => {
-    try {
-      const res = await fetch('/api/public/push/vapid-key', { credentials: 'same-origin' })
-      if (!res.ok) return null
-      return res.text()
-    } catch {
-      return null
-    }
-  },
 
   // Public
   publicSalon: (slug: string) => request<any>(`/api/public/salons/${slug}`),

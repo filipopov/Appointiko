@@ -1,9 +1,8 @@
-import { ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import { ReactNode, useContext, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AuthContext } from '../App'
 import { api } from '../api'
-import { subscribeToPush, isPushSupported } from '../pushManager'
 import LanguageSwitcher from './LanguageSwitcher'
 import Logo from './Logo'
 import ThemeToggle from './ThemeToggle'
@@ -74,17 +73,7 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
   const location = useLocation()
 
   const salonName = user?.salon?.name
-  const pushInitRef = useRef(false)
   const [trimTrigger, setTrimTrigger] = useState(0)
-
-  // Auto-subscribe to push notifications on first visit
-  useEffect(() => {
-    if (pushInitRef.current) return
-    pushInitRef.current = true
-
-    if (!isPushSupported()) return
-    setTimeout(() => { subscribeToPush().catch(() => {}) }, 2000)
-  }, [])
 
   const handleLogout = async () => {
     await api.logout().catch(() => {})

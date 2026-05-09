@@ -16,7 +16,6 @@ import org.appointiko.service.DashboardService;
 import org.appointiko.service.EmailNotificationService;
 import org.appointiko.service.PlanService;
 import org.appointiko.service.SalonMgmtService;
-import org.appointiko.service.WebPushNotificationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +39,6 @@ public class OwnerController {
     private final SalonMgmtService salonMgmtService;
     private final DashboardService dashboardService;
     private final BookingService bookingService;
-    private final WebPushNotificationService webPushService;
     private final PlanService planService;
     private final EmailNotificationService emailService;
 
@@ -311,15 +309,6 @@ public class OwnerController {
                 adminUrl, adminUrl);
 
         emailService.sendHtml(adminEmail, "Boost request: " + salon.getName() + " (" + req.days() + "d)", html);
-        return ResponseEntity.noContent().build();
-    }
-
-    // -- Push Notifications --
-
-    @PostMapping("/push/subscribe")
-    public ResponseEntity<Void> subscribePush(Authentication auth, @Valid @RequestBody PushSubscriptionRequest req) {
-        Salon salon = getOwnerSalon(auth);
-        webPushService.subscribe(salon.getId(), req.endpoint(), req.p256dh(), req.auth());
         return ResponseEntity.noContent().build();
     }
 

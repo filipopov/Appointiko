@@ -13,11 +13,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 )
 
-// Register service worker for PWA + push notifications
+// Unregister any previously installed service worker (push notifications removed)
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
-      .then(reg => reg.update())
-      .catch(() => {})
-  })
+  navigator.serviceWorker.getRegistrations()
+    .then(regs => regs.forEach(reg => reg.unregister()))
+    .catch(() => {})
 }

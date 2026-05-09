@@ -11,10 +11,6 @@ spring:
 server:
   port: 8080
 
-vapid:
-  public-key: ${VAPID_PUBLIC_KEY:}
-  private-key: ${VAPID_PRIVATE_KEY:}
-
 app:
   base-url: ${APP_BASE_URL:https://appointiko.com}
   admin-email: ${APP_ADMIN_EMAIL:filip.popov13@gmail.com}

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final WebPushNotificationService pushService;
     private final EmailNotificationService emailService;
     private final SalonRepository salonRepository;
     private final OwnerRepository ownerRepository;
@@ -29,16 +28,6 @@ public class NotificationService {
             return;
         }
 
-        // Push notification
-        try {
-            String title = "\uD83D\uDCCB " + clientName;
-            String body = serviceName + " \u00B7 " + date + " \u00B7 " + time;
-            pushService.sendNotification(salonId, title, body);
-        } catch (Exception e) {
-            log.warn("Push notification failed for salon {}: {}", salonId, e.getMessage());
-        }
-
-        // Email notification
         try {
             Salon salon = salonRepository.findById(salonId).orElse(null);
             if (salon != null) {

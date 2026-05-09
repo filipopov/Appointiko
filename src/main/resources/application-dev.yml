@@ -16,8 +16,3 @@ spring:
     show-sql: true
   flyway:
     locations: classpath:db/migration
-
-vapid:
-  public-key: BP3eGcEpGEVomCWadC1wK9LRzQ61w8WY2W_VI9MtOL2Gj-mJyXPCpLDS2l3kfOFT3xuBzF7uKDBsWyy-UanqYYQ
-  private-key: REDACTED-VAPID-PRIVATE-KEY
-
