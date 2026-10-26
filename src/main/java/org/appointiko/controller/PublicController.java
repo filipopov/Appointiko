@@ -97,18 +97,6 @@ public class PublicController {
         return ResponseEntity.ok(Map.of("bookingsThisMonth", count));
     }
 
-    @GetMapping("/client-lookup")
-    public ResponseEntity<Map<String, String>> clientLookup(
-            @PathVariable String slug,
-            @RequestParam String phone) {
-        Salon salon = salonMgmtService.getSalonBySlug(slug);
-        List<Appointment> prev = appointmentRepository.findBySalonIdAndClientPhone(salon.getId(), phone);
-        if (!prev.isEmpty()) {
-            return ResponseEntity.ok(Map.of("clientName", prev.get(0).getClientName()));
-        }
-        return ResponseEntity.ok(Map.of());
-    }
-
     @PostMapping("/book")
     public ResponseEntity<?> book(@PathVariable String slug, @Valid @RequestBody BookingRequest req) {
         try {

@@ -25,6 +25,9 @@ public class WebConfig implements WebMvcConfigurer {
                             return resource;
                         }
                         // Forward non-API, non-file routes to index.html for React Router
+                        if (resourcePath.startsWith("api/")) {
+                            return null;
+                        }
                         return new ClassPathResource("/static/index.html");
                     }
                 });

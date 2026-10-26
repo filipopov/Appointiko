@@ -1,10 +1,17 @@
 const BASE = ''
 
+// Spring Security writes the CSRF token to this cookie; state-changing requests must echo it back.
+function csrfHeader(): Record<string, string> {
+  const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/)
+  return match ? { 'X-XSRF-TOKEN': decodeURIComponent(match[1]) } : {}
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...csrfHeader(),
       ...options?.headers,
     },
     credentials: 'same-origin',
@@ -38,6 +45,7 @@ export const api = {
     const res = await fetch('/api/owner/salon/image', {
       method: 'POST',
       body: fd,
+      headers: csrfHeader(),
       credentials: 'same-origin',
     })
     if (!res.ok) {
@@ -103,8 +111,6 @@ export const api = {
     request<any[]>(`/api/public/salons/${slug}/working-hours`),
   publicStats: (slug: string) =>
     request<{ bookingsThisMonth: number }>(`/api/public/salons/${slug}/stats`),
-  publicClientLookup: (slug: string, phone: string) =>
-    request<{ clientName?: string }>(`/api/public/salons/${slug}/client-lookup?phone=${encodeURIComponent(phone)}`),
 
   // Explore
   exploreSalons: (city?: string) =>

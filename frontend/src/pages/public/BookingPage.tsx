@@ -20,6 +20,27 @@ function formatDate(d: Date): string {
 
 type Step = 'service' | 'date' | 'time' | 'info' | 'done'
 
+// Returning clients are remembered on their own device only, so the server
+// never reveals who has booked with a salon.
+const SAVED_CLIENT_KEY = 'appointiko.client'
+
+function readSavedClient(): { name: string; phone: string } {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SAVED_CLIENT_KEY) || '{}')
+    return { name: saved.name || '', phone: saved.phone || '' }
+  } catch {
+    return { name: '', phone: '' }
+  }
+}
+
+function saveClient(name: string, phone: string) {
+  try {
+    localStorage.setItem(SAVED_CLIENT_KEY, JSON.stringify({ name: name.trim(), phone }))
+  } catch {
+    // Storage unavailable (private mode) — remembering the client is optional
+  }
+}
+
 const stepOrder: Step[] = ['service', 'date', 'time', 'info']
 
 function generateICS(salonName: string, serviceName: string, date: string, time: string, durationMin: number): string {
@@ -50,8 +71,8 @@ export default function BookingPage() {
   const [date, setDate] = useState(formatDate(new Date()))
   const [slots, setSlots] = useState<any[]>([])
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
-  const [clientName, setClientName] = useState('')
-  const [clientPhone, setClientPhone] = useState('')
+  const [clientName, setClientName] = useState(() => readSavedClient().name)
+  const [clientPhone, setClientPhone] = useState(() => readSavedClient().phone)
   const [clientComment, setClientComment] = useState('')
   const [step, setStep] = useState<Step>('service')
   const [loading, setLoading] = useState(false)
@@ -63,9 +84,6 @@ export default function BookingPage() {
 
   // Social proof
   const [bookingsCount, setBookingsCount] = useState(0)
-
-  // Phone lookup debounce
-  const lookupTimeout = useRef<ReturnType<typeof setTimeout>>()
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
@@ -99,21 +117,6 @@ export default function BookingPage() {
       .finally(() => setLoading(false))
   }, [slug, selectedService, date])
 
-  // Phone auto-detect returning clients
-  const handlePhoneChange = (phone: string) => {
-    setClientPhone(phone)
-    const cleaned = cleanPhone(phone)
-    if (!slug || !cleaned || !isValidMkPhone(cleaned)) return
-    clearTimeout(lookupTimeout.current)
-    lookupTimeout.current = setTimeout(() => {
-      api.publicClientLookup(slug, cleaned).then(result => {
-        if (result.clientName && !clientName) {
-          setClientName(result.clientName)
-        }
-      }).catch(() => {})
-    }, 500)
-  }
-
   const handleBook = async () => {
     if (!slug || !selectedService || !selectedSlot) return
     const cleaned = cleanPhone(clientPhone)
@@ -129,6 +132,7 @@ export default function BookingPage() {
         clientPhone: cleaned,
         comment: clientComment.trim() || null,
       })
+      saveClient(clientName, cleaned)
       setStep('done')
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err: any) {
@@ -366,7 +370,7 @@ export default function BookingPage() {
               <Card className="animate-in">
                 <h3 className="booking__section-title">4. {t('booking.yourInfo')}</h3>
                 <div className="booking__info-form">
-                  <PhoneInput label={t('booking.phone')} value={clientPhone} onChange={handlePhoneChange} required />
+                  <PhoneInput label={t('booking.phone')} value={clientPhone} onChange={setClientPhone} required />
                   <Input label={t('booking.name')} value={clientName} onChange={e => setClientName(e.target.value)} required />
                   <div className="input-group">
                     <label className="input-group__label">{t('booking.comment')}</label>
