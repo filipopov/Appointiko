@@ -1,0 +1,30 @@
+# kubectl apply -k deploy/   (see deploy/kind-up.sh)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: appointiko
+
+resources:
+  - k8s/namespace.yaml
+  - k8s/postgres.yaml
+  - k8s/minio.yaml
+  - k8s/keycloak.yaml
+  - k8s/app.yaml
+
+configMapGenerator:
+  - name: keycloak-realm
+    files:
+      - keycloak/realm-appointiko.json
+
+# Throwaway values for the local cluster only. A real environment would source these
+# from a secret manager instead of the repository.
+secretGenerator:
+  - name: appointiko-secrets
+    literals:
+      - DATABASE_USERNAME=appointiko
+      - DATABASE_PASSWORD=appointiko-dev-secret
+      - KEYCLOAK_CLIENT_SECRET=appointiko-dev-secret
+      - KEYCLOAK_ADMIN_USERNAME=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - STORAGE_ACCESS_KEY=appointiko
+      - STORAGE_SECRET_KEY=appointiko-dev-secret
+      - RESEND_API_KEY=

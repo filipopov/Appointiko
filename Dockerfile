@@ -1,4 +1,5 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+# Debian-based build stage: the Maven build downloads Node.js, which has no official musl (Alpine) build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 COPY . .
 RUN ./mvnw -B package -DskipTests

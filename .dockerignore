@@ -4,3 +4,7 @@ frontend/dist/
 .git/
 .idea/
 *.iml
+frontend/node/
+BUSINESS_PLAN.html
+PRE_LAUNCH_CHECKLIST.html
+STRATEGY.html

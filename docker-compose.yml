@@ -1,0 +1,33 @@
+# Local development dependencies: Keycloak (auth) and MinIO (S3-compatible image storage).
+# Start them with `docker compose up -d`, then run the app with the dev profile:
+#   ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+# All credentials here are throwaway local-development values.
+name: appointiko
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.2
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./deploy/keycloak/realm-appointiko.json:/opt/keycloak/data/import/realm-appointiko.json:ro
+
+  minio:
+    # Chainguard's free MinIO build, pinned by digest (MinIO no longer publishes community images).
+    image: cgr.dev/chainguard/minio@sha256:113218d9c3d1030eb74b91facc799365d06b6a427a3b842b168163ddd07113fe
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: appointiko
+      MINIO_ROOT_PASSWORD: appointiko-dev-secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+
+volumes:
+  minio-data:

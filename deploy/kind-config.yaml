@@ -1,0 +1,15 @@
+# Local Kubernetes cluster (kind). NodePorts are mapped to the same localhost ports
+# the app uses in development, so the Keycloak realm config works unchanged.
+# Stop `docker compose` first: both use ports 8080 and 8180.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: appointiko
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080 # appointiko
+        hostPort: 8080
+      - containerPort: 30180 # keycloak
+        hostPort: 8180
+      - containerPort: 30901 # minio console
+        hostPort: 9001
