@@ -16,3 +16,16 @@ spring:
     show-sql: true
   flyway:
     locations: classpath:db/migration
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            # Matches deploy/keycloak/realm-appointiko.json — local development only.
+            client-secret: ${KEYCLOAK_CLIENT_SECRET:appointiko-dev-secret}
+
+app:
+  storage:
+    # Matches the MinIO root credentials in docker-compose.yml — local development only.
+    access-key: ${STORAGE_ACCESS_KEY:appointiko}
+    secret-key: ${STORAGE_SECRET_KEY:appointiko-dev-secret}

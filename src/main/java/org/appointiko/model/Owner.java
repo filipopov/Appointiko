@@ -21,9 +21,6 @@ public class Owner {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
-
     private String phone;
 
     @Column(nullable = false)

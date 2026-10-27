@@ -3,44 +3,33 @@ package org.appointiko.service;
 import lombok.RequiredArgsConstructor;
 import org.appointiko.model.Owner;
 import org.appointiko.repo.OwnerRepository;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Local owner accounts. Credentials live in Keycloak; this only keeps the app-side profile.
+ */
 @Service
 @RequiredArgsConstructor
-public class AuthService implements UserDetailsService {
+public class AuthService {
 
     private final OwnerRepository ownerRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Owner owner = ownerRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Owner not found: " + email));
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        if (owner.isAdmin()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        }
-        return new User(owner.getEmail(), owner.getPasswordHash(), authorities);
+    @Transactional
+    public Owner findOrCreateOwner(String email) {
+        String normalized = email.trim().toLowerCase();
+        return ownerRepository.findByEmail(normalized).orElseGet(() -> {
+            Owner owner = new Owner();
+            owner.setEmail(normalized);
+            return ownerRepository.save(owner);
+        });
     }
 
-    public Owner register(String email, String password, String phone) {
-        if (ownerRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("EMAIL_EXISTS");
-        }
-        Owner owner = new Owner();
-        owner.setEmail(email);
-        owner.setPasswordHash(passwordEncoder.encode(password));
+    @Transactional
+    public void updatePhone(Owner owner, String phone) {
         owner.setPhone(phone);
-        return ownerRepository.save(owner);
+        ownerRepository.save(owner);
     }
 
     public Owner getByEmail(String email) {

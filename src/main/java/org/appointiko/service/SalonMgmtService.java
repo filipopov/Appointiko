@@ -30,6 +30,9 @@ public class SalonMgmtService {
     private final SalonImageRepository imageRepository;
     private final GeocodingService geocodingService;
     private final PlanService planService;
+    private final ImageStorage imageStorage;
+
+    public record ImageContent(byte[] data, String contentType) {}
 
     @Transactional
     public Salon createSalon(Long ownerId, String name, String city, String address) {
@@ -49,6 +52,10 @@ public class SalonMgmtService {
         initDefaultWorkingHours(salon.getId());
         initDefaultServices(salon.getId());
         return salon;
+    }
+
+    public boolean hasSalon(Long ownerId) {
+        return salonRepository.findByOwnerId(ownerId).isPresent();
     }
 
     public Salon getSalonByOwner(Long ownerId) {
@@ -287,11 +294,19 @@ public class SalonMgmtService {
         }
 
         SalonImage img = imageRepository.findById(salonId).orElseGet(SalonImage::new);
+        String previousKey = img.getObjectKey();
+        String key = "salons/" + salonId + "/" + java.util.UUID.randomUUID();
+        imageStorage.put(key, data, contentType.toLowerCase());
+
         img.setSalonId(salonId);
-        img.setData(data);
+        img.setObjectKey(key);
+        img.setData(null);
         img.setContentType(contentType.toLowerCase());
         img.setUploadedAt(java.time.LocalDateTime.now());
         imageRepository.save(img);
+        if (previousKey != null) {
+            imageStorage.delete(previousKey);
+        }
 
         Salon salon = salonRepository.findById(salonId).orElseThrow();
         salon.setImageUpdatedAt(img.getUploadedAt());
@@ -300,15 +315,26 @@ public class SalonMgmtService {
 
     @Transactional
     public void deleteImage(Long salonId) {
-        imageRepository.deleteById(salonId);
+        imageRepository.findById(salonId).ifPresent(img -> {
+            imageRepository.delete(img);
+            if (img.getObjectKey() != null) {
+                imageStorage.delete(img.getObjectKey());
+            }
+        });
         salonRepository.findById(salonId).ifPresent(s -> {
             s.setImageUpdatedAt(null);
             salonRepository.save(s);
         });
     }
 
-    public SalonImage getImage(Long salonId) {
-        return imageRepository.findById(salonId).orElse(null);
+    public ImageContent getImage(Long salonId) {
+        SalonImage img = imageRepository.findById(salonId).orElse(null);
+        if (img == null) {
+            return null;
+        }
+        // Images uploaded before the move to object storage still live in the DB row.
+        byte[] data = img.getObjectKey() != null ? imageStorage.get(img.getObjectKey()) : img.getData();
+        return new ImageContent(data, img.getContentType());
     }
 
     private void initDefaultWorkingHours(Long salonId) {

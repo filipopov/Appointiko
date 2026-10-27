@@ -18,7 +18,11 @@ public class SalonImage {
     @Column(name = "salon_id")
     private Long salonId;
 
-    @Column(name = "data", nullable = false)
+    @Column(name = "object_key")
+    private String objectKey;
+
+    /** Legacy: bytes of images uploaded before object storage; null for new uploads. */
+    @Column(name = "data")
     private byte[] data;
 
     @Column(name = "content_type", nullable = false, length = 50)

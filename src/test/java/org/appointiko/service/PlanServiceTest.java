@@ -35,7 +35,6 @@ class PlanServiceTest {
     void setUp() {
         Owner owner = new Owner();
         owner.setEmail("test-" + System.nanoTime() + "@example.com");
-        owner.setPasswordHash("$2a$10$x");
         owner = ownerRepo.save(owner);
 
         salon = new Salon();

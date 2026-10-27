@@ -40,7 +40,6 @@ class SalonMgmtServiceTest {
     void setUp() {
         Owner owner = new Owner();
         owner.setEmail("trim-" + System.nanoTime() + "@example.com");
-        owner.setPasswordHash("$2a$10$x");
         owner = ownerRepo.save(owner);
 
         Salon salon = new Salon();

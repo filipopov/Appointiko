@@ -7,6 +7,25 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: ${KEYCLOAK_CLIENT_ID:appointiko-web}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            # The browser reaches Keycloak on its public URL; the backend talks to it directly.
+            # They are the same locally and differ inside Kubernetes.
+            authorization-uri: ${app.keycloak.public-url}/realms/${app.keycloak.realm}/protocol/openid-connect/auth
+            token-uri: ${app.keycloak.internal-url}/realms/${app.keycloak.realm}/protocol/openid-connect/token
+            jwk-set-uri: ${app.keycloak.internal-url}/realms/${app.keycloak.realm}/protocol/openid-connect/certs
+            user-info-uri: ${app.keycloak.internal-url}/realms/${app.keycloak.realm}/protocol/openid-connect/userinfo
+            user-name-attribute: email
 
 server:
   port: 8080
@@ -14,3 +33,15 @@ server:
 app:
   base-url: ${APP_BASE_URL:https://appointiko.com}
   admin-email: ${APP_ADMIN_EMAIL:filip.popov13@gmail.com}
+  # Where the SPA is served from; empty when the backend serves it (same origin).
+  frontend-url: ${APP_FRONTEND_URL:}
+  keycloak:
+    public-url: ${KEYCLOAK_PUBLIC_URL:http://localhost:8180}
+    internal-url: ${KEYCLOAK_INTERNAL_URL:${app.keycloak.public-url}}
+    realm: ${KEYCLOAK_REALM:appointiko}
+  storage:
+    endpoint: ${STORAGE_ENDPOINT:http://localhost:9000}
+    region: ${STORAGE_REGION:us-east-1}
+    bucket: ${STORAGE_BUCKET:salon-images}
+    access-key: ${STORAGE_ACCESS_KEY}
+    secret-key: ${STORAGE_SECRET_KEY}

@@ -24,7 +24,12 @@
     "noAccount": "Nuk ke llogari?",
     "hasAccount": "Ke llogari tashmë?",
     "loginHere": "Hyr këtu",
-    "registerHere": "Regjistrohu këtu"
+    "registerHere": "Regjistrohu këtu",
+    "secureSignIn": "Do të vazhdoni te faqja jonë e sigurt e hyrjes.",
+    "secureSignUp": "Krijoni llogarinë në faqen tonë të sigurt të regjistrimit, pastaj konfiguroni sallonin.",
+    "signInFailed": "Hyrja dështoi. Ju lutemi provoni përsëri.",
+    "setupTitle": "Konfiguroni sallonin tuaj",
+    "setupSubmit": "Krijo faqen time të rezervimeve"
   },
   "landing": {
     "heroTitle": "Klientët tuaj rezervojnë për 30 sekonda",
@@ -332,7 +337,7 @@
     "INVALID_CREDENTIALS": "Email ose fjalëkalim i gabuar",
     "SLOT_TAKEN": "Ky termin nuk është më i lirë",
     "SERVICE_INACTIVE": "Ky shërbim nuk është më në dispozicion",
-    "SERVICE_NOT_FOUND":"Shërbimi nuk u gjet",
+    "SERVICE_NOT_FOUND": "Shërbimi nuk u gjet",
     "SALON_NOT_FOUND": "Salloni nuk u gjet",
     "INVALID_PHONE": "Numër i pavlefshëm i telefonit maqedonas",
     "NOT_WORKING_DAY": "Salloni është i mbyllur këtë ditë",
@@ -342,7 +347,8 @@
     "IMAGE_TOO_LARGE": "Fotoja është shumë e madhe. Maksimumi 2MB.",
     "IMAGE_TYPE_UNSUPPORTED": "Lloji i fotos nuk mbështetet. Përdor JPG, PNG, WebP ose GIF.",
     "IMAGE_EMPTY": "Zgjidh një foto.",
-    "IMAGE_READ_FAILED": "Nuk mund të lexohet fotoja."
+    "IMAGE_READ_FAILED": "Nuk mund të lexohet fotoja.",
+    "SALON_EXISTS": "Kjo llogari ka tashmë një sallon."
   },
   "days": {
     "1": "Hën",

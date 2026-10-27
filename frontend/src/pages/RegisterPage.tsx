@@ -14,12 +14,14 @@ import MobileMenu from '../components/MobileMenu'
 import { NORTH_MACEDONIA_CITIES } from '../constants/cities'
 import './RegisterPage.css'
 
+/**
+ * Step 1 (signed out): create the account on Keycloak.
+ * Step 2 (signed in, no salon yet): set up the salon.
+ */
 export default function RegisterPage() {
   const { t } = useTranslation()
-  const { setUser } = useContext(AuthContext)
+  const { user, setUser } = useContext(AuthContext)
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [phone, setPhone] = useState('')
   const [salonName, setSalonName] = useState('')
   const [city, setCity] = useState('')
@@ -32,8 +34,8 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
     try {
-      const user = await api.register({ email, password, phone: phone || undefined, salonName, city, address })
-      setUser(user)
+      await api.setupSalon({ phone: phone || undefined, salonName, city, address })
+      setUser(await api.me())
       navigate('/dashboard')
     } catch (err: any) {
       setError(t(`errors.${err.code || 'UNKNOWN'}`))
@@ -55,37 +57,47 @@ export default function RegisterPage() {
             <MobileMenu />
           </div>
         </div>
-        <Card>
-          <h2 className="register-page__title">{t('auth.register')}</h2>
-          <form onSubmit={handleSubmit} className="register-page__form">
-            <Input label={t('auth.salonName')} value={salonName} onChange={e => setSalonName(e.target.value)} required />
-            <div className="register-page__select-group">
-              <label className="register-page__label">{t('auth.city')}</label>
-              <select
-                className="register-page__select"
-                value={city}
-                onChange={e => setCity(e.target.value)}
-                required
-              >
-                <option value="">{t('auth.selectCity')}</option>
-                {NORTH_MACEDONIA_CITIES.map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+        {user ? (
+          <Card>
+            <h2 className="register-page__title">{t('auth.setupTitle')}</h2>
+            <form onSubmit={handleSubmit} className="register-page__form">
+              <Input label={t('auth.salonName')} value={salonName} onChange={e => setSalonName(e.target.value)} required />
+              <div className="register-page__select-group">
+                <label className="register-page__label">{t('auth.city')}</label>
+                <select
+                  className="register-page__select"
+                  value={city}
+                  onChange={e => setCity(e.target.value)}
+                  required
+                >
+                  <option value="">{t('auth.selectCity')}</option>
+                  {NORTH_MACEDONIA_CITIES.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <Input label={t('auth.address')} value={address} onChange={e => setAddress(e.target.value)} required placeholder={t('auth.addressPlaceholder')} />
+              <PhoneInput label={t('auth.phone')} value={phone} onChange={setPhone} />
+              {error && <p className="register-page__error">{error}</p>}
+              <Button type="submit" fullWidth disabled={loading}>
+                {t('auth.setupSubmit')}
+              </Button>
+            </form>
+          </Card>
+        ) : (
+          <Card>
+            <h2 className="register-page__title">{t('auth.register')}</h2>
+            <div className="register-page__form">
+              <p>{t('auth.secureSignUp')}</p>
+              <Button fullWidth onClick={() => { window.location.href = api.signupUrl }}>
+                {t('auth.register')}
+              </Button>
             </div>
-            <Input label={t('auth.address')} value={address} onChange={e => setAddress(e.target.value)} required placeholder={t('auth.addressPlaceholder')} />
-            <Input label={t('auth.email')} type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-            <Input label={t('auth.password')} type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
-            <PhoneInput label={t('auth.phone')} value={phone} onChange={setPhone} />
-            {error && <p className="register-page__error">{error}</p>}
-            <Button type="submit" fullWidth disabled={loading}>
-              {t('auth.register')}
-            </Button>
-          </form>
-          <p className="register-page__footer">
-            {t('auth.hasAccount')} <Link to="/login">{t('auth.loginHere')}</Link>
-          </p>
-        </Card>
+            <p className="register-page__footer">
+              {t('auth.hasAccount')} <Link to="/login">{t('auth.loginHere')}</Link>
+            </p>
+          </Card>
+        )}
       </div>
     </div>
   )

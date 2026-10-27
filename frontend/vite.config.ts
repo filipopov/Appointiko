@@ -10,6 +10,11 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      // Keycloak login starts and finishes on the backend (OIDC authorization code flow)
+      '/oauth2': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
   build: {

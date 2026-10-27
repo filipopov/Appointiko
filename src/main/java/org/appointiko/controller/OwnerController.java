@@ -56,6 +56,18 @@ public class OwnerController {
         return ResponseEntity.ok(toSalonInfo(salon));
     }
 
+    /** First-login onboarding: the Keycloak account exists, now create the owner's salon. */
+    @PostMapping("/salon")
+    public ResponseEntity<?> setupSalon(Authentication auth, @Valid @RequestBody SalonSetupRequest req) {
+        Owner owner = authService.getByEmail(auth.getName());
+        if (salonMgmtService.hasSalon(owner.getId())) {
+            return ResponseEntity.status(409).body(new ErrorResponse("SALON_EXISTS", "Salon already set up"));
+        }
+        authService.updatePhone(owner, req.phone());
+        salonMgmtService.createSalon(owner.getId(), req.salonName(), req.city(), req.address());
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/salon")
     public ResponseEntity<SalonInfo> updateSalon(Authentication auth, @Valid @RequestBody SalonUpdateRequest req) {
         Salon salon = getOwnerSalon(auth);

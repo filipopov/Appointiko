@@ -25,13 +25,15 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  // Auth
-  register: (data: { email: string; password: string; phone?: string; salonName: string; city: string; address: string }) =>
-    request('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
-  login: (data: { email: string; password: string }) =>
-    request('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
-  logout: () => request('/api/auth/logout', { method: 'POST' }),
+  // Auth — sign-in and sign-up happen on Keycloak; the backend completes the OIDC flow.
+  loginUrl: '/oauth2/authorization/keycloak',
+  signupUrl: '/oauth2/authorization/keycloak?signup',
+  logout: () => request<{ logoutUrl: string }>('/api/auth/logout', { method: 'POST' }),
   me: () => request<any>('/api/auth/me'),
+
+  // Owner - first-login salon setup
+  setupSalon: (data: { salonName: string; city: string; address: string; phone?: string }) =>
+    request('/api/owner/salon', { method: 'POST', body: JSON.stringify(data) }),
 
   // Owner - Salon
   getSalon: () => request<any>('/api/owner/salon'),

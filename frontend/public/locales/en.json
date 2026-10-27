@@ -24,7 +24,12 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "loginHere": "Login here",
-    "registerHere": "Register here"
+    "registerHere": "Register here",
+    "secureSignIn": "You will continue to our secure sign-in page.",
+    "secureSignUp": "Create your account on our secure sign-up page, then set up your salon.",
+    "signInFailed": "Sign-in failed. Please try again.",
+    "setupTitle": "Set up your salon",
+    "setupSubmit": "Create my booking page"
   },
   "landing": {
     "heroTitle": "Your clients book in 30 seconds",
@@ -342,7 +347,8 @@
     "IMAGE_TOO_LARGE": "Image is too large. Max 2MB.",
     "IMAGE_TYPE_UNSUPPORTED": "Image type not supported. Use JPG, PNG, WebP, or GIF.",
     "IMAGE_EMPTY": "Please choose an image file.",
-    "IMAGE_READ_FAILED": "Could not read image file."
+    "IMAGE_READ_FAILED": "Could not read image file.",
+    "SALON_EXISTS": "This account already has a salon."
   },
   "days": {
     "1": "Mon",

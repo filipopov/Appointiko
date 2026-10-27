@@ -26,6 +26,7 @@ export const AuthContext = createContext<{
 function defaultRouteFor(user: any): string {
   if (!user) return '/'
   if (user.admin && !user.salon) return '/admin'
+  if (!user.salon) return '/register' // signed in via Keycloak, salon not set up yet
   return '/dashboard'
 }
 
@@ -55,32 +56,32 @@ function App() {
               user ? <Navigate to={defaultRouteFor(user)} /> : <LoginPage />
             } />
             <Route path="/register" element={
-              user ? <Navigate to={defaultRouteFor(user)} /> : <RegisterPage />
+              user && (user.salon || user.admin) ? <Navigate to={defaultRouteFor(user)} /> : <RegisterPage />
             } />
 
             <Route path="/dashboard" element={
               loading ? null : user
-                ? (user.salon ? <DashboardPage /> : <Navigate to="/admin" />)
+                ? (user.salon ? <DashboardPage /> : <Navigate to={defaultRouteFor(user)} />)
                 : <Navigate to="/login" />
             } />
             <Route path="/dashboard/services" element={
               loading ? null : user
-                ? (user.salon ? <ServicesPage /> : <Navigate to="/admin" />)
+                ? (user.salon ? <ServicesPage /> : <Navigate to={defaultRouteFor(user)} />)
                 : <Navigate to="/login" />
             } />
             <Route path="/dashboard/hours" element={
               loading ? null : user
-                ? (user.salon ? <WorkingHoursPage /> : <Navigate to="/admin" />)
+                ? (user.salon ? <WorkingHoursPage /> : <Navigate to={defaultRouteFor(user)} />)
                 : <Navigate to="/login" />
             } />
             <Route path="/dashboard/settings" element={
               loading ? null : user
-                ? (user.salon ? <SettingsPage /> : <Navigate to="/admin" />)
+                ? (user.salon ? <SettingsPage /> : <Navigate to={defaultRouteFor(user)} />)
                 : <Navigate to="/login" />
             } />
             <Route path="/dashboard/plan" element={
               loading ? null : user
-                ? (user.salon ? <PlanPage /> : <Navigate to="/admin" />)
+                ? (user.salon ? <PlanPage /> : <Navigate to={defaultRouteFor(user)} />)
                 : <Navigate to="/login" />
             } />
             <Route path="/admin" element={

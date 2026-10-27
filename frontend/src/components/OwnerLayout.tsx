@@ -76,9 +76,14 @@ export default function OwnerLayout({ children }: { children: ReactNode }) {
   const [trimTrigger, setTrimTrigger] = useState(0)
 
   const handleLogout = async () => {
-    await api.logout().catch(() => {})
+    const result = await api.logout().catch(() => null)
     setUser(null)
-    navigate('/login')
+    // Also end the Keycloak session, otherwise the next login would be silent.
+    if (result?.logoutUrl) {
+      window.location.href = result.logoutUrl
+    } else {
+      navigate('/login')
+    }
   }
 
   return (

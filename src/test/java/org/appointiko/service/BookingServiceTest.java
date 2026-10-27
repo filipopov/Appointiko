@@ -43,7 +43,6 @@ class BookingServiceTest {
     void setUp() {
         Owner o = new Owner();
         o.setEmail("book-" + System.nanoTime() + "@example.com");
-        o.setPasswordHash("$2a$10$x");
         o = ownerRepo.save(o);
 
         Salon s = new Salon();

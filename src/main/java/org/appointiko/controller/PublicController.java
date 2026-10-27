@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.appointiko.dto.*;
 import org.appointiko.model.Appointment;
 import org.appointiko.model.Salon;
-import org.appointiko.model.SalonImage;
 import org.appointiko.model.SalonService;
 import org.appointiko.model.WorkingHours;
 import org.appointiko.repo.AppointmentRepository;
@@ -51,14 +50,14 @@ public class PublicController {
     @GetMapping("/image")
     public ResponseEntity<byte[]> getImage(@PathVariable String slug) {
         Salon salon = salonMgmtService.getSalonBySlug(slug);
-        SalonImage img = salonMgmtService.getImage(salon.getId());
+        SalonMgmtService.ImageContent img = salonMgmtService.getImage(salon.getId());
         if (img == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(img.getContentType()))
+                .contentType(MediaType.parseMediaType(img.contentType()))
                 .cacheControl(CacheControl.maxAge(Duration.ofDays(7)).cachePublic())
-                .body(img.getData());
+                .body(img.data());
     }
 
     @GetMapping("/services")
