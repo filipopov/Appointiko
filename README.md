@@ -14,10 +14,11 @@ Nail, hair and makeup studios get a public booking page (shareable link + QR cod
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)
 
-<!-- TODO: replace with a 10–20s GIF: client books a slot → it appears in the owner dashboard -->
+<!-- TODO: add a 10–20s GIF (client books a slot → it appears in the owner dashboard) and uncomment:
 ![Appointiko demo](docs/demo.gif)
+-->
 
-> **Live:** _TODO: add URL_ · **Built solo, end to end:** product, backend, frontend, deployment and operations.
+> **Built solo, end to end:** product, backend, frontend, deployment and operations.
 
 ---
 
@@ -41,10 +42,11 @@ Nail, hair and makeup studios get a public booking page (shareable link + QR cod
 - Scheduled jobs for trial expiry and plan reminder emails
 - Admin console to activate plans and manage salons
 
-<!-- TODO: screenshots -->
+<!-- TODO: add screenshots and uncomment:
 | Public booking page | Owner dashboard | Explore |
 |---------------------|-----------------|---------|
 | ![Booking](docs/screenshot-booking.png) | ![Dashboard](docs/screenshot-dashboard.png) | ![Explore](docs/screenshot-explore.png) |
+-->
 
 ---
 
